@@ -26,6 +26,7 @@ ignore-paths=
     requirements/.,
     tests/fixtures/vcrpy/.,
     Makefile,
+    justfile,
 
 [MESSAGES CONTROL]
 
