@@ -7,11 +7,11 @@ from typing import Final
 
 import pytest
 
-from src.template.registry import RegistryEntry, matcher
+from src.template.registry import IS_JSON, RegistryEntry, matcher
 
 fundamentals_registry = [
     RegistryEntry(
-        identifier="id1",
+        identifier="xid1",
         name="test_1",
         version="1",
         markers={"test1": 1, "test2": "data"},
@@ -28,7 +28,7 @@ test_data_1: Final[
     """
 
 fundamental_tests = [
-    (fundamentals_registry, test_data_1, "id1"),
+    (fundamentals_registry, test_data_1, "xid1"),
 ]
 
 
@@ -41,4 +41,20 @@ def test_fundamentals(mocker, registry, test_data, expected_id):
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
     res = matcher(json_loaded)
+    assert len(res) == 1, "results for these tests should have one value only"
     assert res[0].identifier == expected_id
+
+
+def test_json_only():
+    """Test that the result of an non identification for a valid
+    JSON file is predictable.
+    """
+    only_json = """
+        {
+            "test1": 1,
+            "test2": "data"
+        }
+        """
+    res = matcher(only_json)
+    assert res[0].identifier == "id0"
+    assert res[0].description == IS_JSON
