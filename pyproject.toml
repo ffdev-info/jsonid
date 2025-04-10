@@ -1,59 +1,31 @@
 [project]
-# For more information on package metadata see:
-#
-#   * https://packaging.python.org/specifications/core-metadata/
-#
-# For even greater information on this file, see the pypa/sampleproject:
-#
-#   * https://github.com/pypa/sampleproject/blob/fc8d83efd5749853507be959d858629d0aaf5c6e/pyproject.toml
-#
 
-# Required.
 name = "python-repo-template"
-
-# Required.
-#
-# Version and packaging dependencies should be dynamically set by features in
-# the package and using source control. This is the most reliable and accurate
-# way to do this.
-#
 dynamic = ["version", "dependencies"]
 
-# Optional.
 description = "A one-line description of this Python project"
 
-# Optional.
 readme = "README.md"
 
-# Supported python versions. Optional, but helpful.
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 
-# Optional.
-license = {file = "LICENSE.txt"}
+license-files = [ "LICENSE" ]
 
-# Optional.
 keywords = ["template", "setuptools", "development"]
 
-# Optional.
 authors = [
   {name = "A. Developer", email = "author_one@example.com" },
   {name = "A.N. Other Developer", email = "author_two@example.com" },
 ]
 
-# Optional. E.g. individual or organisation, e.g. app-support@organization.com.
 maintainers = [
   {name = "A. Project Maintainer", email = "maintainer@example.com" }
 ]
 
-# Optional.
-#
-# For a list of valid classifiers, see https://pypi.org/classifiers/
-#
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
   "Topic :: Software Development :: Build Tools",
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
@@ -61,13 +33,9 @@ classifiers = [
   "Programming Language :: Python :: 3 :: Only",
 ]
 
-# Dependencies.
-#
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements/requirements.txt"]}
 
-# Optional.
-#
 [project.urls]
 "Homepage" = "https://example.com/project/"
 "Bug Reports" = "https://example.com/issues/"
@@ -75,11 +43,6 @@ dependencies = {file = ["requirements/requirements.txt"]}
 "Say Thanks!" = "http://example.com/thanks/"
 "Source" = "https://example.com/sourcecode/"
 
-# Optional.
-#
-# Provide a command line executable called `template` which executes the
-# function `main` from this package when invoked.
-#
 [project.scripts]
 template = "template.template:main"
 
