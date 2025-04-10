@@ -1,0 +1,5 @@
+# Configurtion file for Markdown lint. Add exceptions here.
+default: true
+
+# Exceptions, example given, MD045
+# MD012: false    # no multiple blank-lines.

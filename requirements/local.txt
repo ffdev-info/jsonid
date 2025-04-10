@@ -1,0 +1,9 @@
+# requirements to run locally and for development.
+-r requirements.txt
+
+pip-upgrader==1.4.15
+pre-commit==3.8.0
+pylint==3.2.7
+pytest==8.3.2
+pytest-random-order==1.1.1
+tox==4.18.0
