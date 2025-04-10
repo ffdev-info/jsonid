@@ -19,7 +19,7 @@ class RegistryEntry:
     name: str = ""
     version: Optional[str | None] = None
     description: str = ""
-    markers: dict = field(default_factory=dict)
+    markers: list = field(default_factory=list)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -51,25 +51,36 @@ def registry() -> list[RegistryEntry]:
     return _registry
 
 
+def process_markers(entry, data):
+    """Todo..."""
+    for marker in entry.markers:
+        for marker_key, marker_value in marker.items():
+            try:
+                logger.debug("key: '%s', value: '%s'", marker_key, marker_value)
+                source_value = data[marker_key]
+                if not marker_value:
+                    # values might be optional if we have a key.
+                    continue
+                if marker_value != source_value:
+                    return False
+                if source_value != marker_value:
+                    return False
+            except KeyError:
+                return False
+    return True
+
+
 def matcher(data: dict) -> list:
     """Matcher for registry objects"""
     reg = registry()
     matches = []
     for idx, entry in enumerate(reg):
         logger.debug("processing registry entry: %s", idx)
-        match = False
-        for marker_key, marker_value in entry.markers.items():
-            try:
-                source_value = data[marker_key]
-                if source_value:
-                    if source_value == marker_value:
-                        match = True
-            except IndexError:
-                pass
-        if match:
-            matches.append(entry)
-    if len(matches) == 0:
+        match = process_markers(entry, data)
+        if not match:
+            continue
+        matches.append(entry)
+    if len(matches) == 0 or matches[0] == NIL_ENTRY:
         return [JSON_ONLY]
-
     logger.debug(matches)
     return matches

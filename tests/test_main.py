@@ -11,11 +11,17 @@ from src.template.registry import IS_JSON, RegistryEntry, matcher
 
 fundamentals_registry = [
     RegistryEntry(
-        identifier="xid1",
+        identifier="test_id1",
         name="test_1",
         version="1",
-        markers={"test1": 1, "test2": "data"},
-    )
+        markers=[{"test1": 1}, {"test2": "data"}],
+    ),
+    RegistryEntry(
+        identifier="test_id2",
+        name="test_2",
+        version="1",
+        markers=[{"test2": 1}, {"test3": {"test4": {"test5": None}}}],
+    ),
 ]
 
 test_data_1: Final[
@@ -27,8 +33,22 @@ test_data_1: Final[
     }
     """
 
+test_data_2: Final[
+    str
+] = """
+        {
+            "test2": 1,
+            "test3": {
+                "test4": {
+                   "test5": null
+                }
+            }
+        }
+    """
+
 fundamental_tests = [
-    (fundamentals_registry, test_data_1, "xid1"),
+    (fundamentals_registry, test_data_1, "test_id1"),
+    (fundamentals_registry, test_data_2, "test_id2"),
 ]
 
 
