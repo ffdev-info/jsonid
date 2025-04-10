@@ -5,11 +5,13 @@ from typing import Final
 
 IS_JSON: Final[str] = "parses as JSON but might not conform to a schema"
 
+
 @dataclass
-class RegistryEntry():
-    """Class that represents information that migth be derived from
+class RegistryEntry:
+    """Class that represents information that might be derived from
     a registry.
     """
+
     identifier: str = ""
     name: str = ""
     version: str = ""
@@ -18,15 +20,14 @@ class RegistryEntry():
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.__dict__ == other.__dict__
-        else:
-            return False
+        return False
 
 
 class IdentificationFailure(Exception):
     """Raise when identification fails."""
 
 
-NilEntry: Final[RegistryEntry] = RegistryEntry()
+NIL_ENTRY: Final[RegistryEntry] = RegistryEntry()
 
 _registry = [
     RegistryEntry(),
@@ -39,17 +40,16 @@ def registry() -> list[RegistryEntry]:
     return _registry
 
 
-
 def matcher(data: dict) -> list:
     """Matcher for registry objects"""
     reg = registry()
     matches = []
     for entry in reg:
-        for key, value in entry.markers.items():
+        for marker_key, marker_value in entry.markers.items():
             try:
-                v = data[key]
-                if value:
-                    if v != value:
+                source_value = data[marker_key]
+                if source_value:
+                    if source_value != marker_value:
                         break
                 matches.append(entry)
             except IndexError:
