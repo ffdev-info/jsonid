@@ -84,7 +84,6 @@ NIL_ENTRY: Final[RegistryEntry] = RegistryEntry()
 
 IS_JSON: Final[str] = "parses as JSON but might not conform to a schema"
 
-TYPE_STRING: Final[list] = [{"@en": "data is string type"}]
 TYPE_LIST: Final[list] = [{"@en": "data is list type"}]
 TYPE_DICT: Final[list] = [{"@en": "data is dict type"}]
 TYPE_NONE: Final[list] = [{"@en": "data is null"}]
@@ -124,7 +123,7 @@ def _get_language(string_field: list[dict], language: str = "@en") -> str:
     return string_field[0]
 
 
-def get_additional(data: dict, library: bool) -> str:
+def get_additional(data: dict) -> str:
     """Return additional characterization information about the JSON
     we encountered.
     """
@@ -132,6 +131,8 @@ def get_additional(data: dict, library: bool) -> str:
     # pylint: disable=R0911
 
     if not data:
+        if data is False:
+            return TYPE_BOOL
         return TYPE_NONE
     if isinstance(data, dict):
         return TYPE_DICT
@@ -140,18 +141,9 @@ def get_additional(data: dict, library: bool) -> str:
     if isinstance(data, float):
         return TYPE_FLOAT
     if isinstance(data, int):
-        if data is True or data is False:
+        if data is True:
             return TYPE_BOOL
         return TYPE_INT
-    if isinstance(data, str):
-        if not library:
-            return TYPE_STRING
-        try:
-            logger.debug("library mode decoding JSON from string to confirm is JSON")
-            json_loaded = json.loads(data)
-            return get_additional(json_loaded, False)
-        except json.decoder.JSONDecodeError:
-            return TYPE_ERR
     return TYPE_ERR
 
 
@@ -202,9 +194,16 @@ def process_markers(entry, data) -> bool:
     return False
 
 
-def matcher(data: dict, library=True) -> list:
+def matcher(data: dict) -> list:
     """Matcher for registry objects"""
     logger.debug("type: '%s'", type(data))
+    if isinstance(data, str):
+        try:
+            data = json.loads(data)
+        except json.decoder.JSONDecodeError as err:
+            logger.error("unprocessable data: %s", err)
+            return []
+
     reg = registry()
     matches = []
     for idx, entry in enumerate(reg):
@@ -216,7 +215,7 @@ def matcher(data: dict, library=True) -> list:
             continue
         matches.append(entry)
     if len(matches) == 0 or matches[0] == NIL_ENTRY:
-        additional = get_additional(data, library)
+        additional = get_additional(data)
         json_only = JSON_ONLY
         json_only.additional = additional
         return [json_only]

@@ -111,6 +111,7 @@ primitive_tests = [
     ("null", registry.TYPE_NONE),
     ('{"k1": 1}', registry.TYPE_DICT),
     ('"true"', registry.TYPE_BOOL),
+    ('"false"', registry.TYPE_BOOL),
     ("1.0", registry.TYPE_FLOAT),
     ("1", registry.TYPE_INT),
 ]
