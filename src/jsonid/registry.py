@@ -79,50 +79,67 @@ def get_additional(data: dict) -> str:
     return TYPE_ERR
 
 
-def process_markers(entry, data) -> bool:
+def process_markers(registry_entry: registry_data.RegistryEntry, data: dict) -> bool:
     """Run through the markers for an entry in the registry.
     Attempt to exit early if there isn't a match.
     """
 
-    # pylint: disable=R0911
+    # pylint: disable=R0911,R0912
 
-    logger.debug("markers len: %s", len(entry.markers))
-    for marker in entry.markers:
+    if isinstance(data, list):
+        for marker in registry_entry.markers:
+            try:
+                _ = marker[registry_matchers.MARKER_INDEX]
+                data = registry_matchers.at_index(marker, data)
+            except KeyError as err:
+                logger.debug("following through: %s", err)
+                continue
+    for marker in registry_entry.markers:
+        try:
+            _ = marker[registry_matchers.MARKER_GOTO]
+            data = registry_matchers.at_goto(marker, data)
+        except KeyError as err:
+            logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_CONTAINS]
             return registry_matchers.contains_match(marker, data)
-        except KeyError:
-            pass
+        except KeyError as err:
+            logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_STARTSWITH]
             return registry_matchers.startswith_match(marker, data)
-        except KeyError:
-            pass
+        except KeyError as err:
+            logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_ENDSWITH]
             return registry_matchers.endswith_match(marker, data)
-        except KeyError:
-            pass
+        except KeyError as err:
+            logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_IS]
             return registry_matchers.is_match(marker, data)
-        except KeyError:
-            pass
+        except KeyError as err:
+            logger.debug("following through: %s", err)
+        try:
+            _ = marker[registry_matchers.MARKER_IS_TYPE]
+            return registry_matchers.is_type(marker, data)
+        except KeyError as err:
+            logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_REGEX]
             return registry_matchers.regex_match(marker, data)
-        except KeyError:
-            pass
+        except KeyError as err:
+            logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_KEY_EXISTS]
             return registry_matchers.key_exists_match(marker, data)
-        except KeyError:
-            pass
+        except KeyError as err:
+            logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_KEY_NO_EXIST]
             return registry_matchers.key_no_exist_match(marker, data)
-        except KeyError:
-            pass
+        except KeyError as err:
+            logger.debug("following through: %s", err)
     return False
 
 
@@ -137,17 +154,18 @@ def matcher(data: dict) -> list:
             return []
     reg = registry_data.registry()
     matches = []
-    for idx, entry in enumerate(reg):
+    for idx, registry_entry in enumerate(reg):
         try:
             logger.debug("processing registry entry: %s", idx)
-            match = process_markers(entry, data)
+            match = process_markers(registry_entry, data)
             if not match:
                 continue
-            if entry in matches:
+            if registry_entry in matches:
                 continue
-            matches.append(entry)
-        except TypeError:
-            break
+            matches.append(registry_entry)
+        except TypeError as err:
+            logger.debug("%s", err)
+            continue
     if len(matches) == 0 or matches[0] == NIL_ENTRY:
         additional = get_additional(data)
         json_only = JSON_ONLY

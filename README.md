@@ -58,21 +58,19 @@ looking at. jsonid is currently designed to identify the existence of
 information but you can also add some negation, e.g. to remove false-positives.
 Do this carefully!
 
-```text
-    * KEY
-    * CONTAINS
-    * STARTSWITH
-    * ENDSWITH
-    * IS
-    * REGEX
-    * EXISTS
-```
-
-Special:
-
-```text
-    * NOEXIST (must be used in conjunction with another keyword)
-```
+| rule       | meaning                                               |
+|------------|-------------------------------------------------------|
+| INDEX      | index (from which to read when structure is an array) |
+| GOTO       | goto key (read key at given key)                      |
+| KEY        | key to read                                           |
+| CONTAINS   | value contains string                                 |
+| STARTSWITH | value startswith string                               |
+| ENDSWITH   | value endswith string                                 |
+| IS         | value matches exactly                                 |
+| REGEX      | value matches a regex pattern                         |
+| EXISTS     | key exists                                            |
+| NOEXIST    | key doesn't exists                                    |
+| ISTYPE     | key is a specific type (string, number, dict, array)  |
 
 Stored in a list within a `RegistryEntry` object, they are then processed
 in order.
@@ -86,6 +84,11 @@ For example:
         { "KEY": "data", "IS": { "more": "data" } },
     ]
 ```
+
+### Discussion
+
+I hope the discussion around these keys will be fruitful! I also hope we can
+add/remove for the community as we continue to test.
 
 ## Registry
 

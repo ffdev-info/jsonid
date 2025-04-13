@@ -59,6 +59,30 @@ spec_registry = [
             {"KEY": "k1_exists", "EXISTS": None},
         ],
     ),
+    RegistryEntry(
+        identifier="index1",
+        name="spec: index",
+        version="1",
+        markers=[
+            {"INDEX": 0, "KEY": "k1_index", "EXISTS": None},
+        ],
+    ),
+    RegistryEntry(
+        identifier="goto1",
+        name="spec: goto",
+        version="1",
+        markers=[
+            {"GOTO": "k1_goto", "KEY": "k1_goto_1", "EXISTS": None},
+        ],
+    ),
+    RegistryEntry(
+        identifier="istype1",
+        name="spec: exists",
+        version="1",
+        markers=[
+            {"KEY": "k1_istype", "ISTYPE": int},
+        ],
+    ),
 ]
 
 contains_1: Final[
@@ -116,6 +140,34 @@ noexist_1: Final[
         }
 """
 
+index_1: Final[
+    str
+] = """
+[
+    {
+        "k1_index": null
+    }
+]
+"""
+
+goto_1: Final[
+    str
+] = """
+{
+    "k1_goto": {
+        "k1_goto_1": null
+    }
+}
+"""
+
+istype_1: Final[
+    str
+] = """
+{
+    "k1_istype": 1
+}
+"""
+
 spec_tests = [
     (spec_registry, contains_1, "contains1"),
     (spec_registry, startswith_1, "startswith1"),
@@ -123,6 +175,9 @@ spec_tests = [
     (spec_registry, is_1, "is1"),
     (spec_registry, regex_1, "regex1"),
     (spec_registry, exists_1, "exists1"),
+    (spec_registry, index_1, "index1"),
+    (spec_registry, goto_1, "goto1"),
+    (spec_registry, istype_1, "istype1"),
 ]
 
 
