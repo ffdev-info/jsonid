@@ -1,6 +1,11 @@
 # jsonid
 
-![JSON Logo by Douglas Crockford](static/images/JSON_logo-crockford.png)
+<!-- markdownlint-disable -->
+<img
+    src="static/images/JSON_logo-crockford.png"
+    alt="JSON ID logo based on JSON Logo by Douglas Crockford"
+    width="200px" />
+<!-- markdownlint-enable -->
 
 [JSON][JSON-1]-Identification ruleset and tool.
 
