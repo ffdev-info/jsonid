@@ -185,6 +185,16 @@ _registry = [
             {"KEY": "id", "EXISTS": None},
         ],
     ),
+    RegistryEntry(
+        identifier="id0017",
+        name=[{"@en": "open resume"}],
+        description=[{"@en": "an open source data-oriented resume builder"}],
+        markers=[
+            {"KEY": "basics", "EXISTS": None},
+            {"KEY": "work", "EXISTS": None},
+            {"KEY": "education", "EXISTS": None},
+        ],
+    ),
 ]
 
 
