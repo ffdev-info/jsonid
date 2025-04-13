@@ -115,7 +115,7 @@ The registry can be read in the source code here:
 ## PRONOM
 
 Ideally we will add PRONOM identifiers `jsonid`'s formats. The tool can be
-used to generate evidence enough to be able to add tthis data to PRONOM
+used to generate evidence enough to be able to add this data to PRONOM
 in future.
 
 ## Output format
@@ -135,6 +135,8 @@ IIIF API data and so on.
 
 If the ruleset works for JSON we might be able to apply it to other formats
 such as YAML in future.
+
+----
 
 ## Developer install
 
