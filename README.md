@@ -7,9 +7,11 @@
     width="200px" />
 <!-- markdownlint-enable -->
 
-[JSON][JSON-1]-Identification ruleset and tool.
+[ison][json-1](ID)entification tool, and ruleset. `jsonid` can be downloaded via
+PyPi: [here][pypi-1].
 
-[JSON-1]: https://www.json.org/json-en.html
+[json-1]: https://www.json.org/json-en.html
+[pypi-1]: https://pypi.org/project/jsonid/
 
 ## Function
 
