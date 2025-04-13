@@ -287,6 +287,15 @@ _registry = [
             {"KEY": "definitions", "ISTYPE": dict},
         ],
     ),
+    RegistryEntry(
+        identifier="id0027",
+        name=[{"@en": "JSON-LD Document"}],
+        markers=[
+            {"KEY": "@context", "EXISTS": None},
+            {"KEY": "type", "EXISTS": None},
+            {"KEY": "definitions", "ISTYPE": dict},
+        ],
+    ),
 ]
 
 
