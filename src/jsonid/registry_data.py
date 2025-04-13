@@ -256,7 +256,30 @@ _registry = [
             {"INDEX": 0, "KEY": "dc.type", "EXISTS": None},
         ],
     ),
+    RegistryEntry(
+        identifier="id0024",
+        name=[{"@en": "tika recursive metadata"}],
+        markers=[
+            {"INDEX": 0, "KEY": "Content-Length", "EXISTS": None},
+            {"INDEX": 0, "KEY": "Content-Type", "EXISTS": None},
+            {"INDEX": 0, "KEY": "X-TIKA:Parsed-By", "EXISTS": None},
+            {"INDEX": 0, "KEY": "X-TIKA:parse_time_millis", "EXISTS": None},
+        ],
+    ),
+    RegistryEntry(
+        identifier="id0025",
+        name=[{"@en": "JavaScript package.json file"}],
+        pronom="fmt/1311",
+        markers=[
+            {"KEY": "name", "EXISTS": None},
+            {"KEY": "version", "EXISTS": None},
+            {"KEY": "scripts", "EXISTS": None},
+            {"KEY": "devDependencies", "EXISTS": None},
+            {"KEY": "dependencies", "EXISTS": None},
+        ],
+    ),
 ]
+
 
 def registry() -> list[RegistryEntry]:
     """Return a registry object to the caller."""
