@@ -37,7 +37,8 @@ dependencies = {file = ["requirements/requirements.txt"]}
 "Source" = "https://github.com/ross-spencer/jsonid/sourcecode/"
 
 [project.scripts]
-template = "jsonid.jsonid:main"
+jsonid = "jsonid.jsonid:main"
+momoa = "jsonid.jsonid:main"
 
 [build-system]
 requires = ["setuptools>=74.0.0", "wheel>=0.44.0", "setuptools_scm[toml]>=8.1.0"]
