@@ -23,7 +23,8 @@ def at_index(marker: dict, data: dict) -> dict:
     """Provide an ability to investigate an indeex."""
     idx = marker[MARKER_INDEX]
     try:
-        return data[idx]
+        data = data[idx]
+        return data
     except IndexError:
         return data
 

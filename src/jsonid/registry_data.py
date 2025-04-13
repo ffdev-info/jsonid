@@ -173,7 +173,7 @@ _registry = [
         name=[{"@en": "google link file"}],
         pronom="fmt/1073",
         markers=[
-            {"KEY": "url", "startswith": "https://docs.google.com/open"},
+            {"KEY": "url", "STARTSWITH": "https://docs.google.com/open"},
         ],
     ),
     # Also: id can be "bookmarks.json", "inbox.json", "likes.json"
@@ -181,7 +181,7 @@ _registry = [
         identifier="id0016",
         name=[{"@en": "activity streams json (generic)"}],
         markers=[
-            {"KEY": "@context", "startswith": "https://www.w3.org/ns/activitystreams"},
+            {"KEY": "@context", "STARTSWITH": "https://www.w3.org/ns/activitystreams"},
             {"KEY": "id", "EXISTS": None},
         ],
     ),

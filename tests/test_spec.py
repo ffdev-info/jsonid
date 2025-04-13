@@ -77,7 +77,7 @@ spec_registry = [
     ),
     RegistryEntry(
         identifier="istype1",
-        name="spec: exists",
+        name="spec: istype",
         version="1",
         markers=[
             {"KEY": "k1_istype", "ISTYPE": int},

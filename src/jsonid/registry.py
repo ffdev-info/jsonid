@@ -84,16 +84,16 @@ def process_markers(registry_entry: registry_data.RegistryEntry, data: dict) -> 
     Attempt to exit early if there isn't a match.
     """
 
-    # pylint: disable=R0911,R0912
+    # pylint: disable=R0911,R0912.R0915
 
     if isinstance(data, list):
         for marker in registry_entry.markers:
             try:
                 _ = marker[registry_matchers.MARKER_INDEX]
                 data = registry_matchers.at_index(marker, data)
+                break
             except KeyError as err:
-                logger.debug("following through: %s", err)
-                continue
+                return False
     for marker in registry_entry.markers:
         try:
             _ = marker[registry_matchers.MARKER_GOTO]
@@ -102,45 +102,61 @@ def process_markers(registry_entry: registry_data.RegistryEntry, data: dict) -> 
             logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_CONTAINS]
-            return registry_matchers.contains_match(marker, data)
+            match = registry_matchers.contains_match(marker, data)
+            if not match:
+                return False
         except KeyError as err:
             logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_STARTSWITH]
-            return registry_matchers.startswith_match(marker, data)
+            match = registry_matchers.startswith_match(marker, data)
+            if not match:
+                return False
         except KeyError as err:
             logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_ENDSWITH]
-            return registry_matchers.endswith_match(marker, data)
+            match = registry_matchers.endswith_match(marker, data)
+            if not match:
+                return False
         except KeyError as err:
             logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_IS]
-            return registry_matchers.is_match(marker, data)
+            match = registry_matchers.is_match(marker, data)
+            if not match:
+                return False
         except KeyError as err:
             logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_IS_TYPE]
-            return registry_matchers.is_type(marker, data)
+            match = registry_matchers.is_type(marker, data)
+            if not match:
+                return False
         except KeyError as err:
             logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_REGEX]
-            return registry_matchers.regex_match(marker, data)
+            match = registry_matchers.regex_match(marker, data)
+            if not match:
+                return False
         except KeyError as err:
             logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_KEY_EXISTS]
-            return registry_matchers.key_exists_match(marker, data)
+            match = registry_matchers.key_exists_match(marker, data)
+            if not match:
+                return False
         except KeyError as err:
             logger.debug("following through: %s", err)
         try:
             _ = marker[registry_matchers.MARKER_KEY_NO_EXIST]
-            return registry_matchers.key_no_exist_match(marker, data)
+            match = registry_matchers.key_no_exist_match(marker, data)
+            if not match:
+                return False
         except KeyError as err:
             logger.debug("following through: %s", err)
-    return False
+    return True
 
 
 def matcher(data: dict) -> list:
