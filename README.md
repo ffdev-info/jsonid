@@ -1,6 +1,6 @@
 # jsonid
 
-![JSON Logo by Douglas Crockford](static/images/JSON_logo-crockford.svg)
+![JSON Logo by Douglas Crockford](static/images/JSON_logo-crockford.png)
 
 JSON-Identification ruleset and tool.
 
