@@ -1,5 +1,6 @@
 # CLI helpers.
 
+# Help
 help:
     @just -l
 
@@ -11,7 +12,7 @@ pre-commit:
 tar-source: package-deps
 	rm -rf tar-src/
 	mkdir tar-src/
-	git-archive-all --prefix template/ tar-src/template-v0.0.0.tar.gz
+	git-archive-all --prefix jsonid/ tar-src/jsonid-v0.0.0.tar.gz
 
 # Upgrade dependencies for packaging
 package-deps:
@@ -33,6 +34,7 @@ package-upload-test: clean package-deps package-check
 package-upload: clean package-deps package-check
 	twine upload dist/* --repository-url https://upload.pypi.org/legacy/ --verbose
 
+# Package
 package: package-upload
 
 # Generate documentation
