@@ -1,42 +1,4 @@
-"""JSON registry processor.
-
-Identifier spec:
-
-    version 0.1:
-
-    A list of data structures is processed in order to determine
-    what kind of JSON document we might be looking at.
-
-    version 0.1 is currently designed to identify existence of
-    information. It doesn't currently test for negations of
-    information, however, this could be introduced, e.g. if a user
-    expects one value, but IT CANNOT BE another value, e.g. to
-    reduce conflicts/false-positives.
-
-    Keywords (case insensitive):
-
-       * KEY
-       * CONTAINS
-       * STARTSWITH
-       * ENDSWITH
-       * IS
-       * REGEX
-       * EXISTS
-
-       Special:
-
-       * NOEXIST (must be used in conjunction with another keyword)
-
-    ```e.g.
-        [
-            { "KEY": "name", "IS": "value" },
-            { "KEY": "schema", "CONTAINS": "/schema/version/1.1/" },
-            { "KEY": "data", "IS": { "more": "data" } },
-        ]
-    ```
-
-
-"""
+"""JSON registry processor. """
 
 import json
 import logging
