@@ -7,16 +7,16 @@ from typing import Final
 
 import pytest
 
-from src.template import registry
+from src.template import registry, registry_data
 
 fundamentals_registry = [
-    registry.RegistryEntry(
+    registry_data.RegistryEntry(
         identifier="test_id1",
         name="one key with integer, one key with string",
         version="1",
         markers=[{"KEY": "test1", "IS": 1}, {"KEY": "test2", "IS": "data"}],
     ),
-    registry.RegistryEntry(
+    registry_data.RegistryEntry(
         identifier="test_id2",
         name="one key with integer one key with nested data",
         version="1",
@@ -25,7 +25,7 @@ fundamentals_registry = [
             {"KEY": "test3", "IS": {"test4": {"test5": None}}},
         ],
     ),
-    registry.RegistryEntry(
+    registry_data.RegistryEntry(
         identifier="test_id3",
         name="key only identification (allows testing for only keys)",
         version="1",
@@ -75,7 +75,7 @@ fundamental_tests = [
 @pytest.mark.parametrize("test_registry, test_data, expected_id", fundamental_tests)
 def test_fundamentals(mocker, test_registry, test_data, expected_id):
     """Ensure the main function for the template repository exists."""
-    mocker.patch("src.template.registry.registry", return_value=test_registry)
+    mocker.patch("src.template.registry_data.registry", return_value=test_registry)
     try:
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:

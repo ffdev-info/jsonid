@@ -1,4 +1,4 @@
-"""JSON registry information.
+"""JSON registry processor.
 
 Identifier spec:
 
@@ -40,47 +40,26 @@ Identifier spec:
 
 import json
 import logging
-from dataclasses import dataclass, field
-from typing import Final, Optional
+from typing import Final
 
 try:
+    import registry_data
     import registry_matchers
 except ModuleNotFoundError:
     try:
-        from src.template import registry_matchers
+        from src.template import registry_data, registry_matchers
     except ModuleNotFoundError:
-        from templte import registry_matchers
+        from templte import registry_data, registry_matchers
 
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class RegistryEntry:  # pylint: disable=R0902
-    """Class that represents information that might be derived from
-    a registry.
-    """
-
-    identifier: str = ""
-    name: list = field(default_factory=list)
-    version: Optional[str | None] = None
-    description: list = field(default_factory=list)
-    pronom: str = ""
-    mime: list[str] = field(default_factory=list)
-    markers: list[dict] = field(default_factory=list)
-    additional: str = ""
-
-    def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            return self.__dict__ == other.__dict__
-        return False
 
 
 class IdentificationFailure(Exception):
     """Raise when identification fails."""
 
 
-NIL_ENTRY: Final[RegistryEntry] = RegistryEntry()
+NIL_ENTRY: Final[registry_data.RegistryEntry] = registry_data.RegistryEntry()
 
 IS_JSON: Final[str] = "parses as JSON but might not conform to a schema"
 
@@ -93,7 +72,7 @@ TYPE_BOOL: Final[list] = [{"@en": "data is boolean type"}]
 TYPE_ERR: Final[list] = [{"@en": "error processing data"}]
 
 
-JSON_ONLY: Final[RegistryEntry] = RegistryEntry(
+JSON_ONLY: Final[registry_data.RegistryEntry] = registry_data.RegistryEntry(
     identifier="id0",
     name=[{"@en": "JavaScript Object Notation (JSON)"}],
     description=[{"@en": IS_JSON}],
@@ -102,15 +81,6 @@ JSON_ONLY: Final[RegistryEntry] = RegistryEntry(
     mime=["application/json"],
     markers=None,
 )
-
-_registry = [
-    RegistryEntry(),
-]
-
-
-def registry() -> list[RegistryEntry]:
-    """Return a registry object to the caller."""
-    return _registry
 
 
 def _get_language(string_field: list[dict], language: str = "@en") -> str:
@@ -204,7 +174,7 @@ def matcher(data: dict) -> list:
             logger.error("unprocessable data: %s", err)
             return []
 
-    reg = registry()
+    reg = registry_data.registry()
     matches = []
     for idx, entry in enumerate(reg):
         logger.debug("processing registry entry: %s", idx)

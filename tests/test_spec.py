@@ -7,7 +7,8 @@ from typing import Final
 
 import pytest
 
-from src.template.registry import RegistryEntry, matcher
+from src.template.registry import matcher
+from src.template.registry_data import RegistryEntry
 
 spec_registry = [
     RegistryEntry(
@@ -129,7 +130,7 @@ spec_tests = [
 def test_spec(mocker, registry, test_data, expected_id):
     """Test all keywords."""
     print("test:", expected_id)
-    mocker.patch("src.template.registry.registry", return_value=registry)
+    mocker.patch("src.template.registry_data.registry", return_value=registry)
     try:
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
@@ -170,7 +171,7 @@ no_exist_registry = [
 def test_noexist_spec(mocker, registry, test_data, expected_id):
     """Test the no-exist keyword."""
     print("test:", expected_id)
-    mocker.patch("src.template.registry.registry", return_value=registry)
+    mocker.patch("src.template.registry_data.registry", return_value=registry)
     try:
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
