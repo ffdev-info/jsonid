@@ -1,13 +1,13 @@
 """ json-id tests... """
 
-# pylint: disable=C0103 #--upper-case naming of constants
+# pylint: disable=C0103,R0401
 
 import json
 from typing import Final
 
 import pytest
 
-from src.jsonid import registry, registry_data  # pylint: disable=R0401
+from src.jsonid import registry, registry_data
 
 fundamentals_registry = [
     registry_data.RegistryEntry(

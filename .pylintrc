@@ -36,3 +36,5 @@ ignore-paths=
 disable =
     C0301,  # line-length too long, see Black documented recommendations.
     C0115,  # No docstring for Class.
+    # TODO: Fixup
+    R0401,  # Cyclic import.
