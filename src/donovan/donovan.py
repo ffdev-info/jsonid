@@ -1,9 +1,4 @@
-"""Python template repository.
-
-Baseline template for future Python code related to this project.
-
-Replace this docstring and code below with your own code as required.
-"""
+"""JSON-ID (donovan) entry-point."""
 
 import argparse
 import asyncio
@@ -19,9 +14,9 @@ try:
     import registry
 except ModuleNotFoundError:
     try:
-        from src.template import helpers, registry
+        from src.donovan import helpers, registry
     except ModuleNotFoundError:
-        from template import helpers, registry
+        from donovan import helpers, registry
 
 
 # Set up logging.

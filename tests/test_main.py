@@ -7,7 +7,7 @@ from typing import Final
 
 import pytest
 
-from src.template import registry, registry_data
+from src.donovan import registry, registry_data
 
 fundamentals_registry = [
     registry_data.RegistryEntry(
@@ -74,8 +74,8 @@ fundamental_tests = [
 
 @pytest.mark.parametrize("test_registry, test_data, expected_id", fundamental_tests)
 def test_fundamentals(mocker, test_registry, test_data, expected_id):
-    """Ensure the main function for the template repository exists."""
-    mocker.patch("src.template.registry_data.registry", return_value=test_registry)
+    """Test the foundational components of this identification tool."""
+    mocker.patch("src.donovan.registry_data.registry", return_value=test_registry)
     try:
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
