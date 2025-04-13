@@ -1,9 +1,9 @@
 [project]
 
-name = "python-repo-template"
+name = "jsonid"
 dynamic = ["version", "dependencies"]
 
-description = "A one-line description of this Python project"
+description = "jsonid a json identification tool"
 
 readme = "README.md"
 
@@ -11,24 +11,19 @@ requires-python = ">=3.11"
 
 license-files = [ "LICENSE" ]
 
-keywords = ["template", "setuptools", "development"]
+keywords = ["json", "digipres", "file-formats"]
 
 authors = [
-  {name = "A. Developer", email = "author_one@example.com" },
-  {name = "A.N. Other Developer", email = "author_two@example.com" },
+  {name = "R. Spencer", email = "all.along.the.watchtower2001+github@gmail.com" },
 ]
 
 maintainers = [
-  {name = "A. Project Maintainer", email = "maintainer@example.com" }
+  {name = "R. Spencer", email = "all.along.the.watchtower2001+github@gmail.com" }
 ]
 
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
-  "Topic :: Software Development :: Build Tools",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3 :: Only",
 ]
@@ -37,14 +32,12 @@ classifiers = [
 dependencies = {file = ["requirements/requirements.txt"]}
 
 [project.urls]
-"Homepage" = "https://example.com/project/"
-"Bug Reports" = "https://example.com/issues/"
-"Funding" = "https://example.com/funding/"
-"Say Thanks!" = "http://example.com/thanks/"
-"Source" = "https://example.com/sourcecode/"
+"Homepage" = "https://github.com/ross-spencer/jsonid"
+"Bug Reports" = "https://github.com/ross-spencer/jsonid/issues/"
+"Source" = "https://github.com/ross-spencer/jsonid/sourcecode/"
 
 [project.scripts]
-template = "template.template:main"
+template = "jsonid.jsonid:main"
 
 [build-system]
 requires = ["setuptools>=74.0.0", "wheel>=0.44.0", "setuptools_scm[toml]>=8.1.0"]
