@@ -21,6 +21,8 @@ def contains_match(marker: dict, data: dict) -> bool:
         v = data[k]
     except KeyError:
         return False
+    if not isinstance(v, str):
+        return False
     match_pattern = marker[MARKER_CONTAINS]
     return match_pattern in v
 
@@ -33,6 +35,8 @@ def startswith_match(marker: dict, data: dict) -> bool:
         v = data[k]
     except KeyError:
         return False
+    if not isinstance(v, str):
+        return False
     match_pattern = marker[MARKER_STARTSWITH]
     return v.startswith(match_pattern)
 
@@ -44,6 +48,8 @@ def endswith_match(marker: dict, data: dict) -> bool:
     try:
         v = data[k]
     except KeyError:
+        return False
+    if not isinstance(v, str):
         return False
     match_pattern = marker[MARKER_ENDSWITH]
     return v.endswith(match_pattern)
@@ -68,6 +74,8 @@ def regex_match(marker: dict, data: dict) -> bool:
     try:
         v = data[k]
     except KeyError:
+        return False
+    if not isinstance(v, str):
         return False
     match_pattern = marker[MARKER_REGEX]
     return re.search(match_pattern, v)

@@ -173,17 +173,19 @@ def matcher(data: dict) -> list:
         except json.decoder.JSONDecodeError as err:
             logger.error("unprocessable data: %s", err)
             return []
-
     reg = registry_data.registry()
     matches = []
     for idx, entry in enumerate(reg):
-        logger.debug("processing registry entry: %s", idx)
-        match = process_markers(entry, data)
-        if not match:
-            continue
-        if entry in matches:
-            continue
-        matches.append(entry)
+        try:
+            logger.debug("processing registry entry: %s", idx)
+            match = process_markers(entry, data)
+            if not match:
+                continue
+            if entry in matches:
+                continue
+            matches.append(entry)
+        except TypeError:
+            break
     if len(matches) == 0 or matches[0] == NIL_ENTRY:
         additional = get_additional(data)
         json_only = JSON_ONLY

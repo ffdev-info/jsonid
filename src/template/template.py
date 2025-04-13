@@ -41,18 +41,6 @@ logging.Formatter.converter = time.gmtime
 logger = logging.getLogger(__name__)
 
 
-"""
-        try:
-            for line in obj:
-                if data == "":
-                    data = f"{line}"
-                    continue
-                data = f"{data}\n{line}"
-        except UnicodeDecodeError:
-            return False, None
-"""
-
-
 @helpers.timeit
 async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str]:
     """Ensure that the file is a palintext bytestream and can be
@@ -65,12 +53,12 @@ async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str]:
             data = json.loads(obj.read())
         except (json.decoder.JSONDecodeError, UnicodeDecodeError):
             return False, None
-    logger.info("returrning oka...")
     return True, data
 
 
 async def identify_json(paths: list[str], binary: bool):
     """Identify objects"""
+    print("---")
     for path in paths:
         valid, data = await identify_plaintext_bytestream(path)
         if not valid:
@@ -79,8 +67,13 @@ async def identify_json(paths: list[str], binary: bool):
                 logger.warning("report on binary object...")
             continue
         if data != "":
-            logger.info("process this: %s", path)
-            assert registry
+            logger.debug("processing: %s", path)
+            res = registry.matcher(data)
+            print(f"file: {path}")
+            print("identifiers:")
+            for item in res:
+                print("  ", item)
+            print("---")
 
 
 async def create_manifest(path: str) -> list[str]:
@@ -134,9 +127,30 @@ def main() -> None:
         required=False,
         action="store_true",
     )
+    parser.add_argument(
+        "--registry",
+        help="path to a custom registry to lead into memory replacing the default",
+        required=False,
+    )
+    parser.add_argument(
+        "--pronom",
+        help="return a PRONOM-centric view of the results",
+        required=False,
+    )
+    parser.add_argument(
+        "--language",
+        help="return results in different languages",
+        required=False,
+    )
     args = parser.parse_args()
     logging.getLogger(__name__).setLevel(logging.DEBUG if args.debug else logging.INFO)
     logger.debug("debug logging is configured")
+    if args.registry:
+        raise NotImplementedError("custom registry is not yet available")
+    if args.pronom:
+        raise NotImplementedError("pronom view is not yet implemented")
+    if args.language:
+        raise NotImplementedError("multiple languages are not yet implemented")
     asyncio.run(
         process_data(
             path=args.path,

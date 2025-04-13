@@ -20,6 +20,7 @@ ignore-patterns=
     ^(.+).yml,
     ^(.+).yaml,
     ^(.+).toml,
+    ^(.+).svg,
     ^\.,
 
 ignore-paths=
@@ -31,5 +32,5 @@ ignore-paths=
 [MESSAGES CONTROL]
 
 disable =
-    C0301, 	# line-length too long, see Black documented recommendations.
+    C0301,  # line-length too long, see Black documented recommendations.
     C0115,  # No docstring for Class.
