@@ -269,13 +269,22 @@ _registry = [
     RegistryEntry(
         identifier="id0025",
         name=[{"@en": "JavaScript package.json file"}],
-        pronom="fmt/1311",
         markers=[
             {"KEY": "name", "EXISTS": None},
             {"KEY": "version", "EXISTS": None},
             {"KEY": "scripts", "EXISTS": None},
             {"KEY": "devDependencies", "EXISTS": None},
             {"KEY": "dependencies", "EXISTS": None},
+        ],
+    ),
+    RegistryEntry(
+        identifier="id0026",
+        name=[{"@en": "Parcore schema documents"}],
+        pronom="fmt/1311",
+        markers=[
+            {"KEY": "$id", "STARTSWITH": "http://www.parcore.org/schema/"},
+            {"KEY": "$schema", "EXISTS": None},
+            {"KEY": "definitions", "ISTYPE": dict},
         ],
     ),
 ]
