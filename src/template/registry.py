@@ -157,7 +157,7 @@ def process_markers(entry, data) -> bool:
         except KeyError:
             pass
         try:
-            _ = marker[registry_matchers.MARKER_KEY_no_exist]
+            _ = marker[registry_matchers.MARKER_KEY_NO_EXIST]
             return registry_matchers.key_no_exist_match(marker, data)
         except KeyError:
             pass

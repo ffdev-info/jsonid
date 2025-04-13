@@ -10,6 +10,7 @@ MARKER_ENDSWITH: Final[str] = "ENDSWITH"
 MARKER_IS: Final[str] = "IS"
 MARKER_REGEX: Final[str] = "REGEX"
 MARKER_KEY_EXISTS: Final[str] = "EXISTS"
+MARKER_KEY_NO_EXIST: Final[str] = "NOEXIST"
 
 
 def contains_match(marker: dict, data: dict) -> bool:

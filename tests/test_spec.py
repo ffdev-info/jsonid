@@ -127,7 +127,7 @@ spec_tests = [
 
 @pytest.mark.parametrize("registry, test_data, expected_id", spec_tests)
 def test_spec(mocker, registry, test_data, expected_id):
-    """Ensure the main function for the template repository exists."""
+    """Test all keywords."""
     print("test:", expected_id)
     mocker.patch("src.template.registry.registry", return_value=registry)
     try:
@@ -168,7 +168,7 @@ no_exist_registry = [
 
 @pytest.mark.parametrize("registry, test_data, expected_id", spec_tests)
 def test_noexist_spec(mocker, registry, test_data, expected_id):
-    """Ensure the main function for the template repository exists."""
+    """Test the no-exist keyword."""
     print("test:", expected_id)
     mocker.patch("src.template.registry.registry", return_value=registry)
     try:
