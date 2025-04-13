@@ -45,6 +45,43 @@ el.replaceWith(d);
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="src.jsonid.registry_matchers.at_goto"><code class="name flex">
+<span>def <span class="ident">at_goto</span></span>(<span>marker: dict, data: dict) ‑> dict</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def at_goto(marker: dict, data: dict) -&gt; dict:
+    &#34;&#34;&#34;Match data against a regular expression.&#34;&#34;&#34;
+    k = marker[MARKER_GOTO]
+    try:
+        return data[k]
+    except KeyError:
+        return data</code></pre>
+</details>
+<div class="desc"><p>Match data against a regular expression.</p></div>
+</dd>
+<dt id="src.jsonid.registry_matchers.at_index"><code class="name flex">
+<span>def <span class="ident">at_index</span></span>(<span>marker: dict, data: dict) ‑> dict</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def at_index(marker: dict, data: dict) -&gt; dict:
+    &#34;&#34;&#34;Provide an ability to investigate an indeex.&#34;&#34;&#34;
+    idx = marker[MARKER_INDEX]
+    try:
+        data = data[idx]
+        return data
+    except IndexError:
+        return data</code></pre>
+</details>
+<div class="desc"><p>Provide an ability to investigate an indeex.</p></div>
+</dd>
 <dt id="src.jsonid.registry_matchers.contains_match"><code class="name flex">
 <span>def <span class="ident">contains_match</span></span>(<span>marker: dict, data: dict) ‑> bool</span>
 </code></dt>
@@ -111,6 +148,32 @@ el.replaceWith(d);
     return v == match_pattern</code></pre>
 </details>
 <div class="desc"><p>Match data against a regular expression.</p></div>
+</dd>
+<dt id="src.jsonid.registry_matchers.is_type"><code class="name flex">
+<span>def <span class="ident">is_type</span></span>(<span>marker: dict, data: dict) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_type(marker: dict, data: dict) -&gt; bool:
+    &#34;&#34;&#34;Match data against type only.&#34;&#34;&#34;
+    k = marker[MARKER_KEY]
+    v = None
+    try:
+        v = data[k]
+    except KeyError:
+        return False
+    match_pattern = marker[MARKER_IS_TYPE]
+    try:
+        if isinstance(v, match_pattern):
+            return True
+    except TypeError:
+        pass
+    return False</code></pre>
+</details>
+<div class="desc"><p>Match data against type only.</p></div>
 </dd>
 <dt id="src.jsonid.registry_matchers.key_exists_match"><code class="name flex">
 <span>def <span class="ident">key_exists_match</span></span>(<span>marker: dict, data: dict) ‑> bool</span>
@@ -213,9 +276,12 @@ el.replaceWith(d);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
+<li><code><a title="src.jsonid.registry_matchers.at_goto" href="#src.jsonid.registry_matchers.at_goto">at_goto</a></code></li>
+<li><code><a title="src.jsonid.registry_matchers.at_index" href="#src.jsonid.registry_matchers.at_index">at_index</a></code></li>
 <li><code><a title="src.jsonid.registry_matchers.contains_match" href="#src.jsonid.registry_matchers.contains_match">contains_match</a></code></li>
 <li><code><a title="src.jsonid.registry_matchers.endswith_match" href="#src.jsonid.registry_matchers.endswith_match">endswith_match</a></code></li>
 <li><code><a title="src.jsonid.registry_matchers.is_match" href="#src.jsonid.registry_matchers.is_match">is_match</a></code></li>
+<li><code><a title="src.jsonid.registry_matchers.is_type" href="#src.jsonid.registry_matchers.is_type">is_type</a></code></li>
 <li><code><a title="src.jsonid.registry_matchers.key_exists_match" href="#src.jsonid.registry_matchers.key_exists_match">key_exists_match</a></code></li>
 <li><code><a title="src.jsonid.registry_matchers.key_no_exist_match" href="#src.jsonid.registry_matchers.key_no_exist_match">key_no_exist_match</a></code></li>
 <li><code><a title="src.jsonid.registry_matchers.regex_match" href="#src.jsonid.registry_matchers.regex_match">regex_match</a></code></li>
