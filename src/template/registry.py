@@ -23,6 +23,10 @@ Identifier spec:
        * REGEX
        * EXISTS
 
+       Special:
+
+       * NOEXIST (must be used in conjunction with another keyword)
+
     ```e.g.
         [
             { "KEY": "name", "IS": "value" },
@@ -37,6 +41,15 @@ Identifier spec:
 import logging
 from dataclasses import dataclass, field
 from typing import Final, Optional
+
+try:
+    import registry_matchers
+except ModuleNotFoundError:
+    try:
+        from src.template import registry_matchers
+    except ModuleNotFoundError:
+        from templte import registry_matchers
+
 
 logger = logging.getLogger(__name__)
 
@@ -85,13 +98,13 @@ def registry() -> list[RegistryEntry]:
     return _registry
 
 
-def process_markers(entry, data):
+def _process_markers(entry, data):
     """Todo..."""
     for marker in entry.markers:
-        for marker_key, marker_value in marker.items():
+        for MARKER_KEY, marker_value in marker.items():
             try:
-                logger.debug("key: '%s', value: '%s'", marker_key, marker_value)
-                source_value = data[marker_key]
+                logger.debug("key: '%s', value: '%s'", MARKER_KEY, marker_value)
+                source_value = data[MARKER_KEY]
                 if not marker_value:
                     # values might be optional if we have a key.
                     continue
@@ -102,6 +115,53 @@ def process_markers(entry, data):
             except KeyError:
                 return False
     return True
+
+
+def process_markers(entry, data) -> bool:
+    """Run through the markers for an entry in the registry.
+    Attempt to exit early if there isn't a match.
+    """
+
+    # pylint: disable=R0911
+
+    logger.debug("markers len: %s", len(entry.markers))
+    for marker in entry.markers:
+        try:
+            _ = marker[registry_matchers.MARKER_CONTAINS]
+            return registry_matchers.contains_match(marker, data)
+        except KeyError:
+            pass
+        try:
+            _ = marker[registry_matchers.MARKER_STARTSWITH]
+            return registry_matchers.startswith_match(marker, data)
+        except KeyError:
+            pass
+        try:
+            _ = marker[registry_matchers.MARKER_ENDSWITH]
+            return registry_matchers.endswith_match(marker, data)
+        except KeyError:
+            pass
+        try:
+            _ = marker[registry_matchers.MARKER_IS]
+            return registry_matchers.is_match(marker, data)
+        except KeyError:
+            pass
+        try:
+            _ = marker[registry_matchers.MARKER_REGEX]
+            return registry_matchers.regex_match(marker, data)
+        except KeyError:
+            pass
+        try:
+            _ = marker[registry_matchers.MARKER_KEY_EXISTS]
+            return registry_matchers.key_exists_match(marker, data)
+        except KeyError:
+            pass
+        try:
+            _ = marker[registry_matchers.MARKER_KEY_no_exist]
+            return registry_matchers.key_no_exist_match(marker, data)
+        except KeyError:
+            pass
+    return False
 
 
 def matcher(data: dict) -> list:

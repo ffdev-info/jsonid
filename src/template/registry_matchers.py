@@ -1,0 +1,92 @@
+"""Functions to support processing of the registry."""
+
+import re
+from typing import Final
+
+MARKER_KEY: Final[str] = "KEY"
+MARKER_CONTAINS: Final[str] = "CONTAINS"
+MARKER_STARTSWITH: Final[str] = "STARTSWITH"
+MARKER_ENDSWITH: Final[str] = "ENDSWITH"
+MARKER_IS: Final[str] = "IS"
+MARKER_REGEX: Final[str] = "REGEX"
+MARKER_KEY_EXISTS: Final[str] = "EXISTS"
+
+
+def contains_match(marker: dict, data: dict) -> bool:
+    """Match data against a regular expression."""
+    k = marker[MARKER_KEY]
+    v = None
+    try:
+        v = data[k]
+    except KeyError:
+        return False
+    match_pattern = marker[MARKER_CONTAINS]
+    return match_pattern in v
+
+
+def startswith_match(marker: dict, data: dict) -> bool:
+    """Match data against a regular expression."""
+    k = marker[MARKER_KEY]
+    v = None
+    try:
+        v = data[k]
+    except KeyError:
+        return False
+    match_pattern = marker[MARKER_STARTSWITH]
+    return v.startswith(match_pattern)
+
+
+def endswith_match(marker: dict, data: dict) -> bool:
+    """Match data against a regular expression."""
+    k = marker[MARKER_KEY]
+    v = None
+    try:
+        v = data[k]
+    except KeyError:
+        return False
+    match_pattern = marker[MARKER_ENDSWITH]
+    return v.endswith(match_pattern)
+
+
+def is_match(marker: dict, data: dict) -> bool:
+    """Match data against a regular expression."""
+    k = marker[MARKER_KEY]
+    v = None
+    try:
+        v = data[k]
+    except KeyError:
+        return False
+    match_pattern = marker[MARKER_IS]
+    return v == match_pattern
+
+
+def regex_match(marker: dict, data: dict) -> bool:
+    """Match data against a regular expression."""
+    k = marker[MARKER_KEY]
+    v = None
+    try:
+        v = data[k]
+    except KeyError:
+        return False
+    match_pattern = marker[MARKER_REGEX]
+    return re.search(match_pattern, v)
+
+
+def key_exists_match(marker: dict, data: dict) -> bool:
+    """Match data against a regular expression."""
+    k = marker[MARKER_KEY]
+    try:
+        data[k]
+    except KeyError:
+        return False
+    return True
+
+
+def key_no_exist_match(marker: dict, data: dict) -> bool:
+    """Match data against a regular expression."""
+    k = marker[MARKER_KEY]
+    try:
+        data[k]
+    except KeyError:
+        return True
+    return False

@@ -7,8 +7,7 @@ from typing import Final
 
 import pytest
 
-from src.template.registry import IS_JSON, RegistryEntry, matcher
-
+from src.template.registry import RegistryEntry, matcher
 
 spec_registry = [
     RegistryEntry(
@@ -16,7 +15,7 @@ spec_registry = [
         name="spec: contains",
         version="1",
         markers=[
-            {"KEY": "k1", "CONTAINS": "xyx"},
+            {"KEY": "k1", "CONTAINS": "CONTAINSxyzCONTAINS"},
         ],
     ),
     RegistryEntry(
@@ -24,7 +23,7 @@ spec_registry = [
         name="spec: starts with",
         version="1",
         markers=[
-            {"KEY": "k1", "STARTSWITH": "xyx"},
+            {"KEY": "k1", "STARTSWITH": "xyz"},
         ],
     ),
     RegistryEntry(
@@ -32,7 +31,7 @@ spec_registry = [
         name="spec: endswith",
         version="1",
         markers=[
-            {"KEY": "k1", "ENDSWITH": "xyx"},
+            {"KEY": "k1", "ENDSWITH": "xyz"},
         ],
     ),
     RegistryEntry(
@@ -40,7 +39,7 @@ spec_registry = [
         name="spec: is",
         version="1",
         markers=[
-            {"KEY": "k1", "IS": "xyx"},
+            {"KEY": "k1", "IS": "ISxyzIS"},
         ],
     ),
     RegistryEntry(
@@ -48,7 +47,7 @@ spec_registry = [
         name="spec: regex",
         version="1",
         markers=[
-            {"KEY": "k1", "REGEX": "(\d+)(xyz)(\d{3}[a-z]+)"},
+            {"KEY": "k1", "REGEX": "(\\d+)(REGEX)(\\d{3}[a-z]+)"},
         ],
     ),
     RegistryEntry(
@@ -56,7 +55,7 @@ spec_registry = [
         name="spec: exists",
         version="1",
         markers=[
-            {"KEY": "k1", "EXISTS": None},
+            {"KEY": "k1_exists", "EXISTS": None},
         ],
     ),
 ]
@@ -65,7 +64,7 @@ contains_1: Final[
     str
 ] = """
     {
-        "k1": "somedata xyz more data"
+        "k1": "somedata CONTAINSxyzCONTAINS more data"
     }
     """
 
@@ -76,27 +75,43 @@ startswith_1: Final[
             "k1": "xyz more data"
         }
     """
-endswith_1: Final[str] = """
+endswith_1: Final[
+    str
+] = """
         {
             "k1": "more data xyz"
         }
 """
 
-is_1: Final[str] = """
+is_1: Final[
+    str
+] = """
         {
-            "k1": "xyz"
+            "k1": "ISxyzIS"
         }
 """
 
-regex_1: Final[str] = """
+regex_1: Final[
+    str
+] = """
         {
-            "k1": "12345xyz567abcdef"
+            "k1": "12345REGEX567abcdef"
         }
 """
 
-exists_1: Final[str] = """
+exists_1: Final[
+    str
+] = """
         {
-            "k1": null
+            "k1_exists": null
+        }
+"""
+
+noexist_1: Final[
+    str
+] = """
+        {
+            "k1_noexist": null
         }
 """
 
@@ -119,3 +134,49 @@ def test_spec(mocker, registry, test_data, expected_id):
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
+    res = matcher(json_loaded)
+    assert (
+        len(res) == 1
+    ), f"results for these tests should have one value only, got: {len(res)}"
+    assert res[0].identifier == expected_id
+
+
+no_exist_registry = [
+    RegistryEntry(
+        identifier="noexist1",
+        name="spec: exists",
+        version="1",
+        markers=[
+            {"KEY": "k1_not_exists", "NOEXIST": None},
+        ],
+    ),
+]
+
+noexist_1: Final[
+    str
+] = """
+        {
+            "k1_noexist": null
+        }
+"""
+
+
+no_exist_registry = [
+    (spec_registry, noexist_1, "noexist1"),
+]
+
+
+@pytest.mark.parametrize("registry, test_data, expected_id", spec_tests)
+def test_noexist_spec(mocker, registry, test_data, expected_id):
+    """Ensure the main function for the template repository exists."""
+    print("test:", expected_id)
+    mocker.patch("src.template.registry.registry", return_value=registry)
+    try:
+        json_loaded = json.loads(test_data)
+    except json.JSONDecodeError as err:
+        assert False, f"data won't decode as JSON: {err}"
+    res = matcher(json_loaded)
+    assert (
+        len(res) == 1
+    ), f"results for these tests should have one value only, got: {len(res)}"
+    assert res[0].identifier == expected_id
