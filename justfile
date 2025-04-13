@@ -35,6 +35,17 @@ package-upload: clean package-deps package-check
 
 package: package-upload
 
+# Generate documentation
+docs:
+   rm -rf docs/*
+   pdoc3 --force --html -o docs src/
+   mv -f docs/src/* docs/.
+   rm -rf docs/src
+
+# Serve the documentation
+serve-docs:
+   python -m http.server --directory docs/
+
 # Upgrade project dependencies
 upgrade:
 	pip-upgrade

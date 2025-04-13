@@ -1,6 +1,7 @@
 # requirements to run locally and for development.
 -r requirements.txt
 
+pdoc3==0.11.6
 pip-upgrader==1.4.15
 pre-commit==3.8.0
 pylint==3.2.7
