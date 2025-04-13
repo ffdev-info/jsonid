@@ -148,7 +148,9 @@ _registry = [
         identifier="id0012",
         name=[{"@en": "sops encrypted secrets file"}],
         markers=[
-            {"KEY": "sopf", "EXISTS": None},
+            {"KEY": "sops", "EXISTS": None},
+            {"GOTO": "sops", "KEY": "kms", "EXISTS": None},
+            {"GOTO": "sops", "KEY": "pgp", "EXISTS": None},
         ],
     ),
     RegistryEntry(

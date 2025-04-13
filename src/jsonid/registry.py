@@ -92,7 +92,7 @@ def process_markers(registry_entry: registry_data.RegistryEntry, data: dict) -> 
                 _ = marker[registry_matchers.MARKER_INDEX]
                 data = registry_matchers.at_index(marker, data)
                 break
-            except KeyError as err:
+            except KeyError:
                 return False
     for marker in registry_entry.markers:
         try:
