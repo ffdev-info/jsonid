@@ -8,10 +8,10 @@
 <!-- markdownlint-enable -->
 
 [ison][json-1](ID)entification tool, and ruleset. `jsonid` can be downloaded via
-PyPi: [here][pypi-1].
+PyPi: [here][pypi-download-1].
 
 [json-1]: https://www.json.org/json-en.html
-[pypi-1]: https://pypi.org/project/jsonid/
+[pypi-download-1]: https://pypi.org/project/jsonid/
 
 ## Function
 
