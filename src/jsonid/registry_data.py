@@ -195,6 +195,57 @@ _registry = [
             {"KEY": "education", "EXISTS": None},
         ],
     ),
+    RegistryEntry(
+        identifier="id0018",
+        name=[
+            {"@en": "jackerr song: http://fileformats.archiveteam.org/wiki/Jacker_song"}
+        ],
+        description=[{"@en": "via"}],
+        markers=[
+            {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
+            {"KEY": "$schema", "ENDSWIWITH": "/schema#"},
+            {"KEY": "name", "IS": "Document"},
+            {"KEY": "is", "IS": "http://largemind.com/schema/jacker-song-1#"},
+            {"KEY": "namespace", "IS": "jacker"},
+        ],
+    ),
+    RegistryEntry(
+        identifier="id0019",
+        name=[{"@en": "JSON Patch RFC 6902"}],
+        markers=[
+            {"INDEX": 0, "KEY": "op", "EXISTS": None},
+            {"INDEX": 0, "KEY": "path", "EXISTS": None},
+        ],
+    ),
+    RegistryEntry(
+        identifier="id0020",
+        name=[{"@en": "GL Transmission Format: GLTF runtime 3D asset library"}],
+        markers=[
+            {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
+            {"KEY": "$schema", "ENDSWIWITH": "/schema#"},
+            {"KEY": "title", "EXISTS": None},
+            {"KEY": "type", "IS": "object"},
+            {"KEY": "description", "IS": "The root object for a glTF asset."},
+        ],
+    ),
+    RegistryEntry(
+        identifier="id0021",
+        name=[{"@en": "tweet data"}],
+        pronom="fmt/1311",
+        markers=[
+            {"KEY": "id_str", "EXISTS": None},
+            {"KEY": "retweeted", "EXISTS": None},
+        ],
+    ),
+    RegistryEntry(
+        identifier="id0022",
+        name=[{"@en": "sandboxels save file"}],
+        pronom="fmt/1956",
+        markers=[
+            {"GOTO": "meta", "KEY": "saveVersion", "EXISTS": None},
+            {"GOTO": "meta", "KEY": "gameVersion", "EXISTS": None},
+        ],
+    ),
 ]
 
 
