@@ -47,9 +47,9 @@ try:
     import registry_matchers
 except ModuleNotFoundError:
     try:
-        from src.donovan import registry_data, registry_matchers
+        from src.jsonid import registry_data, registry_matchers
     except ModuleNotFoundError:
-        from donovan import registry_data, registry_matchers
+        from jsonid import registry_data, registry_matchers
 
 
 logger = logging.getLogger(__name__)

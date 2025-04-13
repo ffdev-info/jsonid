@@ -1,4 +1,4 @@
-"""JSON-ID (donovan) entry-point."""
+"""jsonid entry-point."""
 
 import argparse
 import asyncio
@@ -14,9 +14,9 @@ try:
     import registry
 except ModuleNotFoundError:
     try:
-        from src.donovan import helpers, registry
+        from src.jsonid import helpers, registry
     except ModuleNotFoundError:
-        from donovan import helpers, registry
+        from jsonid import helpers, registry
 
 
 # Set up logging.

@@ -168,6 +168,23 @@ _registry = [
             {"KEY": "endpoint", "IS": "https://query.wikidata.org/sparql"},
         ],
     ),
+    RegistryEntry(
+        identifier="id0015",
+        name=[{"@en": "google link file"}],
+        pronom="fmt/1073",
+        markers=[
+            {"KEY": "url", "startswith": "https://docs.google.com/open"},
+        ],
+    ),
+    # Also: id can be "bookmarks.json", "inbox.json", "likes.json"
+    RegistryEntry(
+        identifier="id0016",
+        name=[{"@en": "activity streams json (generic)"}],
+        markers=[
+            {"KEY": "@context", "startswith": "https://www.w3.org/ns/activitystreams"},
+            {"KEY": "id", "EXISTS": None},
+        ],
+    ),
 ]
 
 
