@@ -13,10 +13,14 @@
 
 ## Function
 
-JSON borrows from the Python approach to ask forgiveness rather than permission
-to attempt to open every object it scans and see if it parses as JSON. If it
-doesn't we move along. If it does, we then have an opportunity to identify
-the characteristics of the JSON we have opened.
+`jsonid` borrows from the Python approach to ask forgiveness rather than
+permission (EAFP) to attempt to open every object it scans and see if it
+parses as JSON. If it doesn't we move along. If it does, we then have an
+opportunity to identify the characteristics of the JSON we have opened.
+
+Python being high-level also provides an easier path to processing files
+and parsing JSON quickly with very little other knowledge required
+of the underlying data structure.
 
 ## Why?
 
@@ -50,7 +54,7 @@ complicated as they aren't guaranteed by the JSON spec to be in the same order.
 They're not even guaranteed to be in the same positions (from a visual
 perspective) when other keys are also used in the object.
 
-jsonid tries to compensate for this by using JSON's own strengths to use its
+`jsonid` tries to compensate for this by using JSON's own strengths to use its
 keys and values as "markers" that can help to identify what we're looking
 at.
 
@@ -92,10 +96,11 @@ For example:
     ]
 ```
 
-### Discussion
+All rules need to match for a positive ID.
 
-I hope the discussion around these keys will be fruitful! I also hope we can
-add/remove for the community as we continue to test.
+> NB.: `jsonid` is an
+early-days tool so there is a lot of opportunity to add/remove to these
+if it proves its worth
 
 ## Registry
 
@@ -105,7 +110,7 @@ rewritten if `jsonid` can prove useful to its communities.
 
 The registry can be read in the source code here:
 
-* [registry](src/jsonid/registry_data.py).
+* [Registry](src/jsonid/registry_data.py).
 
 ## PRONOM
 
