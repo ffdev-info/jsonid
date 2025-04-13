@@ -248,8 +248,15 @@ _registry = [
             {"GOTO": "meta", "KEY": "gameVersion", "EXISTS": None},
         ],
     ),
+    RegistryEntry(
+        identifier="id0023",
+        name=[{"@en": "dublin core metadata (archivematica)"}],
+        markers=[
+            {"INDEX": 0, "KEY": "dc.title", "EXISTS": None},
+            {"INDEX": 0, "KEY": "dc.type", "EXISTS": None},
+        ],
+    ),
 ]
-
 
 def registry() -> list[RegistryEntry]:
     """Return a registry object to the caller."""
