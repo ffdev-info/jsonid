@@ -32,9 +32,9 @@ classifiers = [
 dependencies = {file = ["requirements/requirements.txt"]}
 
 [project.urls]
-"Homepage" = "https://github.com/ross-spencer/jsonid"
-"Bug Reports" = "https://github.com/ross-spencer/jsonid/issues/"
-"Source" = "https://github.com/ross-spencer/jsonid/sourcecode/"
+"Homepage" = "https://github.com/ffdev-info/jsonid"
+"Bug Reports" = "https://github.com/ffdev-info/jsonid/issues/"
+"Source" = "https://github.com/ffdev-info/jsonid/sourcecode/"
 
 [project.scripts]
 jsonid = "jsonid.jsonid:main"
