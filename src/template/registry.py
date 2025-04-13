@@ -38,6 +38,7 @@ Identifier spec:
 
 """
 
+import json
 import logging
 from dataclasses import dataclass, field
 from typing import Final, Optional
@@ -53,20 +54,21 @@ except ModuleNotFoundError:
 
 logger = logging.getLogger(__name__)
 
-IS_JSON: Final[str] = "parses as JSON but might not conform to a schema"
-
 
 @dataclass
-class RegistryEntry:
+class RegistryEntry:  # pylint: disable=R0902
     """Class that represents information that might be derived from
     a registry.
     """
 
     identifier: str = ""
-    name: str = ""
+    name: list = field(default_factory=list)
     version: Optional[str | None] = None
-    description: str = ""
-    markers: list = field(default_factory=list)
+    description: list = field(default_factory=list)
+    pronom: str = ""
+    mime: list[str] = field(default_factory=list)
+    markers: list[dict] = field(default_factory=list)
+    additional: str = ""
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -80,11 +82,25 @@ class IdentificationFailure(Exception):
 
 NIL_ENTRY: Final[RegistryEntry] = RegistryEntry()
 
+IS_JSON: Final[str] = "parses as JSON but might not conform to a schema"
+
+TYPE_STRING: Final[list] = [{"@en": "data is string type"}]
+TYPE_LIST: Final[list] = [{"@en": "data is list type"}]
+TYPE_DICT: Final[list] = [{"@en": "data is dict type"}]
+TYPE_NONE: Final[list] = [{"@en": "data is null"}]
+TYPE_FLOAT: Final[list] = [{"@en": "data is float type"}]
+TYPE_INT: Final[list] = [{"@en": "data is integer type"}]
+TYPE_BOOL: Final[list] = [{"@en": "data is boolean type"}]
+TYPE_ERR: Final[list] = [{"@en": "error processing data"}]
+
+
 JSON_ONLY: Final[RegistryEntry] = RegistryEntry(
     identifier="id0",
-    name="JSONOnly",
-    description=IS_JSON,
+    name=[{"@en": "JavaScript Object Notation (JSON)"}],
+    description=[{"@en": IS_JSON}],
     version=None,
+    pronom="fmt/817",
+    mime=["application/json"],
     markers=None,
 )
 
@@ -98,23 +114,45 @@ def registry() -> list[RegistryEntry]:
     return _registry
 
 
-def _process_markers(entry, data):
-    """Todo..."""
-    for marker in entry.markers:
-        for MARKER_KEY, marker_value in marker.items():
-            try:
-                logger.debug("key: '%s', value: '%s'", MARKER_KEY, marker_value)
-                source_value = data[MARKER_KEY]
-                if not marker_value:
-                    # values might be optional if we have a key.
-                    continue
-                if marker_value != source_value:
-                    return False
-                if source_value != marker_value:
-                    return False
-            except KeyError:
-                return False
-    return True
+def _get_language(string_field: list[dict], language: str = "@en") -> str:
+    """Return a string in a given language from a result string."""
+    for value in string_field:
+        try:
+            return value[language]
+        except KeyError:
+            pass
+    return string_field[0]
+
+
+def get_additional(data: dict, library: bool) -> str:
+    """Return additional characterization information about the JSON
+    we encountered.
+    """
+
+    # pylint: disable=R0911
+
+    if not data:
+        return TYPE_NONE
+    if isinstance(data, dict):
+        return TYPE_DICT
+    if isinstance(data, list):
+        return TYPE_LIST
+    if isinstance(data, float):
+        return TYPE_FLOAT
+    if isinstance(data, int):
+        if data is True or data is False:
+            return TYPE_BOOL
+        return TYPE_INT
+    if isinstance(data, str):
+        if not library:
+            return TYPE_STRING
+        try:
+            logger.debug("library mode decoding JSON from string to confirm is JSON")
+            json_loaded = json.loads(data)
+            return get_additional(json_loaded, False)
+        except json.decoder.JSONDecodeError:
+            return TYPE_ERR
+    return TYPE_ERR
 
 
 def process_markers(entry, data) -> bool:
@@ -164,8 +202,9 @@ def process_markers(entry, data) -> bool:
     return False
 
 
-def matcher(data: dict) -> list:
+def matcher(data: dict, library=True) -> list:
     """Matcher for registry objects"""
+    logger.debug("type: '%s'", type(data))
     reg = registry()
     matches = []
     for idx, entry in enumerate(reg):
@@ -177,6 +216,9 @@ def matcher(data: dict) -> list:
             continue
         matches.append(entry)
     if len(matches) == 0 or matches[0] == NIL_ENTRY:
-        return [JSON_ONLY]
+        additional = get_additional(data, library)
+        json_only = JSON_ONLY
+        json_only.additional = additional
+        return [json_only]
     logger.debug(matches)
     return matches

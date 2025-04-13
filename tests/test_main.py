@@ -1,32 +1,35 @@
 """ json-id tests... """
 
-# pylint: disable=C0103
+# pylint: disable=C0103 #--upper-case naming of constants
 
 import json
 from typing import Final
 
 import pytest
 
-from src.template.registry import IS_JSON, RegistryEntry, matcher
+from src.template import registry
 
 fundamentals_registry = [
-    RegistryEntry(
+    registry.RegistryEntry(
         identifier="test_id1",
         name="one key with integer, one key with string",
         version="1",
-        markers=[{"test1": 1}, {"test2": "data"}],
+        markers=[{"KEY": "test1", "IS": 1}, {"KEY": "test2", "IS": "data"}],
     ),
-    RegistryEntry(
+    registry.RegistryEntry(
         identifier="test_id2",
         name="one key with integer one key with nested data",
         version="1",
-        markers=[{"test2": 1}, {"test3": {"test4": {"test5": None}}}],
+        markers=[
+            {"KEY": "test2", "IS": 1},
+            {"KEY": "test3", "IS": {"test4": {"test5": None}}},
+        ],
     ),
-    RegistryEntry(
+    registry.RegistryEntry(
         identifier="test_id3",
         name="key only identification (allows testing for only keys)",
         version="1",
-        markers=[{"@testkey": None}],
+        markers=[{"KEY": "@testkey", "EXISTS": None}],
     ),
     # Identical matches,
 ]
@@ -69,21 +72,19 @@ fundamental_tests = [
 ]
 
 
-@pytest.mark.skip()
-@pytest.mark.parametrize("registry, test_data, expected_id", fundamental_tests)
-def test_fundamentals(mocker, registry, test_data, expected_id):
+@pytest.mark.parametrize("test_registry, test_data, expected_id", fundamental_tests)
+def test_fundamentals(mocker, test_registry, test_data, expected_id):
     """Ensure the main function for the template repository exists."""
-    mocker.patch("src.template.registry.registry", return_value=registry)
+    mocker.patch("src.template.registry.registry", return_value=test_registry)
     try:
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
-    res = matcher(json_loaded)
+    res = registry.matcher(json_loaded)
     assert len(res) == 1, "results for these tests should have one value only"
     assert res[0].identifier == expected_id
 
 
-@pytest.mark.skip()
 def test_json_only():
     """Test that the result of an non identification for a valid
     JSON file is predictable.
@@ -94,6 +95,33 @@ def test_json_only():
             "test2": "data"
         }
         """
-    res = matcher(only_json)
+    try:
+        json_loaded = json.loads(only_json)
+    except json.JSONDecodeError as err:
+        assert False, f"data won't decode as JSON: {err}"
+    res = registry.matcher(json_loaded)
     assert res[0].identifier == "id0"
-    assert res[0].description == IS_JSON
+    assert res[0].description[0]["@en"] == registry.IS_JSON
+
+
+primitive_tests = [
+    ("[1,2,3]", registry.TYPE_LIST),
+    ("[]", registry.TYPE_NONE),
+    ("{}", registry.TYPE_NONE),
+    ("null", registry.TYPE_NONE),
+    ('{"k1": 1}', registry.TYPE_DICT),
+    ('"true"', registry.TYPE_BOOL),
+    ("1.0", registry.TYPE_FLOAT),
+    ("1", registry.TYPE_INT),
+]
+
+
+@pytest.mark.parametrize("test_data, expected_additional", primitive_tests)
+def test_forms(test_data, expected_additional):
+    """Test other JSON forms beyond object based JSON."""
+    try:
+        json_loaded = json.loads(test_data)
+    except json.JSONDecodeError as err:
+        assert False, f"data won't decode as JSON: {err}"
+    res = registry.matcher(json_loaded)
+    assert res[0].additional == expected_additional
