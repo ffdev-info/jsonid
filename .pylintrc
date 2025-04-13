@@ -21,6 +21,7 @@ ignore-patterns=
     ^(.+).yaml,
     ^(.+).toml,
     ^(.+).svg,
+    ^(.+).html,
     ^\.,
 
 ignore-paths=

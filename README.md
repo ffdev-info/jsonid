@@ -79,7 +79,7 @@ in order.
 
 For example:
 
-```
+```json
     [
         { "KEY": "name", "IS": "value" },
         { "KEY": "schema", "CONTAINS": "/schema/version/1.1/" },
