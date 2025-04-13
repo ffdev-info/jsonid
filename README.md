@@ -2,7 +2,9 @@
 
 ![JSON Logo by Douglas Crockford](static/images/JSON_logo-crockford.png)
 
-JSON-Identification ruleset and tool.
+[JSON][JSON-1]-Identification ruleset and tool.
+
+[JSON-1]: https://www.json.org/json-en.html
 
 ## Function
 
@@ -205,7 +207,7 @@ When you build, a package will be created with the correct version:
 ```sh
 make package-source
 ### build process here ###
-Successfully built python_repo_template-1.0.0rc1.tar.gz and python_repo_template-1.0.0rc1-py3-none-any.whl
+Successfully built python_repo_jsonid-1.0.0rc1.tar.gz and python_repo_jsonid-1.0.0rc1-py3-none-any.whl
 ```
 
 ### Local packaging
