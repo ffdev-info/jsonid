@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable -->
 <img
-    src="static/images/JSON_logo-crockford.png"
+    src="https://github.com/ffdev-info/jsonid/blob/main/static/images/JSON_logo-crockford.png?raw=true"
     alt="JSON ID logo based on JSON Logo by Douglas Crockford"
     width="200px" />
 <!-- markdownlint-enable -->
