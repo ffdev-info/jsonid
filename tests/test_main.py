@@ -7,7 +7,7 @@ from typing import Final
 
 import pytest
 
-from src.jsonid import registry, registry_data
+from src.jsonid import registry, registry_data  # pylint: disable=R0401
 
 fundamentals_registry = [
     registry_data.RegistryEntry(
