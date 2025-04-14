@@ -223,7 +223,9 @@ _registry = [
     ),
     RegistryEntry(
         identifier="jrid:0020",
-        name=[{"@en": "GL Transmission Format: GLTF runtime 3D asset library"}],
+        name=[
+            {"@en": "GL Transmission Format: GLTF runtime 3D asset library (Generic)"}
+        ],
         markers=[
             {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
             {"KEY": "$schema", "ENDSWIWITH": "/schema#"},
