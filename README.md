@@ -118,10 +118,10 @@ For example:
 
 All rules need to match for a positive ID.
 
-> **NB.**: `jsonid` is an
+> **NB.**: `jsonid` is a
 work-in-progress and requires community input to help determine the grammar
 in its fullness and so there is a lot of opportunity to add/remove to these
-methods if its development continues. Additionally, help formalizing the
+methods as its development continues. Additionally, help formalizing the
 grammar/ruleset would be greatly appreciated 🙏.
 
 ### Backed by testing
