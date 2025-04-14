@@ -38,7 +38,7 @@ Consider these equivalent forms:
 ```json
 {
     "key 2": "value",
-    "key 1": "value
+    "key 1": "value"
 }
 ```
 
