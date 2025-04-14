@@ -44,7 +44,8 @@ Consider these equivalent forms:
 
 PRONOM signatures are not expressive enough for complicated JSON objects.
 
-If I want PRONOM to find `key 1` I have to use a wildcard, so something like:
+If I want DROID to find `key 1` I have to use a wildcard, so I would write
+something like:
 
 ```text
 BOF: "7B*226B6579203122"
@@ -52,24 +53,41 @@ EOF: "7D"
 ```
 
 But if I then want to match on `key 2` as well as `key 1` things start getting
-complicated as they aren't guaranteed by the JSON spec to be in the same order.
-They're not even guaranteed to be in the same positions (from a visual
-perspective) when other keys are also used in the object.
+complicated as they aren't guaranteed by the JSON spec to be in the same
+"position' (if we think about order visually). When other keys are used in
+the object they aren't necessarily guaranteed to be next to each other.
 
-`jsonid` tries to compensate for this by using JSON's own strengths to use its
-keys and values as "markers" that can help to identify what we're looking
-at.
+`jsonid` tries to compensate for this by using the format's own strengths to
+parse binary data as JSON and then if successful, use a grammar describing
+specific key-valyes as "markers" that can begin to help to identify the
+JSON objects that we might be looking at.
+
+## What does `jsonid` get you?
+
+To begin, `jsonid` should identify JSON files on your system as JSON.
+That's already a pretty good position to be in.
+
+The ruleset should then allow you to identify a decent number of JSON objects,
+especially those that have a well-defined structure. Examples we have in the
+registry data include things like ActivityPub streams, RO-CRATE metadata,
+IIIF API data and so on.
+
+If the ruleset works for JSON we might be able to apply it to other formats
+such as YAML, and TOML in future.
 
 ## Ruleset
 
 `jsonid` currently defines a small set of rules that help us to identify JSON
 documents.
 
-The rules are each their own data-structures. The structures are processed
-sequentially in order to determine what kind of JSON document we might be
-looking at. jsonid is currently designed to identify the existence of
-information but you can also add some negation, e.g. to remove false-positives.
-Do this carefully!
+The rules are described in theur own data-structures. The structures are
+processed as a list (they need not necessarily be in order) and each must
+match for a given set of ruls to determine what kind of JSON document we might
+be looking at.
+
+`jsonid` can identify the existence of information but you can also use
+wildcards and provide some negation as required, e.g. to remove
+false-positives between similar JSON entities.
 
 | rule       | meaning                                               |
 |------------|-------------------------------------------------------|
@@ -100,43 +118,139 @@ For example:
 
 All rules need to match for a positive ID.
 
-> NB.: `jsonid` is an
-early-days tool so there is a lot of opportunity to add/remove to these
-if it proves its worth
+<!-- markdownlint-disable -->
+
+> **NB.**: `jsonid` is an
+work-in-progress and requires community input to help determine the grammar
+in its fullness and so there is a lot of opportunity to add/remove to these
+methods if its development continues.
+
+> **Additional**: help formalizing the grammar/ruleset would be appreciated.
+
+<!-- markdownlint-enable -->
+
+### Backed by testing
+
+The ruleset has been developed using test-driven-development practices (TDD)
+and the current set of tests can be reviewed in the repository's
+[test folder][testing-1]. More tests should be added, in general, and over
+time.
+
+[testing-1]: https://github.com/ffdev-info/jsonid/tree/main/tests
 
 ## Registry
 
-A "registry" module is used to store JSON markers for identifying documents
-and objects. The registry is a work in progress and will be exported and
-rewritten if `jsonid` can prove useful to its communities.
+A temporary "registry" module is used to store JSON markers.
+The registry is a work in progress and must be exported and
+rewritten somewhere more centralized (and easier to manage) if `jsonid` can
+prove useful to the communities that might use it (*see notes on PRONOM below*).
 
-The registry can be read in the source code here:
+The registry can be read via the source code here:
 
 * [Registry](src/jsonid/registry_data.py).
 
+### Registry examples
+
+#### Identifying JSON-LD Generic
+
+```python
+    RegistryEntry(
+        identifier="id0009",
+        name=[{"@en": "JSON-LD (generic)"}],
+        markers=[
+            {"KEY": "@context", "EXISTS": None},
+            {"KEY": "id", "EXISTS": None},
+        ],
+    ),
+```
+
+> **Pseudo code**:
+Test for the existence of keys: `@context` and `id` in the primary JSON object.
+
+#### Identifying Tika Recursive Metadata
+
+```python
+    RegistryEntry(
+        identifier="id0024",
+        name=[{"@en": "tika recursive metadata"}],
+        markers=[
+            {"INDEX": 0, "KEY": "Content-Length", "EXISTS": None},
+            {"INDEX": 0, "KEY": "Content-Type", "EXISTS": None},
+            {"INDEX": 0, "KEY": "X-TIKA:Parsed-By", "EXISTS": None},
+            {"INDEX": 0, "KEY": "X-TIKA:parse_time_millis", "EXISTS": None},
+        ],
+```
+
+> **Pseudo code**:
+Test for the existence of keys: `Content-Length`, `Content-Type`,
+`X-TIKA:Parsed-By` and `X-TIKA:parse_time_millis` in the `zeroth` (first)
+JSON object where the primary document is a list of JSON objects.
+
+#### Identifying SOPS encrypted secrets file
+
+```python
+    RegistryEntry(
+        identifier="id0012",
+        name=[{"@en": "sops encrypted secrets file"}],
+        markers=[
+            {"KEY": "sops", "EXISTS": None},
+            {"GOTO": "sops", "KEY": "kms", "EXISTS": None},
+            {"GOTO": "sops", "KEY": "pgp", "EXISTS": None},
+        ],
+    ),
+```
+
+> **Pseudo code**:
+Test for the existence of keys `sops` in the primary JSON object.
+>
+> Goto the `sops` key and test for the existence of keys: `kms` and `pgp`
+within the `sops` object/value.
+
 ## PRONOM
 
-Ideally we will add PRONOM identifiers `jsonid`'s formats. The tool can be
-used to generate evidence enough to be able to add this data to PRONOM
-in future.
+Ideally `jsonid` can generate evidence enough to warrant the creration of
+PRONOM IDs that can then be referenced in the `jsonid` output.
+
+Evantually, PRONOM or a PRONOM-like tool might host an authoritative version
+of the `jsonid` registry.
 
 ## Output format
 
-A very basic `yaml` output is used to output data about identified files.
-This will need to be reformatted and reshaped as the concept is proved.
+For ease of development, the utility currently outputs `yaml`. The structure
+is still very fluid, and will also vary depending on the desired level of
+detail in the registry, e.g. there isn't currently a lot of information about
+the contents beyond a basic title and identifier.
 
-## What does `jsonid` get you?
+E.g.:
 
-At the very least, `jsonid` should identify json files on your system as json.
-That's already a pretty good position to be in.
+```yaml
+file: tests/integration/working/sops.json
+identifiers:
+   id0012:
+      name: [{'@en': 'sops encrypted secrets file'}]
+      pronom:
+      additional:
+---
+file: tests/integration/working/json-patch.json
+identifiers:
+   id0019:
+      name: [{'@en': 'JSON Patch RFC 6902'}]
+      pronom:
+      additional:
+---
+file: tests/integration/working/iiif-image-api.json
+identifiers:
+   id0008:
+      name: [{'@en': 'iiif image api (all versions)'}]
+      pronom:
+      additional:
+   id0009:
+      name: [{'@en': 'JSON-LD (generic)'}]
+      pronom:
+      additional:
+```
 
-The ruleset should then allow you to identify a decent number of json objects,
-especially those that have a well-defined structure. Examples we have in the
-registry data include things like ActivityPub streams, RO-CRATE metadata,
-IIIF API data and so on.
-
-If the ruleset works for JSON we might be able to apply it to other formats
-such as YAML in future.
+The structure should become more concrete as `jsonid` is formalized.
 
 ----
 
