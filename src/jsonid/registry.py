@@ -39,7 +39,9 @@ JSON_ONLY: Final[registry_data.RegistryEntry] = registry_data.RegistryEntry(
     name=[{"@en": "JavaScript Object Notation (JSON)"}],
     description=[{"@en": IS_JSON}],
     version=None,
-    pronom="fmt/817",
+    pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/817",
+    loc="https://www.loc.gov/preservation/digital/formats/fdd/fdd000381.shtml",
+    wikidata="https://www.wikidata.org/entity/Q2063",
     mime=["application/json"],
     markers=None,
 )
