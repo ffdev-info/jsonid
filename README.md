@@ -53,8 +53,8 @@ EOF: "7D"
 ```
 
 But if I then want to match on `key 2` as well as `key 1` things start getting
-complicated as they aren't guaranteed by the JSON spec to be in the same
-"position' (if we think about order visually). When other keys are used in
+complicated as they aren't guaranteed by the JSON specification to be in the
+same "position' (if we think about order visually). When other keys are used in
 the object they aren't necessarily guaranteed to be next to each other.
 
 `jsonid` tries to compensate for this by using the format's own strengths to
@@ -118,16 +118,11 @@ For example:
 
 All rules need to match for a positive ID.
 
-<!-- markdownlint-disable -->
-
 > **NB.**: `jsonid` is an
 work-in-progress and requires community input to help determine the grammar
 in its fullness and so there is a lot of opportunity to add/remove to these
-methods if its development continues.
-
-> **Additional**: help formalizing the grammar/ruleset would be appreciated.
-
-<!-- markdownlint-enable -->
+methods if its development continues. Additionally, help formalizing the
+grammar/ruleset would be greatly appreciated 🙏.
 
 ### Backed by testing
 
