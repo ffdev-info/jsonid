@@ -309,6 +309,49 @@ _registry = [
             {"KEY": "id", "STARTSWITH": "https://coriolis.io/schemas/ship-loadout/"},
         ],
     ),
+    RegistryEntry(
+        identifier="jrid:0029",
+        name=[{"@en": "JSON web token"}],
+        markers=[
+            {"KEY": "alg", "EXISTS": None},
+            {"KEY": "typ", "EXISTS": None},
+        ],
+    ),
+    RegistryEntry(
+        identifier="jrid:0030",
+        name=[{"@en": "JHOVE JhoveView Output (generic)"}],
+        markers=[
+            {"GOTO": "jhove", "KEY": "name", "IS": "JhoveView"},
+            {"GOTO": "jhove", "KEY": "release", "EXISTS": None},
+            {"GOTO": "jhove", "KEY": "repInfo", "EXISTS": None},
+        ],
+    ),
+    # JSON RPC uses three different keys, error, method, result. JSONID
+    # Isn't expressive enough to test three keys in one go yet.
+    RegistryEntry(
+        identifier="jrid:0031",
+        name=[{"@en": "JSON RPC 2.0 (error)"}],
+        markers=[
+            {"KEY": "jsonrpc", "IS": "2.0"},
+            {"KEY": "error", "EXISTS": None},
+        ],
+    ),
+    RegistryEntry(
+        identifier="jrid:0032",
+        name=[{"@en": "JSON RPC 2.0 (request)"}],
+        markers=[
+            {"KEY": "jsonrpc", "IS": "2.0"},
+            {"KEY": "method", "EXISTS": None},
+        ],
+    ),
+    RegistryEntry(
+        identifier="jrid:0033",
+        name=[{"@en": "JSON RPC 2.0 (response)"}],
+        markers=[
+            {"KEY": "jsonrpc", "IS": "2.0"},
+            {"KEY": "result", "EXISTS": None},
+        ],
+    ),
 ]
 
 
