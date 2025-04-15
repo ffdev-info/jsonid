@@ -36,25 +36,35 @@ logging.Formatter.converter = time.gmtime
 logger = logging.getLogger(__name__)
 
 
+def decode(content: str):
+    """Decode the given content stream."""
+    data = ""
+    try:
+        data = json.loads(content)
+    except json.decoder.JSONDecodeError as err:
+        logger.debug("can't process: %s", err)
+        return False, None
+    return True, data
+
+
 @helpers.timeit
 async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str]:
     """Ensure that the file is a palintext bytestream and can be
     processed as JSON.
     """
     logger.debug("attempting to open: %s", path)
-    data = ""
     with open(path, "r", encoding="utf-8") as obj:
         try:
-            data = json.loads(obj.read())
-        except (json.decoder.JSONDecodeError, UnicodeDecodeError):
+            content = obj.read()
+            return decode(content)
+        except UnicodeDecodeError as err:
+            logger.debug("can't process: %s", err)
             return False, None
-    return True, data
 
 
 async def identify_json(paths: list[str], binary: bool):
     """Identify objects"""
-    print("---")
-    for path in paths:
+    for idx, path in enumerate(paths):
         valid, data = await identify_plaintext_bytestream(path)
         if not valid:
             logger.debug("%s: is not plaintext", path)
@@ -63,6 +73,8 @@ async def identify_json(paths: list[str], binary: bool):
             continue
         if data != "":
             logger.debug("processing: %s", path)
+            if idx == 0:
+                print("---")
             res = registry.matcher(data)
             print(f"file: {path}")
             print("identifiers:")
