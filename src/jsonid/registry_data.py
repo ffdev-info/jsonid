@@ -17,6 +17,7 @@ class RegistryEntry:  # pylint: disable=R0902
     pronom: str = ""
     wikidata: str = ""
     loc: str = ""
+    archive_team: str = ""
     mime: list[str] = field(default_factory=list)
     markers: list[dict] = field(default_factory=list)
     additional: str = ""
@@ -350,6 +351,18 @@ _registry = [
         markers=[
             {"KEY": "jsonrpc", "IS": "2.0"},
             {"KEY": "result", "EXISTS": None},
+        ],
+    ),
+    RegistryEntry(
+        identifier="jrid:0034",
+        name=[{"@en": "Jupyter Notebook (Generic)"}],
+        pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/1119",
+        archive_team="http://fileformats.archiveteam.org/wiki/Jupyter_Notebook",
+        markers=[
+            {"KEY": "metadata", "ISTYPE": dict},
+            {"KEY": "nbformat", "ISTYPE": int},
+            {"KEY": "nbformat_minor", "ISTYPE": int},
+            {"KEY": "cells", "ISTYPE": list},
         ],
     ),
 ]
