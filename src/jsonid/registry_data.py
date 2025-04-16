@@ -423,6 +423,16 @@ _registry = [
             {"KEY": "features", "EXISTS": None},
         ],
     ),
+    RegistryEntry(
+        identifier="jrid:0039",
+        name=[{"@en": "HAR (HTTP Archive) (Generic)"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/HAR",
+        markers=[
+            {"GOTO": "log", "KEY": "version", "ISTYPE": str},
+            {"GOTO": "log", "KEY": "creator", "ISTYPE": dict},
+            {"GOTO": "log", "KEY": "entries", "ISTYPE": list},
+        ],
+    ),
 ]
 
 
