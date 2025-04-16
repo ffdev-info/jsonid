@@ -1,8 +1,7 @@
 """jsonid version information. """
 
-from typing import Final
-
 from importlib.metadata import PackageNotFoundError, version
+from typing import Final
 
 # Store time format in version for consistent meta output.
 UTC_TIME_FORMAT: Final[str] = "%Y-%m-%dT%H:%M:%SZ"
