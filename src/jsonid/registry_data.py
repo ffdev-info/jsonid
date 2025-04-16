@@ -433,6 +433,17 @@ _registry = [
             {"GOTO": "log", "KEY": "entries", "ISTYPE": list},
         ],
     ),
+    RegistryEntry(
+        identifier="jrid:0040",
+        name=[{"@en": "JSON API"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/JSON_API",
+        mime="application/vnd.api+json",
+        markers=[
+            # "jsonapi" MAY exist but isn't guaranteed. It is unlikely
+            # we will see this object as a static document.
+            {"KEY": "jsonapi", "ISTYPE": dict},
+        ],
+    ),
 ]
 
 
