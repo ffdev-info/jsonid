@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from typing import Final, Optional
 
-JSON_ID: Final[int] = "jsid:0000"
+JSON_ID: Final[int] = "jrid:0000"
 
 
 @dataclass
