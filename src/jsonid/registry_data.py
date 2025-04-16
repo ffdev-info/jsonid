@@ -453,6 +453,16 @@ _registry = [
             {"KEY": "jsonapi", "ISTYPE": dict},
         ],
     ),
+    RegistryEntry(
+        identifier="jrid:0041",
+        name=[{"@en": "Max (Interactive Software) .maxpat JSON (Generic)"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/Max",
+        markers=[
+            {"GOTO": "patcher", "KEY": "fileversion", "EXISTS": None},
+            {"GOTO": "patcher", "KEY": "appversion", "ISTYPE": dict},
+            {"GOTO": "patcher", "KEY": "bglocked", "EXISTS": None},
+        ],
+    ),
 ]
 
 
