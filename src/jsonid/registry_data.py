@@ -376,7 +376,7 @@ _registry = [
     ),
     RegistryEntry(
         identifier="jrid:0035",
-        name=[{"@en": "CSV Dialect Description Format (CDDF)"}],
+        name=[{"@en": "CSV Dialect Description Format (CDDF) (Generic)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/CSV_Dialect_Description_Format",
         markers=[
             {"KEY": "csvddf_version", "EXISTS": None},
@@ -385,6 +385,21 @@ _registry = [
             {"GOTO": "dialect", "KEY": "lineterminator", "EXISTS": None},
             {"GOTO": "dialect", "KEY": "quotechar", "EXISTS": None},
             {"GOTO": "dialect", "KEY": "skipinitialspace", "EXISTS": None},
+        ],
+    ),
+    RegistryEntry(
+        identifier="jrid:0036",
+        name=[{"@en": "CSV Dialect Description Format (CDDF) (1.2 Onwards)"}],
+        version="1.2",
+        archive_team="http://fileformats.archiveteam.org/wiki/CSV_Dialect_Description_Format",
+        markers=[
+            {"KEY": "csvddfVersion", "EXISTS": None},
+            {"KEY": "delimiter", "EXISTS": None},
+            {"KEY": "doubleQuote", "EXISTS": None},
+            {"KEY": "lineTerminator", "EXISTS": None},
+            {"KEY": "quoteChar", "EXISTS": None},
+            {"KEY": "skipInitialSpace", "EXISTS": None},
+            {"KEY": "header", "EXISTS": None},
         ],
     ),
 ]
