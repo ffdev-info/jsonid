@@ -2,21 +2,24 @@
 
 import argparse
 import asyncio
+import datetime
 import json
 import logging
 import os
 import sys
 import time
+from datetime import timezone
 from typing import Tuple
 
 try:
     import helpers
     import registry
+    import version
 except ModuleNotFoundError:
     try:
-        from src.jsonid import helpers, registry
+        from src.jsonid import helpers, registry, version
     except ModuleNotFoundError:
-        from jsonid import helpers, registry
+        from jsonid import helpers, registry, version
 
 
 # Set up logging.
@@ -62,6 +65,17 @@ async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str]:
             return False, None
 
 
+def get_date_time() -> str:
+    """Return a datetime string for now(),"""
+    return datetime.datetime.now(timezone.utc).strftime(version.UTC_TIME_FORMAT)
+
+
+def version_header() -> str:
+    """Output a formatted version header."""
+    return f"""jsonid: {version.get_version()}
+scandate: {get_date_time()}""".strip()
+
+
 async def identify_json(paths: list[str], binary: bool):
     """Identify objects"""
     for idx, path in enumerate(paths):
@@ -74,6 +88,8 @@ async def identify_json(paths: list[str], binary: bool):
         if data != "":
             logger.debug("processing: %s", path)
             if idx == 0:
+                print("---")
+                print(version_header())
                 print("---")
             res = registry.matcher(data)
             print(f"file: {path}")
