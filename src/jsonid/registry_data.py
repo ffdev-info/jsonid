@@ -402,6 +402,27 @@ _registry = [
             {"KEY": "header", "EXISTS": None},
         ],
     ),
+    RegistryEntry(
+        identifier="jrid:0037",
+        name=[{"@en": "GeoJSON Feature Object"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/GeoJSON",
+        mime="application/vnd.geo+json",
+        markers=[
+            {"KEY": "type", "IS": "Feature"},
+            {"KEY": "geometry", "EXISTS": None},
+            {"KEY": "properties", "EXISTS": None},
+        ],
+    ),
+    RegistryEntry(
+        identifier="jrid:0038",
+        name=[{"@en": "GeoJSON Feature Collection Object"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/GeoJSON",
+        mime="application/vnd.geo+json",
+        markers=[
+            {"KEY": "type", "IS": "FeatureCollection"},
+            {"KEY": "features", "EXISTS": None},
+        ],
+    ),
 ]
 
 
