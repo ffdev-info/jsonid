@@ -145,6 +145,11 @@ def main() -> None:
         required=False,
     )
     parser.add_argument(
+        "--export",
+        help="export the embedded registry",
+        required=False,
+    )
+    parser.add_argument(
         "--language",
         help="return results in different languages",
         required=False,
@@ -158,6 +163,8 @@ def main() -> None:
         raise NotImplementedError("pronom view is not yet implemented")
     if args.language:
         raise NotImplementedError("multiple languages are not yet implemented")
+    if args.export:
+        raise NotImplementedError("registry export is not yet implemented")
     asyncio.run(
         process_data(
             path=args.path,
