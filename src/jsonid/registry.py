@@ -2,7 +2,7 @@
 
 import json
 import logging
-from typing import Final
+from typing import Final, Union
 
 try:
     import registry_data
@@ -33,9 +33,8 @@ TYPE_INT: Final[list] = [{"@en": "data is integer type"}]
 TYPE_BOOL: Final[list] = [{"@en": "data is boolean type"}]
 TYPE_ERR: Final[list] = [{"@en": "error processing data"}]
 
-
 JSON_ONLY: Final[registry_data.RegistryEntry] = registry_data.RegistryEntry(
-    identifier="id0",
+    identifier=registry_data.JSON_ID,
     name=[{"@en": "JavaScript Object Notation (JSON)"}],
     description=[{"@en": IS_JSON}],
     version=None,
@@ -48,6 +47,21 @@ JSON_ONLY: Final[registry_data.RegistryEntry] = registry_data.RegistryEntry(
 )
 
 
+def get_depth(data: Union[dict, list]) -> list[str]:
+    """Provide some details about the complexity of this data.
+
+    Implementation via:
+
+        * https://stackoverflow.com/a/30928645/23789970
+
+    """
+    if data and isinstance(data, dict):
+        return 1 + max(get_depth(data[k]) for k in data)
+    if data and isinstance(data, list):
+        return 1 + max(get_depth(k) for k in data)
+    return 0
+
+
 def _get_language(string_field: list[dict], language: str = "@en") -> str:
     """Return a string in a given language from a result string."""
     for value in string_field:
@@ -58,7 +72,7 @@ def _get_language(string_field: list[dict], language: str = "@en") -> str:
     return string_field[0]
 
 
-def get_additional(data: dict) -> str:
+def get_additional(data: Union[dict, list, float, int]) -> str:
     """Return additional characterization information about the JSON
     we encountered.
     """
@@ -188,6 +202,7 @@ def matcher(data: dict) -> list:
     if len(matches) == 0 or matches[0] == NIL_ENTRY:
         additional = get_additional(data)
         json_only = JSON_ONLY
+        json_only.depth = get_depth(data)
         json_only.additional = additional
         return [json_only]
     logger.debug(matches)

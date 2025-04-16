@@ -1,7 +1,9 @@
 """JSON registry data."""
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Final, Optional
+
+JSON_ID: Final[int] = "jsid:0000"
 
 
 @dataclass
@@ -20,6 +22,7 @@ class RegistryEntry:  # pylint: disable=R0902
     archive_team: str = ""
     mime: list[str] = field(default_factory=list)
     markers: list[dict] = field(default_factory=list)
+    depth: int = 0
     additional: str = ""
 
     def __eq__(self, other):
@@ -29,10 +32,15 @@ class RegistryEntry:  # pylint: disable=R0902
 
     def __str__(self):
         """Return summary string."""
+        if self.identifier == JSON_ID:
+            return f"""{self.identifier}:
+        name: {self.name}
+        pronom: {self.pronom}
+        depth: {self.depth}
+        additional: {self.additional}""".strip()
         return f"""{self.identifier}:
       name: {self.name}
-      pronom: {self.pronom}
-      additional: {self.additional}""".strip()
+      pronom: {self.pronom}""".strip()
 
 
 _registry = [
