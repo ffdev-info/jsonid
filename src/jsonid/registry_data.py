@@ -357,6 +357,7 @@ _registry = [
         identifier="jrid:0034",
         name=[{"@en": "Jupyter Notebook (Generic)"}],
         pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/1119",
+        wikidata="http://www.wikidata.org/entity/Q105099901",
         archive_team="http://fileformats.archiveteam.org/wiki/Jupyter_Notebook",
         markers=[
             {"KEY": "metadata", "ISTYPE": dict},
