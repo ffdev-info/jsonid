@@ -374,6 +374,19 @@ _registry = [
             {"KEY": "cells", "ISTYPE": list},
         ],
     ),
+    RegistryEntry(
+        identifier="jrid:0035",
+        name=[{"@en": "CSV Dialect Description Format (CDDF)"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/CSV_Dialect_Description_Format",
+        markers=[
+            {"KEY": "csvddf_version", "EXISTS": None},
+            {"GOTO": "dialect", "KEY": "delimiter", "EXISTS": None},
+            {"GOTO": "dialect", "KEY": "doublequote", "EXISTS": None},
+            {"GOTO": "dialect", "KEY": "lineterminator", "EXISTS": None},
+            {"GOTO": "dialect", "KEY": "quotechar", "EXISTS": None},
+            {"GOTO": "dialect", "KEY": "skipinitialspace", "EXISTS": None},
+        ],
+    ),
 ]
 
 
