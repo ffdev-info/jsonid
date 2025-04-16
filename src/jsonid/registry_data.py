@@ -20,6 +20,7 @@ class RegistryEntry:  # pylint: disable=R0902
     wikidata: str = ""
     loc: str = ""
     archive_team: str = ""
+    rfc: str = ""
     mime: list[str] = field(default_factory=list)
     markers: list[dict] = field(default_factory=list)
     depth: int = 0
@@ -126,6 +127,7 @@ _registry = [
     RegistryEntry(
         identifier="jrid:0009",
         name=[{"@en": "JSON-LD (generic)"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/JSON-LD",
         markers=[
             {"KEY": "@context", "EXISTS": None},
             {"KEY": "id", "EXISTS": None},
@@ -211,7 +213,7 @@ _registry = [
     RegistryEntry(
         identifier="jrid:0018",
         name=[
-            {"@en": "jackerr song: http://fileformats.archiveteam.org/wiki/Jacker_song"}
+            {"@en": "jacker song: http://fileformats.archiveteam.org/wiki/Jacker_song"}
         ],
         description=[{"@en": "via"}],
         markers=[
@@ -224,7 +226,10 @@ _registry = [
     ),
     RegistryEntry(
         identifier="jrid:0019",
-        name=[{"@en": "JSON Patch RFC 6902"}],
+        name=[{"@en": "JSON Patch"}],
+        mime="application/json-patch+json",
+        rfc="https://datatracker.ietf.org/doc/html/rfc6902",
+        archive_team="http://fileformats.archiveteam.org/wiki/JSON_Patch",
         markers=[
             {"INDEX": 0, "KEY": "op", "EXISTS": None},
             {"INDEX": 0, "KEY": "path", "EXISTS": None},
@@ -406,6 +411,7 @@ _registry = [
         identifier="jrid:0037",
         name=[{"@en": "GeoJSON Feature Object"}],
         archive_team="http://fileformats.archiveteam.org/wiki/GeoJSON",
+        rfc="https://datatracker.ietf.org/doc/html/rfc7946",
         mime="application/vnd.geo+json",
         markers=[
             {"KEY": "type", "IS": "Feature"},
@@ -417,6 +423,7 @@ _registry = [
         identifier="jrid:0038",
         name=[{"@en": "GeoJSON Feature Collection Object"}],
         archive_team="http://fileformats.archiveteam.org/wiki/GeoJSON",
+        rfc="https://datatracker.ietf.org/doc/html/rfc7946",
         mime="application/vnd.geo+json",
         markers=[
             {"KEY": "type", "IS": "FeatureCollection"},
