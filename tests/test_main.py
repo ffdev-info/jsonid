@@ -100,7 +100,7 @@ def test_json_only():
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
     res = registry.matcher(json_loaded)
-    assert res[0].identifier == "id0"
+    assert res[0].identifier == registry_data.JSON_ID
     assert res[0].description[0]["@en"] == registry.IS_JSON
 
 

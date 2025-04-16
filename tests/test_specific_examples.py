@@ -47,3 +47,39 @@ def test_specific(mocker, test_registry, test_data, expected_id):
         assert False, f"data won't decode as JSON: {err}"
     res = registry.matcher(json_loaded)
     assert res[0].identifier == expected_id
+
+
+depth_test_1 = {
+    "children": [
+        {
+            "name": "product service",
+            "children": [
+                {"name": "price", "children": [{"name": "cost", "size": 8}]},
+                {"name": "quality", "children": [{"name": "messaging", "size": 4}]},
+            ],
+        },
+        {
+            "name": "customer service",
+            "children": [
+                {"name": "Personnel", "children": [{"name": "CEO", "size": 7}]}
+            ],
+        },
+        {
+            "name": "product",
+            "children": [
+                {"name": "Apple", "children": [{"name": "iPhone 4", "size": 10}]}
+            ],
+        },
+    ]
+}
+
+
+specific_tests = [
+    (depth_test_1, 7),
+]
+
+
+@pytest.mark.parametrize("depth_test, expected_depth", specific_tests)
+def test_get_depth(depth_test, expected_depth):
+    """Assert depth tests work."""
+    assert registry.get_depth(depth_test) == expected_depth
