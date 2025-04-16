@@ -325,7 +325,9 @@ _registry = [
     ),
     RegistryEntry(
         identifier="jrid:0029",
-        name=[{"@en": "JSON web token"}],
+        name=[{"@en": "JSON Web Token (JWT)"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/JSON_Web_Tokens",
+        rfc="https://datatracker.ietf.org/doc/html/rfc7519",
         markers=[
             {"KEY": "alg", "EXISTS": None},
             {"KEY": "typ", "EXISTS": None},
