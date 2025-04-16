@@ -42,6 +42,7 @@ JSON_ONLY: Final[registry_data.RegistryEntry] = registry_data.RegistryEntry(
     pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/817",
     loc="https://www.loc.gov/preservation/digital/formats/fdd/fdd000381.shtml",
     wikidata="https://www.wikidata.org/entity/Q2063",
+    archive_team="http://fileformats.archiveteam.org/wiki/JSON",
     mime=["application/json"],
     markers=None,
 )
