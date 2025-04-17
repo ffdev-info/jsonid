@@ -20,7 +20,7 @@ MARKER_IS_TYPE: Final[str] = "ISTYPE"
 
 
 def at_index(marker: dict, data: dict) -> dict:
-    """Provide an ability to investigate an indeex."""
+    """Provide an ability to investigate an index."""
     idx = marker[MARKER_INDEX]
     try:
         data = data[idx]
@@ -30,7 +30,7 @@ def at_index(marker: dict, data: dict) -> dict:
 
 
 def at_goto(marker: dict, data: dict) -> dict:
-    """Match data against a regular expression."""
+    """Goto A key at the top-level of the document."""
     k = marker[MARKER_GOTO]
     try:
         return data[k]
@@ -39,7 +39,7 @@ def at_goto(marker: dict, data: dict) -> dict:
 
 
 def contains_match(marker: dict, data: dict) -> bool:
-    """Match data against a regular expression."""
+    """Determine whether a string value contains part of another value."""
     k = marker[MARKER_KEY]
     v = None
     try:
@@ -53,7 +53,7 @@ def contains_match(marker: dict, data: dict) -> bool:
 
 
 def startswith_match(marker: dict, data: dict) -> bool:
-    """Match data against a regular expression."""
+    """Determine whether a string value begins with another value."""
     k = marker[MARKER_KEY]
     v = None
     try:
@@ -67,7 +67,7 @@ def startswith_match(marker: dict, data: dict) -> bool:
 
 
 def endswith_match(marker: dict, data: dict) -> bool:
-    """Match data against a regular expression."""
+    """Determine whether a string value ends with another value."""
     k = marker[MARKER_KEY]
     v = None
     try:
@@ -81,7 +81,9 @@ def endswith_match(marker: dict, data: dict) -> bool:
 
 
 def is_match(marker: dict, data: dict) -> bool:
-    """Match data against a regular expression."""
+    """Determine whether a value is an exact match for a given
+    value.
+    """
     k = marker[MARKER_KEY]
     v = None
     try:
@@ -93,7 +95,9 @@ def is_match(marker: dict, data: dict) -> bool:
 
 
 def is_type(marker: dict, data: dict) -> bool:
-    """Match data against type only."""
+    """Match data against type only, i.e. determine if a value is
+    a primitive data type, e.g. `dict`, `list`, `string`, `int`.
+    """
     k = marker[MARKER_KEY]
     v = None
     try:
@@ -124,7 +128,9 @@ def regex_match(marker: dict, data: dict) -> bool:
 
 
 def key_exists_match(marker: dict, data: dict) -> bool:
-    """Match data against a regular expression."""
+    """Determine if a key exists, i.e. returns `True` if a key
+    exists when it is expected to exist.
+    """
     k = marker[MARKER_KEY]
     try:
         data[k]
@@ -134,7 +140,9 @@ def key_exists_match(marker: dict, data: dict) -> bool:
 
 
 def key_no_exist_match(marker: dict, data: dict) -> bool:
-    """Match data against a regular expression."""
+    """Determine if a key doesn't exist, i.e. negates the existence
+    of a key when a specific value isn't supposed to be there.
+    """
     k = marker[MARKER_KEY]
     try:
         data[k]
