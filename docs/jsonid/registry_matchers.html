@@ -54,14 +54,14 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def at_goto(marker: dict, data: dict) -&gt; dict:
-    &#34;&#34;&#34;Match data against a regular expression.&#34;&#34;&#34;
+    &#34;&#34;&#34;Goto A key at the top-level of the document.&#34;&#34;&#34;
     k = marker[MARKER_GOTO]
     try:
         return data[k]
     except KeyError:
         return data</code></pre>
 </details>
-<div class="desc"><p>Match data against a regular expression.</p></div>
+<div class="desc"><p>Goto A key at the top-level of the document.</p></div>
 </dd>
 <dt id="src.jsonid.registry_matchers.at_index"><code class="name flex">
 <span>def <span class="ident">at_index</span></span>(<span>marker: dict, data: dict) ‑> dict</span>
@@ -72,7 +72,7 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def at_index(marker: dict, data: dict) -&gt; dict:
-    &#34;&#34;&#34;Provide an ability to investigate an indeex.&#34;&#34;&#34;
+    &#34;&#34;&#34;Provide an ability to investigate an index.&#34;&#34;&#34;
     idx = marker[MARKER_INDEX]
     try:
         data = data[idx]
@@ -80,7 +80,7 @@ el.replaceWith(d);
     except IndexError:
         return data</code></pre>
 </details>
-<div class="desc"><p>Provide an ability to investigate an indeex.</p></div>
+<div class="desc"><p>Provide an ability to investigate an index.</p></div>
 </dd>
 <dt id="src.jsonid.registry_matchers.contains_match"><code class="name flex">
 <span>def <span class="ident">contains_match</span></span>(<span>marker: dict, data: dict) ‑> bool</span>
@@ -91,7 +91,7 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def contains_match(marker: dict, data: dict) -&gt; bool:
-    &#34;&#34;&#34;Match data against a regular expression.&#34;&#34;&#34;
+    &#34;&#34;&#34;Determine whether a string value contains part of another value.&#34;&#34;&#34;
     k = marker[MARKER_KEY]
     v = None
     try:
@@ -103,7 +103,7 @@ el.replaceWith(d);
     match_pattern = marker[MARKER_CONTAINS]
     return match_pattern in v</code></pre>
 </details>
-<div class="desc"><p>Match data against a regular expression.</p></div>
+<div class="desc"><p>Determine whether a string value contains part of another value.</p></div>
 </dd>
 <dt id="src.jsonid.registry_matchers.endswith_match"><code class="name flex">
 <span>def <span class="ident">endswith_match</span></span>(<span>marker: dict, data: dict) ‑> bool</span>
@@ -114,7 +114,7 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def endswith_match(marker: dict, data: dict) -&gt; bool:
-    &#34;&#34;&#34;Match data against a regular expression.&#34;&#34;&#34;
+    &#34;&#34;&#34;Determine whether a string value ends with another value.&#34;&#34;&#34;
     k = marker[MARKER_KEY]
     v = None
     try:
@@ -126,7 +126,7 @@ el.replaceWith(d);
     match_pattern = marker[MARKER_ENDSWITH]
     return v.endswith(match_pattern)</code></pre>
 </details>
-<div class="desc"><p>Match data against a regular expression.</p></div>
+<div class="desc"><p>Determine whether a string value ends with another value.</p></div>
 </dd>
 <dt id="src.jsonid.registry_matchers.is_match"><code class="name flex">
 <span>def <span class="ident">is_match</span></span>(<span>marker: dict, data: dict) ‑> bool</span>
@@ -137,7 +137,9 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def is_match(marker: dict, data: dict) -&gt; bool:
-    &#34;&#34;&#34;Match data against a regular expression.&#34;&#34;&#34;
+    &#34;&#34;&#34;Determine whether a value is an exact match for a given
+    value.
+    &#34;&#34;&#34;
     k = marker[MARKER_KEY]
     v = None
     try:
@@ -147,7 +149,8 @@ el.replaceWith(d);
     match_pattern = marker[MARKER_IS]
     return v == match_pattern</code></pre>
 </details>
-<div class="desc"><p>Match data against a regular expression.</p></div>
+<div class="desc"><p>Determine whether a value is an exact match for a given
+value.</p></div>
 </dd>
 <dt id="src.jsonid.registry_matchers.is_type"><code class="name flex">
 <span>def <span class="ident">is_type</span></span>(<span>marker: dict, data: dict) ‑> bool</span>
@@ -158,7 +161,9 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def is_type(marker: dict, data: dict) -&gt; bool:
-    &#34;&#34;&#34;Match data against type only.&#34;&#34;&#34;
+    &#34;&#34;&#34;Match data against type only, i.e. determine if a value is
+    a primitive data type, e.g. `dict`, `list`, `string`, `int`.
+    &#34;&#34;&#34;
     k = marker[MARKER_KEY]
     v = None
     try:
@@ -173,7 +178,8 @@ el.replaceWith(d);
         pass
     return False</code></pre>
 </details>
-<div class="desc"><p>Match data against type only.</p></div>
+<div class="desc"><p>Match data against type only, i.e. determine if a value is
+a primitive data type, e.g. <code>dict</code>, <code>list</code>, <code>string</code>, <code>int</code>.</p></div>
 </dd>
 <dt id="src.jsonid.registry_matchers.key_exists_match"><code class="name flex">
 <span>def <span class="ident">key_exists_match</span></span>(<span>marker: dict, data: dict) ‑> bool</span>
@@ -184,7 +190,9 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def key_exists_match(marker: dict, data: dict) -&gt; bool:
-    &#34;&#34;&#34;Match data against a regular expression.&#34;&#34;&#34;
+    &#34;&#34;&#34;Determine if a key exists, i.e. returns `True` if a key
+    exists when it is expected to exist.
+    &#34;&#34;&#34;
     k = marker[MARKER_KEY]
     try:
         data[k]
@@ -192,7 +200,8 @@ el.replaceWith(d);
         return False
     return True</code></pre>
 </details>
-<div class="desc"><p>Match data against a regular expression.</p></div>
+<div class="desc"><p>Determine if a key exists, i.e. returns <code>True</code> if a key
+exists when it is expected to exist.</p></div>
 </dd>
 <dt id="src.jsonid.registry_matchers.key_no_exist_match"><code class="name flex">
 <span>def <span class="ident">key_no_exist_match</span></span>(<span>marker: dict, data: dict) ‑> bool</span>
@@ -203,7 +212,9 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def key_no_exist_match(marker: dict, data: dict) -&gt; bool:
-    &#34;&#34;&#34;Match data against a regular expression.&#34;&#34;&#34;
+    &#34;&#34;&#34;Determine if a key doesn&#39;t exist, i.e. negates the existence
+    of a key when a specific value isn&#39;t supposed to be there.
+    &#34;&#34;&#34;
     k = marker[MARKER_KEY]
     try:
         data[k]
@@ -211,7 +222,8 @@ el.replaceWith(d);
         return True
     return False</code></pre>
 </details>
-<div class="desc"><p>Match data against a regular expression.</p></div>
+<div class="desc"><p>Determine if a key doesn't exist, i.e. negates the existence
+of a key when a specific value isn't supposed to be there.</p></div>
 </dd>
 <dt id="src.jsonid.registry_matchers.regex_match"><code class="name flex">
 <span>def <span class="ident">regex_match</span></span>(<span>marker: dict, data: dict) ‑> bool</span>
@@ -245,7 +257,7 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def startswith_match(marker: dict, data: dict) -&gt; bool:
-    &#34;&#34;&#34;Match data against a regular expression.&#34;&#34;&#34;
+    &#34;&#34;&#34;Determine whether a string value begins with another value.&#34;&#34;&#34;
     k = marker[MARKER_KEY]
     v = None
     try:
@@ -257,7 +269,7 @@ el.replaceWith(d);
     match_pattern = marker[MARKER_STARTSWITH]
     return v.startswith(match_pattern)</code></pre>
 </details>
-<div class="desc"><p>Match data against a regular expression.</p></div>
+<div class="desc"><p>Determine whether a string value begins with another value.</p></div>
 </dd>
 </dl>
 </section>
