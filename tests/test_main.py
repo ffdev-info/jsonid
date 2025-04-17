@@ -1,6 +1,6 @@
 """ json-id tests... """
 
-# pylint: disable=C0103,R0401
+# pylint: disable=C0103,R0401,R0801
 
 import json
 from typing import Final

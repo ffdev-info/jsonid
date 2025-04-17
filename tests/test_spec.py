@@ -1,6 +1,6 @@
 """Some basic tests to make sure the spec is working."""
 
-# pylint: disable=C0103
+# pylint: disable=C0103,R0801
 
 import json
 from typing import Final
