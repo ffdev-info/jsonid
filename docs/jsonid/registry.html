@@ -46,14 +46,14 @@ el.replaceWith(d);
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="src.jsonid.registry.get_additional"><code class="name flex">
-<span>def <span class="ident">get_additional</span></span>(<span>data: dict) ‑> str</span>
+<span>def <span class="ident">get_additional</span></span>(<span>data: dict | list | float | int) ‑> str</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_additional(data: dict) -&gt; str:
+<pre><code class="python">def get_additional(data: Union[dict, list, float, int]) -&gt; str:
     &#34;&#34;&#34;Return additional characterization information about the JSON
     we encountered.
     &#34;&#34;&#34;
@@ -78,6 +78,33 @@ el.replaceWith(d);
 </details>
 <div class="desc"><p>Return additional characterization information about the JSON
 we encountered.</p></div>
+</dd>
+<dt id="src.jsonid.registry.get_depth"><code class="name flex">
+<span>def <span class="ident">get_depth</span></span>(<span>data: dict | list) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_depth(data: Union[dict, list]) -&gt; list[str]:
+    &#34;&#34;&#34;Provide some details about the complexity of this data.
+
+    Implementation via:
+
+        * https://stackoverflow.com/a/30928645/23789970
+
+    &#34;&#34;&#34;
+    if data and isinstance(data, dict):
+        return 1 + max(get_depth(data[k]) for k in data)
+    if data and isinstance(data, list):
+        return 1 + max(get_depth(k) for k in data)
+    return 0</code></pre>
+</details>
+<div class="desc"><p>Provide some details about the complexity of this data.</p>
+<p>Implementation via:</p>
+<pre><code>* &lt;https://stackoverflow.com/a/30928645/23789970&gt;
+</code></pre></div>
 </dd>
 <dt id="src.jsonid.registry.matcher"><code class="name flex">
 <span>def <span class="ident">matcher</span></span>(<span>data: dict) ‑> list</span>
@@ -113,6 +140,7 @@ we encountered.</p></div>
     if len(matches) == 0 or matches[0] == NIL_ENTRY:
         additional = get_additional(data)
         json_only = JSON_ONLY
+        json_only.depth = get_depth(data)
         json_only.additional = additional
         return [json_only]
     logger.debug(matches)
@@ -250,6 +278,7 @@ Attempt to exit early if there isn't a match.</p></div>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="src.jsonid.registry.get_additional" href="#src.jsonid.registry.get_additional">get_additional</a></code></li>
+<li><code><a title="src.jsonid.registry.get_depth" href="#src.jsonid.registry.get_depth">get_depth</a></code></li>
 <li><code><a title="src.jsonid.registry.matcher" href="#src.jsonid.registry.matcher">matcher</a></code></li>
 <li><code><a title="src.jsonid.registry.process_markers" href="#src.jsonid.registry.process_markers">process_markers</a></code></li>
 </ul>

@@ -66,7 +66,7 @@ el.replaceWith(d);
 <dl>
 <dt id="src.jsonid.registry_data.RegistryEntry"><code class="flex name class">
 <span>class <span class="ident">RegistryEntry</span></span>
-<span>(</span><span>identifier: str = '',<br>name: list = &lt;factory&gt;,<br>version: str | None = None,<br>description: list = &lt;factory&gt;,<br>pronom: str = '',<br>mime: list[str] = &lt;factory&gt;,<br>markers: list[dict] = &lt;factory&gt;,<br>additional: str = '')</span>
+<span>(</span><span>identifier: str = '',<br>name: list = &lt;factory&gt;,<br>version: str | None = None,<br>description: list = &lt;factory&gt;,<br>pronom: str = '',<br>wikidata: str = '',<br>loc: str = '',<br>archive_team: str = '',<br>rfc: str = '',<br>mime: list[str] = &lt;factory&gt;,<br>markers: list[dict] = &lt;factory&gt;,<br>depth: int = 0,<br>additional: str = '')</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -84,8 +84,13 @@ class RegistryEntry:  # pylint: disable=R0902
     version: Optional[str | None] = None
     description: list = field(default_factory=list)
     pronom: str = &#34;&#34;
+    wikidata: str = &#34;&#34;
+    loc: str = &#34;&#34;
+    archive_team: str = &#34;&#34;
+    rfc: str = &#34;&#34;
     mime: list[str] = field(default_factory=list)
     markers: list[dict] = field(default_factory=list)
+    depth: int = 0
     additional: str = &#34;&#34;
 
     def __eq__(self, other):
@@ -95,10 +100,15 @@ class RegistryEntry:  # pylint: disable=R0902
 
     def __str__(self):
         &#34;&#34;&#34;Return summary string.&#34;&#34;&#34;
+        if self.identifier == JSON_ID:
+            return f&#34;&#34;&#34;{self.identifier}:
+        name: {self.name}
+        pronom: {self.pronom}
+        depth: {self.depth}
+        additional: {self.additional}&#34;&#34;&#34;.strip()
         return f&#34;&#34;&#34;{self.identifier}:
       name: {self.name}
-      pronom: {self.pronom}
-      additional: {self.additional}&#34;&#34;&#34;.strip()</code></pre>
+      pronom: {self.pronom}&#34;&#34;&#34;.strip()</code></pre>
 </details>
 <div class="desc"><p>Class that represents information that might be derived from
 a registry.</p></div>
@@ -108,11 +118,23 @@ a registry.</p></div>
 <dd>
 <div class="desc"></div>
 </dd>
+<dt id="src.jsonid.registry_data.RegistryEntry.archive_team"><code class="name">var <span class="ident">archive_team</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.registry_data.RegistryEntry.depth"><code class="name">var <span class="ident">depth</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="src.jsonid.registry_data.RegistryEntry.description"><code class="name">var <span class="ident">description</span> : list</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 <dt id="src.jsonid.registry_data.RegistryEntry.identifier"><code class="name">var <span class="ident">identifier</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.registry_data.RegistryEntry.loc"><code class="name">var <span class="ident">loc</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -132,7 +154,15 @@ a registry.</p></div>
 <dd>
 <div class="desc"></div>
 </dd>
+<dt id="src.jsonid.registry_data.RegistryEntry.rfc"><code class="name">var <span class="ident">rfc</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="src.jsonid.registry_data.RegistryEntry.version"><code class="name">var <span class="ident">version</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.registry_data.RegistryEntry.wikidata"><code class="name">var <span class="ident">wikidata</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -162,13 +192,18 @@ a registry.</p></div>
 <h4><code><a title="src.jsonid.registry_data.RegistryEntry" href="#src.jsonid.registry_data.RegistryEntry">RegistryEntry</a></code></h4>
 <ul class="two-column">
 <li><code><a title="src.jsonid.registry_data.RegistryEntry.additional" href="#src.jsonid.registry_data.RegistryEntry.additional">additional</a></code></li>
+<li><code><a title="src.jsonid.registry_data.RegistryEntry.archive_team" href="#src.jsonid.registry_data.RegistryEntry.archive_team">archive_team</a></code></li>
+<li><code><a title="src.jsonid.registry_data.RegistryEntry.depth" href="#src.jsonid.registry_data.RegistryEntry.depth">depth</a></code></li>
 <li><code><a title="src.jsonid.registry_data.RegistryEntry.description" href="#src.jsonid.registry_data.RegistryEntry.description">description</a></code></li>
 <li><code><a title="src.jsonid.registry_data.RegistryEntry.identifier" href="#src.jsonid.registry_data.RegistryEntry.identifier">identifier</a></code></li>
+<li><code><a title="src.jsonid.registry_data.RegistryEntry.loc" href="#src.jsonid.registry_data.RegistryEntry.loc">loc</a></code></li>
 <li><code><a title="src.jsonid.registry_data.RegistryEntry.markers" href="#src.jsonid.registry_data.RegistryEntry.markers">markers</a></code></li>
 <li><code><a title="src.jsonid.registry_data.RegistryEntry.mime" href="#src.jsonid.registry_data.RegistryEntry.mime">mime</a></code></li>
 <li><code><a title="src.jsonid.registry_data.RegistryEntry.name" href="#src.jsonid.registry_data.RegistryEntry.name">name</a></code></li>
 <li><code><a title="src.jsonid.registry_data.RegistryEntry.pronom" href="#src.jsonid.registry_data.RegistryEntry.pronom">pronom</a></code></li>
+<li><code><a title="src.jsonid.registry_data.RegistryEntry.rfc" href="#src.jsonid.registry_data.RegistryEntry.rfc">rfc</a></code></li>
 <li><code><a title="src.jsonid.registry_data.RegistryEntry.version" href="#src.jsonid.registry_data.RegistryEntry.version">version</a></code></li>
+<li><code><a title="src.jsonid.registry_data.RegistryEntry.wikidata" href="#src.jsonid.registry_data.RegistryEntry.wikidata">wikidata</a></code></li>
 </ul>
 </li>
 </ul>

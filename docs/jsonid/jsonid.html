@@ -65,6 +65,40 @@ el.replaceWith(d);
 </details>
 <div class="desc"><p>Get a list of paths to process.</p></div>
 </dd>
+<dt id="src.jsonid.jsonid.decode"><code class="name flex">
+<span>def <span class="ident">decode</span></span>(<span>content: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def decode(content: str):
+    &#34;&#34;&#34;Decode the given content stream.&#34;&#34;&#34;
+    data = &#34;&#34;
+    try:
+        data = json.loads(content)
+    except json.decoder.JSONDecodeError as err:
+        logger.debug(&#34;can&#39;t process: %s&#34;, err)
+        return False, None
+    return True, data</code></pre>
+</details>
+<div class="desc"><p>Decode the given content stream.</p></div>
+</dd>
+<dt id="src.jsonid.jsonid.get_date_time"><code class="name flex">
+<span>def <span class="ident">get_date_time</span></span>(<span>) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_date_time() -&gt; str:
+    &#34;&#34;&#34;Return a datetime string for now(),&#34;&#34;&#34;
+    return datetime.datetime.now(timezone.utc).strftime(version.UTC_TIME_FORMAT)</code></pre>
+</details>
+<div class="desc"><p>Return a datetime string for now(),</p></div>
+</dd>
 <dt id="src.jsonid.jsonid.identify_json"><code class="name flex">
 <span>async def <span class="ident">identify_json</span></span>(<span>paths: list[str], binary: bool)</span>
 </code></dt>
@@ -75,8 +109,7 @@ el.replaceWith(d);
 </summary>
 <pre><code class="python">async def identify_json(paths: list[str], binary: bool):
     &#34;&#34;&#34;Identify objects&#34;&#34;&#34;
-    print(&#34;---&#34;)
-    for path in paths:
+    for idx, path in enumerate(paths):
         valid, data = await identify_plaintext_bytestream(path)
         if not valid:
             logger.debug(&#34;%s: is not plaintext&#34;, path)
@@ -85,6 +118,10 @@ el.replaceWith(d);
             continue
         if data != &#34;&#34;:
             logger.debug(&#34;processing: %s&#34;, path)
+            if idx == 0:
+                print(&#34;---&#34;)
+                print(version_header())
+                print(&#34;---&#34;)
             res = registry.matcher(data)
             print(f&#34;file: {path}&#34;)
             print(&#34;identifiers:&#34;)
@@ -137,6 +174,11 @@ el.replaceWith(d);
         required=False,
     )
     parser.add_argument(
+        &#34;--export&#34;,
+        help=&#34;export the embedded registry&#34;,
+        required=False,
+    )
+    parser.add_argument(
         &#34;--language&#34;,
         help=&#34;return results in different languages&#34;,
         required=False,
@@ -150,6 +192,8 @@ el.replaceWith(d);
         raise NotImplementedError(&#34;pronom view is not yet implemented&#34;)
     if args.language:
         raise NotImplementedError(&#34;multiple languages are not yet implemented&#34;)
+    if args.export:
+        raise NotImplementedError(&#34;registry export is not yet implemented&#34;)
     asyncio.run(
         process_data(
             path=args.path,
@@ -184,6 +228,21 @@ el.replaceWith(d);
 </details>
 <div class="desc"><p>Process all objects at a given path</p></div>
 </dd>
+<dt id="src.jsonid.jsonid.version_header"><code class="name flex">
+<span>def <span class="ident">version_header</span></span>(<span>) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def version_header() -&gt; str:
+    &#34;&#34;&#34;Output a formatted version header.&#34;&#34;&#34;
+    return f&#34;&#34;&#34;jsonid: {version.get_version()}
+scandate: {get_date_time()}&#34;&#34;&#34;.strip()</code></pre>
+</details>
+<div class="desc"><p>Output a formatted version header.</p></div>
+</dd>
 </dl>
 </section>
 <section>
@@ -200,11 +259,14 @@ el.replaceWith(d);
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="src.jsonid.jsonid.create_manifest" href="#src.jsonid.jsonid.create_manifest">create_manifest</a></code></li>
+<li><code><a title="src.jsonid.jsonid.decode" href="#src.jsonid.jsonid.decode">decode</a></code></li>
+<li><code><a title="src.jsonid.jsonid.get_date_time" href="#src.jsonid.jsonid.get_date_time">get_date_time</a></code></li>
 <li><code><a title="src.jsonid.jsonid.identify_json" href="#src.jsonid.jsonid.identify_json">identify_json</a></code></li>
 <li><code><a title="src.jsonid.jsonid.main" href="#src.jsonid.jsonid.main">main</a></code></li>
 <li><code><a title="src.jsonid.jsonid.process_data" href="#src.jsonid.jsonid.process_data">process_data</a></code></li>
+<li><code><a title="src.jsonid.jsonid.version_header" href="#src.jsonid.jsonid.version_header">version_header</a></code></li>
 </ul>
 </li>
 </ul>

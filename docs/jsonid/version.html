@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
-<title>src.jsonid API documentation</title>
-<meta name="description" content="">
+<title>src.jsonid.version API documentation</title>
+<meta name="description" content="jsonid version information.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -33,42 +33,46 @@ el.replaceWith(d);
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>src.jsonid</code></h1>
+<h1 class="title">Module <code>src.jsonid.version</code></h1>
 </header>
 <section id="section-intro">
+<p>jsonid version information.</p>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt><code class="name"><a title="src.jsonid.helpers" href="helpers.html">src.jsonid.helpers</a></code></dt>
+<dt id="src.jsonid.version.get_version"><code class="name flex">
+<span>def <span class="ident">get_version</span></span>(<span>)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Code helperrs.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.jsonid" href="jsonid.html">src.jsonid.jsonid</a></code></dt>
-<dd>
-<div class="desc"><p>jsonid entry-point.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry" href="registry.html">src.jsonid.registry</a></code></dt>
-<dd>
-<div class="desc"><p>JSON registry processor.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry_data" href="registry_data.html">src.jsonid.registry_data</a></code></dt>
-<dd>
-<div class="desc"><p>JSON registry data.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry_matchers" href="registry_matchers.html">src.jsonid.registry_matchers</a></code></dt>
-<dd>
-<div class="desc"><p>Functions to support processing of the registry.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.version" href="version.html">src.jsonid.version</a></code></dt>
-<dd>
-<div class="desc"><p>jsonid version information.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_version():
+    &#34;&#34;&#34;Return information about the version of this application. If
+    it returns 0.0.0 then the user is to assume this is a development
+    version. Otherwise the version must be driven by the source
+    control management through appropriate tagging.
+    &#34;&#34;&#34;
+    __version__ = &#34;0.0.0&#34;
+    try:
+        __version__ = version(&#34;simple-sign&#34;)
+    except PackageNotFoundError:
+        # package is not installed
+        pass
+    return __version__</code></pre>
+</details>
+<div class="desc"><p>Return information about the version of this application. If
+it returns 0.0.0 then the user is to assume this is a development
+version. Otherwise the version must be driven by the source
+control management through appropriate tagging.</p></div>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
 </section>
 <section>
 </section>
@@ -80,17 +84,12 @@ el.replaceWith(d);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="src" href="../index.html">src</a></code></li>
+<li><code><a title="src.jsonid" href="index.html">src.jsonid</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
-<ul>
-<li><code><a title="src.jsonid.helpers" href="helpers.html">src.jsonid.helpers</a></code></li>
-<li><code><a title="src.jsonid.jsonid" href="jsonid.html">src.jsonid.jsonid</a></code></li>
-<li><code><a title="src.jsonid.registry" href="registry.html">src.jsonid.registry</a></code></li>
-<li><code><a title="src.jsonid.registry_data" href="registry_data.html">src.jsonid.registry_data</a></code></li>
-<li><code><a title="src.jsonid.registry_matchers" href="registry_matchers.html">src.jsonid.registry_matchers</a></code></li>
-<li><code><a title="src.jsonid.version" href="version.html">src.jsonid.version</a></code></li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="src.jsonid.version.get_version" href="#src.jsonid.version.get_version">get_version</a></code></li>
 </ul>
 </li>
 </ul>
