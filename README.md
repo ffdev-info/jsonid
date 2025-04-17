@@ -142,7 +142,7 @@ prove useful to the communities that might use it (*see notes on PRONOM below*).
 
 The registry can be read via the source code here:
 
-* [Registry](src/jsonid/registry_data.py).
+* [Registry](https://github.com/ffdev-info/jsonid/blob/main/src/jsonid/registry_data.py).
 
 ### Registry examples
 
