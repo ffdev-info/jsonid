@@ -396,7 +396,7 @@ _registry = [
     ),
     RegistryEntry(
         identifier="jrid:0036",
-        name=[{"@en": "CSV Dialect Description Format (CDDF) (1.2 Onwards)"}],
+        name=[{"@en": "CSV Dialect Description Format (CDDF) (1.2 - 1.x)"}],
         version="1.2",
         archive_team="http://fileformats.archiveteam.org/wiki/CSV_Dialect_Description_Format",
         markers=[
@@ -535,6 +535,65 @@ _registry = [
             {"KEY": "appVersion", "EXISTS": None},
             {"KEY": "build", "EXISTS": None},
             {"KEY": "created", "ISTYPE": dict},
+        ],
+    ),
+    # Datapackage.org Schemas.
+    RegistryEntry(
+        identifier="jrid:0048",
+        name=[
+            {"@en": "Data Package Schema (Datapackage.org (Open Knowledge Foundation))"}
+        ],
+        markers=[
+            {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
+            {"KEY": "$schema", "ENDSWITH": "/schema#"},
+            {"KEY": "title", "IS": "Data Package"},
+            {"KEY": "type", "IS": "object"},
+            {"KEY": "required", "ISTYPE": list},
+        ],
+    ),
+    RegistryEntry(
+        identifier="jrid:0049",
+        name=[
+            {
+                "@en": "Data Package Resource Schema (Datapackage.org (Open Knowledge Foundation))"
+            }
+        ],
+        markers=[
+            {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
+            {"KEY": "$schema", "ENDSWITH": "/schema#"},
+            {"KEY": "title", "IS": "Data Resource"},
+            {"KEY": "type", "IS": "object"},
+            {"KEY": "oneOf", "ISTYPE": list},
+        ],
+    ),
+    RegistryEntry(
+        identifier="jrid:0050",
+        name=[
+            {
+                "@en": "Data Package Table Dialect (Datapackage.org (Open Knowledge Foundation))"
+            }
+        ],
+        markers=[
+            {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
+            {"KEY": "$schema", "ENDSWITH": "/schema#"},
+            {"KEY": "title", "IS": "Table Dialect"},
+            {"KEY": "type", "IS": "object"},
+            {"KEY": "properties", "ISTYPE": dict},
+        ],
+    ),
+    RegistryEntry(
+        identifier="jrid:0051",
+        name=[
+            {
+                "@en": "Data Package Table Schema (Datapackage.org (Open Knowledge Foundation))"
+            }
+        ],
+        markers=[
+            {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
+            {"KEY": "$schema", "ENDSWITH": "/schema#"},
+            {"KEY": "title", "IS": "Table Schema"},
+            {"KEY": "type", "IS": ["string", "object"]},
+            {"KEY": "required", "ISTYPE": list},
         ],
     ),
 ]
