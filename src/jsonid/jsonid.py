@@ -3,6 +3,7 @@
 import argparse
 import asyncio
 import datetime
+import glob
 import json
 import logging
 import os
@@ -79,6 +80,11 @@ scandate: {get_date_time()}""".strip()
 async def identify_json(paths: list[str], binary: bool):
     """Identify objects"""
     for idx, path in enumerate(paths):
+        if os.path.getsize(path) == 0:
+            logger.debug("'%s' is an empty file")
+            if binary:
+                logger.warning("report on binary object...")
+            continue
         valid, data = await identify_plaintext_bytestream(path)
         if not valid:
             logger.debug("%s: is not plaintext", path)
@@ -110,9 +116,23 @@ async def create_manifest(path: str) -> list[str]:
     return paths
 
 
+async def process_glob(glob_path: str, binary: bool):
+    """Process glob patterns provided by the user."""
+    paths = []
+    for path in glob.glob(glob_path):
+        if os.path.isdir(path):
+            paths = paths + await create_manifest(path)
+        if os.path.isfile(path):
+            paths.append(path)
+    await identify_json(paths, binary)
+
+
 async def process_data(path: str, binary: bool):
     """Process all objects at a given path"""
     logger.debug("processing: %s", path)
+
+    if "*" in path:
+        return await process_glob(path, binary)
     if not os.path.exists(path):
         logger.error("path: '%s' does not exist", path)
         sys.exit(1)
