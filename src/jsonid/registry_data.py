@@ -475,6 +475,17 @@ _registry = [
             {"GOTO": "developer", "KEY": "name", "EXISTS": None},
         ],
     ),
+    RegistryEntry(
+        identifier="jrid:0043",
+        name=[{"@en": "PiskelApp Canvas (Generic)"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/Piskel_canvas",
+        markers=[
+            {"KEY": "modelVersion", "ISTYPE": int},
+            {"GOTO": "piskel", "KEY": "name", "EXISTS": None},
+            {"GOTO": "piskel", "KEY": "description", "EXISTS": None},
+            {"GOTO": "piskel", "KEY": "layers", "ISTYPE": list},
+        ],
+    ),
 ]
 
 
