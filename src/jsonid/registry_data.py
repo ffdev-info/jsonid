@@ -463,6 +463,18 @@ _registry = [
             {"GOTO": "patcher", "KEY": "bglocked", "EXISTS": None},
         ],
     ),
+    RegistryEntry(
+        identifier="jrid:0042",
+        name=[{"@en": "Open Web App Manifest (Firefox Marketplace)"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/Open_Web_App_Manifest",
+        mime="application/x-web-app-manifest+json",
+        markers=[
+            {"KEY": "name", "ISTYPE": str},
+            {"KEY": "description", "ISTYPE": str},
+            {"KEY": "icons", "ISTYPE": dict},
+            {"GOTO": "developer", "KEY": "name", "EXISTS": None},
+        ],
+    ),
 ]
 
 
