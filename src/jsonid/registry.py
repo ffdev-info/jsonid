@@ -82,6 +82,10 @@ def get_additional(data: Union[dict, list, float, int]) -> str:
     if not data:
         if data is False:
             return TYPE_BOOL
+        if isinstance(data, list):
+            return TYPE_LIST
+        if isinstance(data, dict):
+            return TYPE_DICT
         return TYPE_NONE
     if isinstance(data, dict):
         return TYPE_DICT
