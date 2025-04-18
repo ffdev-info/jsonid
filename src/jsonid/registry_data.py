@@ -486,6 +486,20 @@ _registry = [
             {"GOTO": "piskel", "KEY": "layers", "ISTYPE": list},
         ],
     ),
+    RegistryEntry(
+        identifier="jrid:0044",
+        name=[{"@en": "Apple PassKit (PKPass) pass.json"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/PKPass",
+        mime="application/vnd.apple.pkpass",
+        markers=[
+            {"KEY": "passTypeIdentifier", "EXISTS": None},
+            {"KEY": "formatVersion", "ISTYPE": int},
+            {"KEY": "serialNumber", "EXISTS": None},
+            {"KEY": "teamIdentifier", "EXISTS": None},
+            {"KEY": "organizationName", "EXISTS": None},
+            {"KEY": "description", "EXISTS": None},
+        ],
+    ),
 ]
 
 
