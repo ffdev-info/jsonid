@@ -500,6 +500,32 @@ _registry = [
             {"KEY": "description", "EXISTS": None},
         ],
     ),
+    RegistryEntry(
+        identifier="jrid:0045",
+        name=[{"@en": "Scratch Visual Programming Language - project.json"}],
+        version="3.0",
+        mime="application/vnd.apple.pkpass",
+        markers=[
+            {"KEY": "targets", "ISTYPE": list},
+            {"KEY": "meta", "EXISTS": None},
+            {"GOTO": "meta", "KEY": "semver", "IS": "3.0.0"},
+        ],
+    ),
+    RegistryEntry(
+        identifier="jrid:0046",
+        name=[{"@en": "Scratch Visual Programming Language - project.json"}],
+        version="2.0",
+        archive_team="http://fileformats.archiveteam.org/wiki/Scratch_2.0_File_Format",
+        mime="application/vnd.apple.pkpass",
+        markers=[
+            {"KEY": "objName", "EXISTS": None},
+            {"KEY": "costumes", "EXISTS": None},
+            {"KEY": "children", "EXISTS": None},
+            {"KEY": "penLayerMD5", "EXISTS": None},
+            {"KEY": "info", "EXISTS": None},
+            {"GOTO": "info", "KEY": "userAgent", "EXISTS": None},
+        ],
+    ),
 ]
 
 
