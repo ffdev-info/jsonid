@@ -596,6 +596,17 @@ _registry = [
             {"KEY": "required", "ISTYPE": list},
         ],
     ),
+    # iPuz puzzles.
+    RegistryEntry(
+        identifier="jrid:0052",
+        name=[{"@en": "ipuz: open format for puzzles"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/IPUZ",
+        markers=[
+            {"KEY": "version", "STARTSWITH": "http://ipuz.org/"},
+            {"KEY": "kind", "ISTYPE": list},
+            {"KEY": "puzzle", "ISTYPE": list},
+        ],
+    ),
 ]
 
 
