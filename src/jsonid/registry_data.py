@@ -504,7 +504,6 @@ _registry = [
         identifier="jrid:0045",
         name=[{"@en": "Scratch Visual Programming Language - project.json"}],
         version="3.0",
-        mime="application/vnd.apple.pkpass",
         markers=[
             {"KEY": "targets", "ISTYPE": list},
             {"KEY": "meta", "EXISTS": None},
@@ -516,7 +515,6 @@ _registry = [
         name=[{"@en": "Scratch Visual Programming Language - project.json"}],
         version="2.0",
         archive_team="http://fileformats.archiveteam.org/wiki/Scratch_2.0_File_Format",
-        mime="application/vnd.apple.pkpass",
         markers=[
             {"KEY": "objName", "EXISTS": None},
             {"KEY": "costumes", "EXISTS": None},
@@ -524,6 +522,19 @@ _registry = [
             {"KEY": "penLayerMD5", "EXISTS": None},
             {"KEY": "info", "EXISTS": None},
             {"GOTO": "info", "KEY": "userAgent", "EXISTS": None},
+        ],
+    ),
+    RegistryEntry(
+        identifier="jrid:0047",
+        name=[{"@en": "Sketch project file meta.json (Generic)"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/Sketch",
+        mime="application/vnd.apple.pkpass",
+        markers=[
+            {"KEY": "commit", "EXISTS": None},
+            {"KEY": "pagesAndArtboards", "ISTYPE": dict},
+            {"KEY": "appVersion", "EXISTS": None},
+            {"KEY": "build", "EXISTS": None},
+            {"KEY": "created", "ISTYPE": dict},
         ],
     ),
 ]
