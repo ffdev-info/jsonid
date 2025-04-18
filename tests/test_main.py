@@ -106,8 +106,8 @@ def test_json_only():
 
 primitive_tests = [
     ("[1,2,3]", registry.TYPE_LIST),
-    ("[]", registry.TYPE_NONE),
-    ("{}", registry.TYPE_NONE),
+    ("[]", registry.TYPE_LIST),
+    ("{}", registry.TYPE_DICT),
     ("null", registry.TYPE_NONE),
     ('{"k1": 1}', registry.TYPE_DICT),
     ('"true"', registry.TYPE_BOOL),
