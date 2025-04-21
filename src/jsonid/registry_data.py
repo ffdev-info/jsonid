@@ -414,6 +414,7 @@ _registry = [
         name=[{"@en": "GeoJSON Feature Object"}],
         archive_team="http://fileformats.archiveteam.org/wiki/GeoJSON",
         rfc="https://datatracker.ietf.org/doc/html/rfc7946",
+        loc="https://www.loc.gov/preservation/digital/formats/fdd/fdd000382.shtml",
         mime="application/vnd.geo+json",
         markers=[
             {"KEY": "type", "IS": "Feature"},
@@ -425,6 +426,7 @@ _registry = [
         identifier="jrid:0038",
         name=[{"@en": "GeoJSON Feature Collection Object"}],
         archive_team="http://fileformats.archiveteam.org/wiki/GeoJSON",
+        loc="https://www.loc.gov/preservation/digital/formats/fdd/fdd000382.shtml",
         rfc="https://datatracker.ietf.org/doc/html/rfc7946",
         mime="application/vnd.geo+json",
         markers=[
@@ -605,6 +607,16 @@ _registry = [
             {"KEY": "version", "STARTSWITH": "http://ipuz.org/"},
             {"KEY": "kind", "ISTYPE": list},
             {"KEY": "puzzle", "ISTYPE": list},
+        ],
+    ),
+    RegistryEntry(
+        identifier="jrid:0053",
+        name=[{"@en": "SNIA Self-contained Information Retention Format (SIRF)"}],
+        loc="https://www.loc.gov/preservation/digital/formats/fdd/fdd000584.shtml",
+        markers=[
+            {"KEY": "catalogId", "EXISTS": None},
+            {"KEY": "containerInformation", "EXISTS": None},
+            {"KEY": "objectsSet", "EXISTS": None},
         ],
     ),
 ]
