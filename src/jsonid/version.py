@@ -15,7 +15,7 @@ def get_version():
     """
     __version__ = "0.0.0"
     try:
-        __version__ = version("simple-sign")
+        __version__ = version("jsonid")
     except PackageNotFoundError:
         # package is not installed
         pass
