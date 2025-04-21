@@ -58,3 +58,7 @@ clean:
 	rm -rf build/
 	rm -rf dist/
 	rm -rf tar-src/
+
+# Check the registry entries are correct.
+check:
+   python jsonid.py --check

@@ -3,6 +3,15 @@
 import logging
 import time
 
+try:
+    import registry_data
+except ModuleNotFoundError:
+    try:
+        from src.jsonid import registry_data
+    except ModuleNotFoundError:
+        from jsonid import registry_data
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -25,3 +34,10 @@ def timeit(func):
         return result
 
     return wrapper
+
+
+def entry_check() -> bool:
+    """Make sure the entries are all unique."""
+    data = registry_data.registry()
+    ids = [datum.identifier for datum in data]
+    return len(set(ids)) == len(data)

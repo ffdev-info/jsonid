@@ -188,6 +188,12 @@ def main() -> None:
         action="store_true",
     )
     parser.add_argument(
+        "--check",
+        help="check the registry entrues are correct",
+        required=False,
+        action="store_true",
+    )
+    parser.add_argument(
         "--language",
         help="return results in different languages",
         required=False,
@@ -203,6 +209,14 @@ def main() -> None:
         raise NotImplementedError("multiple languages are not yet implemented")
     if args.export:
         export.exportJSON()
+        sys.exit()
+    if args.check:
+        if not helpers.entry_check():
+            logger.error("registry entries are not correct")
+            sys.exit(1)
+        sys.exit()
+    if not args.path:
+        parser.print_help(sys.stderr)
         sys.exit()
     asyncio.run(
         process_data(
