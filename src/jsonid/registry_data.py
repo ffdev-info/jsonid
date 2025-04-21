@@ -195,6 +195,7 @@ _registry = [
     RegistryEntry(
         identifier="jrid:0016",
         name=[{"@en": "activity streams json (generic)"}],
+        wikidata="https://www.wikidata.org/entity/Q4677626",
         markers=[
             {"KEY": "@context", "STARTSWITH": "https://www.w3.org/ns/activitystreams"},
             {"KEY": "id", "EXISTS": None},
@@ -252,6 +253,7 @@ _registry = [
         identifier="jrid:0021",
         name=[{"@en": "tweet data"}],
         pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/1311",
+        wikidata="https://www.wikidata.org/entity/Q85415600",
         markers=[
             {"KEY": "id_str", "EXISTS": None},
             {"KEY": "retweeted", "EXISTS": None},
@@ -613,10 +615,26 @@ _registry = [
         identifier="jrid:0053",
         name=[{"@en": "SNIA Self-contained Information Retention Format (SIRF)"}],
         loc="https://www.loc.gov/preservation/digital/formats/fdd/fdd000584.shtml",
+        wikidata="http://www.wikidata.org/entity/Q29905354",
         markers=[
             {"KEY": "catalogId", "EXISTS": None},
             {"KEY": "containerInformation", "EXISTS": None},
             {"KEY": "objectsSet", "EXISTS": None},
+        ],
+    ),
+    RegistryEntry(
+        identifier="jrid:0054",
+        name=[{"@en": "Firefox Bookmarks Backup File"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/Firefox_bookmarks",
+        wikidata="http://www.wikidata.org/entity/Q105857338",
+        markers=[
+            {"KEY": "guid", "EXISts": None},
+            {"KEY": "title", "EXISTS": None},
+            {"KEY": "index", "ISTYPE": int},
+            {"KEY": "dateAdded", "ISTYPE": int},
+            {"KEY": "lastModified", "ISTYPE": int},
+            {"KEY": "id", "ISTYPE": int},
+            {"KEY": "typeCode", "ISTYPE": int},
         ],
     ),
 ]
