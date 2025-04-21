@@ -219,30 +219,26 @@ the contents beyond a basic title and identifier.
 E.g.:
 
 ```yaml
-file: tests/integration/working/sops.json
-identifiers:
-   id0012:
-      name: [{'@en': 'sops encrypted secrets file'}]
-      pronom:
-      additional:
 ---
-file: tests/integration/working/json-patch.json
-identifiers:
-   id0019:
-      name: [{'@en': 'JSON Patch RFC 6902'}]
-      pronom:
-      additional:
+jsonid: 0.0.0
+scandate: 2025-04-21T18:40:48Z
 ---
-file: tests/integration/working/iiif-image-api.json
+file: integration_files/plain.json
+additional:
+- '@en': data is dict type
+depth: 1
+documentation:
+- archive_team: http://fileformats.archiveteam.org/wiki/JSON
 identifiers:
-   id0008:
-      name: [{'@en': 'iiif image api (all versions)'}]
-      pronom:
-      additional:
-   id0009:
-      name: [{'@en': 'JSON-LD (generic)'}]
-      pronom:
-      additional:
+- rfc: https://datatracker.ietf.org/doc/html/rfc8259
+- pronom: http://www.nationalarchives.gov.uk/PRONOM/fmt/817
+- loc: https://www.loc.gov/preservation/digital/formats/fdd/fdd000381.shtml
+- wikidata: https://www.wikidata.org/entity/Q2063
+mime:
+- application/json
+name:
+- '@en': JavaScript Object Notation (JSON)
+---
 ```
 
 The structure should become more concrete as `jsonid` is formalized.
