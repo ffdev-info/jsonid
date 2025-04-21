@@ -100,9 +100,8 @@ async def identify_json(paths: list[str], binary: bool):
                 print("---")
             res = registry.matcher(data)
             print(f"file: {path}")
-            print("identifiers:")
             for item in res:
-                print("  ", item)
+                print(item)
             print("---")
 
 

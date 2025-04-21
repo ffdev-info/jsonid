@@ -3,6 +3,8 @@
 from dataclasses import dataclass, field
 from typing import Final, Optional
 
+import yaml
+
 JSON_ID: Final[int] = "jrid:0000"
 
 
@@ -34,14 +36,37 @@ class RegistryEntry:  # pylint: disable=R0902
     def __str__(self):
         """Return summary string."""
         if self.identifier == JSON_ID:
-            return f"""{self.identifier}:
-        name: {self.name}
-        pronom: {self.pronom}
-        depth: {self.depth}
-        additional: {self.additional}""".strip()
-        return f"""{self.identifier}:
-      name: {self.name}
-      pronom: {self.pronom}""".strip()
+            data = {
+                "identifiers": [
+                    {"rfc": self.rfc},
+                    {"pronom": self.pronom},
+                    {"loc": self.loc},
+                    {"wikidata": self.wikidata},
+                ],
+                "documentation": [
+                    {"archive_team": self.archive_team},
+                ],
+                "mime": self.mime,
+                "name": self.name,
+                "depth": self.depth,
+                "additional": self.additional,
+            }
+            return yaml.dump(data, indent=2, allow_unicode=True).strip()
+        data = {
+            "identifiers": [
+                {"rfc": self.rfc},
+                {"pronom": self.pronom},
+                {"loc": self.loc},
+                {"wikidata": self.wikidata},
+            ],
+            "documentation": [
+                {"archive_team": self.archive_team},
+            ],
+            "mime": self.mime,
+            "name": self.name,
+            "additional": self.additional,
+        }
+        return yaml.dump(data, indent=2, allow_unicode=True).strip()
 
     def json(self):
         """Override default __dict__ behavior."""
@@ -276,12 +301,14 @@ _registry = [
     ),
     RegistryEntry(
         identifier="jrid:0021",
-        name=[{"@en": "tweet data"}],
+        name=[{"@en": "Tweet Object"}],
         pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/1311",
         wikidata="https://www.wikidata.org/entity/Q85415600",
         markers=[
-            {"KEY": "id_str", "EXISTS": None},
-            {"KEY": "retweeted", "EXISTS": None},
+            {"KEY": "created_at", "ISTYPE": str},
+            {"KEY": "id", "ISTYPE": int},
+            {"KEY": "id_str", "ISTYPE": str},
+            {"KEY": "user", "ISTYPE": dict},
         ],
     ),
     RegistryEntry(
