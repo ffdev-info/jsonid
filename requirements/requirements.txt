@@ -1,1 +1,3 @@
 # requirements for the production project.
+
+PyYAML==6.0.2
