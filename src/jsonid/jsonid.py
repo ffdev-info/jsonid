@@ -13,14 +13,15 @@ from datetime import timezone
 from typing import Tuple
 
 try:
+    import export
     import helpers
     import registry
     import version
 except ModuleNotFoundError:
     try:
-        from src.jsonid import helpers, registry, version
+        from src.jsonid import export, helpers, registry, version
     except ModuleNotFoundError:
-        from jsonid import helpers, registry, version
+        from jsonid import export, helpers, registry, version
 
 
 # Set up logging.
@@ -162,7 +163,7 @@ def main() -> None:
     parser.add_argument(
         "--path",
         help="file path to process",
-        required=True,
+        required=False,
     )
     parser.add_argument(
         "--binary",
@@ -184,6 +185,7 @@ def main() -> None:
         "--export",
         help="export the embedded registry",
         required=False,
+        action="store_true",
     )
     parser.add_argument(
         "--language",
@@ -200,7 +202,8 @@ def main() -> None:
     if args.language:
         raise NotImplementedError("multiple languages are not yet implemented")
     if args.export:
-        raise NotImplementedError("registry export is not yet implemented")
+        export.exportJSON()
+        sys.exit()
     asyncio.run(
         process_data(
             path=args.path,

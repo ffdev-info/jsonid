@@ -43,6 +43,31 @@ class RegistryEntry:  # pylint: disable=R0902
       name: {self.name}
       pronom: {self.pronom}""".strip()
 
+    def json(self):
+        """Override default __dict__ behavior."""
+        obj = self
+        new_markers = []
+        for marker in obj.markers:
+            try:
+                replace_me = marker["ISTYPE"]
+                if isinstance(replace_me, type):
+                    if replace_me.__name__ == "dict":
+                        replace_me = "map"
+                    elif replace_me.__name__ == "int":
+                        replace_me = "integer"
+                    elif replace_me.__name__ == "list":
+                        replace_me = "list"
+                    elif replace_me.__name__ == "str":
+                        replace_me = "string"
+                marker["ISTYPE"] = replace_me
+                new_markers.append(marker)
+            except KeyError:
+                pass
+        if not new_markers:
+            return obj.__dict__
+        obj.markers = new_markers
+        return obj.__dict__
+
 
 _registry = [
     RegistryEntry(
