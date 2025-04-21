@@ -16,7 +16,8 @@ except ModuleNotFoundError:
 
 logger = logging.getLogger(__name__)
 
-def exportJSON() -> None:
+
+def exportJSON() -> None:  # pylint: disable=C0103
     """Export to JSON."""
     logger.debug("exporting registry ad JSON")
     data = registry_data.registry()
@@ -24,7 +25,11 @@ def exportJSON() -> None:
     id_ = {
         "jsonid": version.get_version(),
         "entries": len(data),
-        "timestamp": int(str(datetime.datetime.now(timezone.utc).timestamp()).split(".")[0]),
+        "timestamp": int(
+            str(datetime.datetime.now(timezone.utc).timestamp()).split(".", maxsplit=1)[
+                0
+            ]
+        ),
     }
     json_obj.append(id_)
     for datum in data:
