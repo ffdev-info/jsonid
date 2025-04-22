@@ -5,7 +5,7 @@
 We as members, contributors, and leaders pledge to make participation in our
 community a harassment-free experience for everyone, regardless of age, body
 size, visible or invisible disability, ethnicity, sex characteristics, gender
-identity and expression, level of experience, education, socio-economic status,
+identity and expression, level of experience, education, socioeconomic status,
 nationality, personal appearance, race, religion, or sexual identity
 and orientation.
 
@@ -60,7 +60,7 @@ representative at an online or offline event.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the community leaders responsible for enforcement at
-all.along.the.watchtower2001+github@gmail.com.
+[all.along.the.watchtower2001+github@gmail.com][mailto-1].
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the
@@ -116,7 +116,7 @@ the community.
 
 This Code of Conduct is adapted from the [Contributor Covenant][homepage],
 version 2.0, available at
-https://www.contributor-covenant.org/version/2/0/code_of_conduct.html.
+[https://www.contributor-covenant.org/version/2/0/code_of_conduct.html][cc-1].
 
 Community Impact Guidelines were inspired by [Mozilla's code of conduct
 enforcement ladder](https://github.com/mozilla/diversity).
@@ -124,5 +124,10 @@ enforcement ladder](https://github.com/mozilla/diversity).
 [homepage]: https://www.contributor-covenant.org
 
 For answers to common questions about this code of conduct, see the FAQ at
-https://www.contributor-covenant.org/faq. Translations are available at
-https://www.contributor-covenant.org/translations.
+[https://www.contributor-covenant.org/faq][cc-2]. Translations are available at
+[https://www.contributor-covenant.org/translations][cc-3].
+
+[mailto-1]: all.along.the.watchtower2001+github@gmail.com
+[cc-1]: https://www.contributor-covenant.org/version/2/0/code_of_conduct.html
+[cc-2]: https://www.contributor-covenant.org/faq
+[cc-3]: https://www.contributor-covenant.org/translations
