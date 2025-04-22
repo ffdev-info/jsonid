@@ -80,7 +80,7 @@ such as YAML, and TOML in future.
 `jsonid` currently defines a small set of rules that help us to identify JSON
 documents.
 
-The rules are described in theur own data-structures. The structures are
+The rules are described in their own data-structures. The structures are
 processed as a list (they need not necessarily be in order) and each must
 match for a given set of ruls to determine what kind of JSON document we might
 be looking at.
