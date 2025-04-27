@@ -243,6 +243,14 @@ name:
 
 The structure should become more concrete as `jsonid` is formalized.
 
+## Utils
+
+UTF-16 can be difficult to read as UTF-16 uses two bytes per every one, e.g.
+`..{.".a.".:. .".b.".}.` is simply `{"a": "b"}`. The utility `json2json.py`
+in the utils folder will output UTF-16 as UTF-8 so that signatures can be
+more easily derived. A signature derived for UTF-16 looks exactly the same
+as UTF-8.
+
 ----
 
 ## Developer install
