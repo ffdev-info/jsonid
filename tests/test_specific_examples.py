@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from src.jsonid import registry, registry_data
+from src.jsonid import jsonid, registry, registry_data
 
 specific_registry = [
     registry_data.RegistryEntry(
@@ -83,3 +83,37 @@ specific_tests = [
 def test_get_depth(depth_test, expected_depth):
     """Assert depth tests work."""
     assert registry.get_depth(depth_test) == expected_depth
+
+
+@pytest.mark.asyncio
+async def test_utf16(tmp_path):
+    """Test UTF-16 handling by mocking the BOM but then not providing
+    any valid JSON data."""
+
+    json_data = '{"a": "b"}'
+    dir_ = tmp_path / "jsonid-utf16"
+    dir_.mkdir()
+    file_ = dir_ / "utftest.json"
+    file_.write_text(json_data, encoding="utf-16")
+
+    res = await jsonid.identify_plaintext_bytestream(file_)
+    assert res == (True, {"a": "b"})
+
+    json_data = '{"a": "b"'
+    dir_ = tmp_path / "jsonid-utf16-broken"
+    dir_.mkdir()
+    file_ = dir_ / "utftest.json"
+    file_.write_text(json_data, encoding="utf-16")
+
+    res = await jsonid.identify_plaintext_bytestream(file_)
+    assert res == (False, None)
+
+    json_data = '{"a": "b"}'
+    dir_ = tmp_path / "jsonid-utf16LE"
+    dir_.mkdir()
+    file_ = dir_ / "utftest.json"
+    file_.write_text(json_data, encoding="UTF-16LE")
+
+    res = await jsonid.identify_plaintext_bytestream(file_)
+    print(res)
+    assert res == (True, {"a": "b"})

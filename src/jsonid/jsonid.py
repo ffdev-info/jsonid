@@ -47,7 +47,7 @@ def decode(content: str):
     try:
         data = json.loads(content)
     except json.decoder.JSONDecodeError as err:
-        logger.debug("can't process: %s", err)
+        logger.debug("(decode) can't process: %s", err)
         return False, None
     return True, data
 
@@ -58,13 +58,30 @@ async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str]:
     processed as JSON.
     """
     logger.debug("attempting to open: %s", path)
-    with open(path, "r", encoding="utf-8") as obj:
+    valid = False
+    with open(path, "r", encoding="UTF-8") as obj:
+        try:
+            content = obj.read()
+            valid, data = decode(content)
+        except UnicodeDecodeError as err:
+            logger.debug("(UTF-8) can't process: '%s' as UTF-8", err)
+    if valid:
+        return valid, data
+    with open(path, "r", encoding="UTF-16") as obj:
+        try:
+            content = obj.read()
+            valid, data = decode(content)
+        except UnicodeError as err:
+            logger.debug("(UTF-16) can't process: '%s' as UTF-16", err)
+    if valid:
+        return valid, data
+    with open(path, "r", encoding="UTF-16LE") as obj:
         try:
             content = obj.read()
             return decode(content)
         except UnicodeDecodeError as err:
-            logger.debug("can't process: %s", err)
-            return False, None
+            logger.debug("(UTF-16LE) can't process: '%s' as UTF-16LE", err)
+    return False, None
 
 
 def get_date_time() -> str:

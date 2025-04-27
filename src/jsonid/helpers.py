@@ -28,7 +28,7 @@ def timeit(func):
         result = await func(*args, **kwargs)
         end = time.perf_counter()
         elapsed = end - start
-        func_name = _function_name(str(func))
+        func_name = _function_name(str(func)).strip()
         # pylint: disable=W1203
         logger.debug(f"Time taken: {elapsed:.6f} seconds ({func_name}())")
         return result
