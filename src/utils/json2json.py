@@ -54,6 +54,8 @@ async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str]:
             return True, json_data
         except UnicodeDecodeError:
             pass
+        except json.decoder.JSONDecodeError:
+            pass
     return False, None
 
 

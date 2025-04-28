@@ -39,6 +39,7 @@ dependencies = {file = ["requirements/requirements.txt"]}
 [project.scripts]
 jsonid = "jsonid.jsonid:main"
 momoa = "jsonid.jsonid:main"
+json2json = "utils.json2json:main"
 
 [build-system]
 requires = ["setuptools>=74.0.0", "wheel>=0.44.0", "setuptools_scm[toml]>=8.1.0"]
