@@ -339,7 +339,7 @@ git push origin 1.0.0-rc.1
 When you build, a package will be created with the correct version:
 
 ```sh
-make package-source
+just package-source
 ### build process here ###
 Successfully built python_repo_jsonid-1.0.0rc1.tar.gz and python_repo_jsonid-1.0.0rc1-py3-none-any.whl
 ```
@@ -349,7 +349,7 @@ Successfully built python_repo_jsonid-1.0.0rc1.tar.gz and python_repo_jsonid-1.0
 To create a python wheel for testing locally, or distributing to colleagues
 run:
 
-* `make package-source`
+* `just package-source`
 
 A `tar` and `whl` file will be stored in a `dist/` directory. The `whl` file
 can be installed as follows:
@@ -360,12 +360,12 @@ can be installed as follows:
 
 Publishing for public use can be achieved with:
 
-* `make package-upload-test` or `make package-upload`
+* `just package-upload-test` or `just package-upload`
 
-`make-package-upload-test` will upload the package to [test.pypi.org][pypi-1]
+`just-package-upload-test` will upload the package to [test.pypi.org][pypi-1]
 which provides a way to look at package metadata and documentation and ensure
 that it is correct before uploading to the official [pypi.org][pypi-2]
-repository using `make package-upload`.
+repository using `just package-upload`.
 
 [pypi-1]: https://test.pypi.org
 [pypi-2]: https://pypi.org
