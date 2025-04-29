@@ -112,8 +112,8 @@ async def process_data(path: str):
 def main() -> None:
     """Primary entry point for this script."""
     parser = argparse.ArgumentParser(
-        prog="json-id",
-        description="proof-of-concept identifier for JSON objects on disk based on identifying valid objects and their key-values",
+        prog="json2json",
+        description="parse JSON UTF-16 (BE-LE) objects and output them as UTF-8 for the sake of developer ergonomics",
         epilog="for more information visit https://github.com/ffdev-info/json-id",
     )
     parser.add_argument(
