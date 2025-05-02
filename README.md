@@ -7,7 +7,7 @@
     width="200px" />
 <!-- markdownlint-enable -->
 
-[ison][json-1](ID)entification tool, and ruleset. `jsonid` can be downloaded via
+[JSON][json-1]IDentification tool, and ruleset. `jsonid` can be downloaded via
 PyPi: [here][pypi-download-1].
 
 [json-1]: https://www.json.org/json-en.html
@@ -140,7 +140,13 @@ The registry is a work in progress and must be exported and
 rewritten somewhere more centralized (and easier to manage) if `jsonid` can
 prove useful to the communities that might use it (*see notes on PRONOM below*).
 
-The registry can be read via the source code here:
+The registry web-page is here:
+
+* [jsonid registry][registry-htm-1].
+
+[registry-htm-1]: https://ffdev-info.github.io/jsonid/registry/
+
+The registry's source is here:
 
 * [Registry](https://github.com/ffdev-info/jsonid/blob/main/src/jsonid/registry_data.py).
 
@@ -257,6 +263,12 @@ as UTF-8.
 find it in [src.utils][json2json-1].
 
 [json2json-1]: src/utils/json2json.py
+
+## Docs
+
+Dev docs are [available][dev-docs-1].
+
+[dev-docs-1]: https://ffdev-info.github.io/jsonid/jsonid/
 
 ----
 
