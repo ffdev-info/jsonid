@@ -729,6 +729,15 @@ _registry = [
             {"KEY": "panels", "ISTYPE": list},
         ],
     ),
+    RegistryEntry(
+        identifier="jrid:0058",
+        name=[{"@en": "Power Bi DataModelSchema"}],
+        markers=[
+            {"KEY": "name", "ISTYPE": str},
+            {"KEY": "compatibilityLevel", "ISTYPE": int},
+            {"GOTO": "model", "KEY": "defaultPowerBIDataSourceVersion", "ISTYPE": str},
+        ],
+    ),
 ]
 
 
