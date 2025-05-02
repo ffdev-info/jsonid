@@ -183,7 +183,7 @@ def process_markers(registry_entry: registry_data.RegistryEntry, data: dict) -> 
     return True
 
 
-def matcher(data: dict) -> list:
+def matcher(data: dict, encoding: str = "") -> list:
     """Matcher for registry objects"""
     logger.debug("type: '%s'", type(data))
     if isinstance(data, str):
@@ -202,6 +202,7 @@ def matcher(data: dict) -> list:
                 continue
             if registry_entry in matches:
                 continue
+            registry_entry.encoding = encoding
             matches.append(registry_entry)
         except TypeError as err:
             logger.debug("%s", err)
@@ -211,6 +212,7 @@ def matcher(data: dict) -> list:
         json_only = JSON_ONLY
         json_only.depth = get_depth(data)
         json_only.additional = additional
+        json_only.encoding = encoding
         return [json_only]
     logger.debug(matches)
     return matches

@@ -27,6 +27,7 @@ class RegistryEntry:  # pylint: disable=R0902
     markers: list[dict] = field(default_factory=list)
     depth: int = 0
     additional: str = ""
+    encoding: str = ""
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -50,6 +51,7 @@ class RegistryEntry:  # pylint: disable=R0902
                 "name": self.name,
                 "depth": self.depth,
                 "additional": self.additional,
+                "encoding": self.encoding,
             }
             return yaml.dump(data, indent=2, allow_unicode=True).strip()
         data = {
@@ -65,6 +67,7 @@ class RegistryEntry:  # pylint: disable=R0902
             "mime": self.mime,
             "name": self.name,
             "additional": self.additional,
+            "encoding": self.encoding,
         }
         return yaml.dump(data, indent=2, allow_unicode=True).strip()
 

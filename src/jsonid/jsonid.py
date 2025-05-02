@@ -10,7 +10,7 @@ import os
 import sys
 import time
 from datetime import timezone
-from typing import Tuple
+from typing import Final, Tuple
 
 try:
     import export
@@ -59,29 +59,31 @@ async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str]:
     """
     logger.debug("attempting to open: %s", path)
     valid = False
-    with open(path, "r", encoding="UTF-8") as obj:
-        try:
-            content = obj.read()
-            valid, data = decode(content)
-        except UnicodeDecodeError as err:
-            logger.debug("(UTF-8) can't process: '%s' as UTF-8", err)
-    if valid:
-        return valid, data
-    with open(path, "r", encoding="UTF-16") as obj:
-        try:
-            content = obj.read()
-            valid, data = decode(content)
-        except UnicodeError as err:
-            logger.debug("(UTF-16) can't process: '%s' as UTF-16", err)
-    if valid:
-        return valid, data
-    with open(path, "r", encoding="UTF-16LE") as obj:
-        try:
-            content = obj.read()
-            return decode(content)
-        except UnicodeDecodeError as err:
-            logger.debug("(UTF-16LE) can't process: '%s' as UTF-16LE", err)
-    return False, None
+
+    supported_encodings: Final[list] = [
+        "UTF-8",
+        "UTF-16",
+        "UTF-16LE",
+        "UTF-16BE",
+        "UTF-32",
+        "UTF-32LE",
+        "UTF-32BE",
+    ]
+
+    for encoding in supported_encodings:
+        logger.debug("attempting to open as: %s", encoding)
+        with open(path, "r", encoding=encoding) as obj:
+            try:
+                content = obj.read()
+                valid, data = decode(content)
+            except UnicodeDecodeError as err:
+                logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
+            except UnicodeError as err:
+                logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
+        if valid:
+            return valid, data, encoding
+
+    return False, None, None
 
 
 def get_date_time() -> str:
@@ -103,7 +105,7 @@ async def identify_json(paths: list[str], binary: bool):
             if binary:
                 logger.warning("report on binary object...")
             continue
-        valid, data = await identify_plaintext_bytestream(path)
+        valid, data, encoding = await identify_plaintext_bytestream(path)
         if not valid:
             logger.debug("%s: is not plaintext", path)
             if binary:
@@ -115,7 +117,7 @@ async def identify_json(paths: list[str], binary: bool):
                 print("---")
                 print(version_header())
                 print("---")
-            res = registry.matcher(data)
+            res = registry.matcher(data, encoding=encoding)
             print(f"file: {path}")
             for item in res:
                 print(item)
