@@ -23,6 +23,7 @@ ignore-patterns=
     ^(.+).svg,
     ^(.+).html,
     ^(.+).png,
+    ^(.+).htm,
     ^\.,
 
 ignore-paths=

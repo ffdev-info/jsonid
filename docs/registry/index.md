@@ -1,3 +1,0 @@
-# Regsitry
-
-Placeholder content.
