@@ -714,6 +714,18 @@ _registry = [
             {"KEY": "metadata", "EXISTS": None},
         ],
     ),
+    RegistryEntry(
+        identifier="jrid:0057",
+        name=[{"@en": "Grafana Dashboard Configuration"}],
+        markers=[
+            {"KEY": "uid", "ISTYPE": str},
+            {"KEY": "title", "ISTYPE": str},
+            {"KEY": "tags", "ISTYPE": list},
+            {"KEY": "schemaVersion", "ISTYPE": int},
+            {"KEY": "version", "ISTYPE": int},
+            {"KEY": "panels", "ISTYPE": list},
+        ],
+    ),
 ]
 
 
