@@ -125,6 +125,7 @@ _registry = [
     registry_class.RegistryEntry(
         identifier="jrid:0012",
         name=[{"@en": "sops encrypted secrets file"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/SOPS",
         markers=[
             {"KEY": "sops", "EXISTS": None},
             {"GOTO": "sops", "KEY": "kms", "EXISTS": None},
@@ -152,6 +153,7 @@ _registry = [
         identifier="jrid:0015",
         name=[{"@en": "google link file"}],
         pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/1073",
+        wikidata="http://www.wikidata.org/entity/Q105856848",
         markers=[
             {"KEY": "url", "STARTSWITH": "https://docs.google.com/open"},
         ],
@@ -178,9 +180,8 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0018",
-        name=[
-            {"@en": "jacker song: http://fileformats.archiveteam.org/wiki/Jacker_song"}
-        ],
+        name=[{"@en": "jacker song"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/Jacker_song",
         description=[{"@en": "via"}],
         markers=[
             {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
@@ -206,6 +207,7 @@ _registry = [
         name=[
             {"@en": "GL Transmission Format: GLTF runtime 3D asset library (Generic)"}
         ],
+        archive_team="http://fileformats.archiveteam.org/wiki/GlTF",
         markers=[
             {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
             {"KEY": "$schema", "ENDSWIWITH": "/schema#"},
@@ -384,6 +386,7 @@ _registry = [
         archive_team="http://fileformats.archiveteam.org/wiki/GeoJSON",
         rfc="https://datatracker.ietf.org/doc/html/rfc7946",
         loc="https://www.loc.gov/preservation/digital/formats/fdd/fdd000382.shtml",
+        wikidata="http://www.wikidata.org/entity/Q5533904",
         mime="application/vnd.geo+json",
         markers=[
             {"KEY": "type", "IS": "Feature"},
@@ -407,6 +410,7 @@ _registry = [
         identifier="jrid:0039",
         name=[{"@en": "HAR (HTTP Archive) (Generic)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/HAR",
+        wikidata="http://www.wikidata.org/entity/Q13422998",
         markers=[
             {"GOTO": "log", "KEY": "version", "ISTYPE": str},
             {"GOTO": "log", "KEY": "creator", "ISTYPE": dict},
@@ -428,6 +432,7 @@ _registry = [
         identifier="jrid:0041",
         name=[{"@en": "Max (Interactive Software) .maxpat JSON (Generic)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/Max",
+        wikidata="http://www.wikidata.org/entity/Q105862509",
         markers=[
             {"GOTO": "patcher", "KEY": "fileversion", "EXISTS": None},
             {"GOTO": "patcher", "KEY": "appversion", "ISTYPE": dict},
@@ -572,6 +577,7 @@ _registry = [
         identifier="jrid:0052",
         name=[{"@en": "ipuz: open format for puzzles"}],
         archive_team="http://fileformats.archiveteam.org/wiki/IPUZ",
+        wikidata="http://www.wikidata.org/entity/Q105857590",
         markers=[
             {"KEY": "version", "STARTSWITH": "http://ipuz.org/"},
             {"KEY": "kind", "ISTYPE": list},
