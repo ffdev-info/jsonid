@@ -115,7 +115,7 @@ el.replaceWith(d);
             if binary:
                 logger.warning(&#34;report on binary object...&#34;)
             continue
-        valid, data = await identify_plaintext_bytestream(path)
+        valid, data, encoding = await identify_plaintext_bytestream(path)
         if not valid:
             logger.debug(&#34;%s: is not plaintext&#34;, path)
             if binary:
@@ -127,7 +127,7 @@ el.replaceWith(d);
                 print(&#34;---&#34;)
                 print(version_header())
                 print(&#34;---&#34;)
-            res = registry.matcher(data)
+            res = registry.matcher(data, encoding=encoding)
             print(f&#34;file: {path}&#34;)
             for item in res:
                 print(item)
@@ -158,6 +158,8 @@ el.replaceWith(d);
     )
     parser.add_argument(
         &#34;--path&#34;,
+        &#34;--paths&#34;,
+        &#34;-p&#34;,
         help=&#34;file path to process&#34;,
         required=False,
     )
@@ -190,6 +192,12 @@ el.replaceWith(d);
         action=&#34;store_true&#34;,
     )
     parser.add_argument(
+        &#34;--html&#34;,
+        help=&#34;output the registry as html&#34;,
+        required=False,
+        action=&#34;store_true&#34;,
+    )
+    parser.add_argument(
         &#34;--language&#34;,
         help=&#34;return results in different languages&#34;,
         required=False,
@@ -210,6 +218,9 @@ el.replaceWith(d);
         if not helpers.entry_check():
             logger.error(&#34;registry entries are not correct&#34;)
             sys.exit(1)
+        sys.exit()
+    if args.html:
+        helpers.html()
         sys.exit()
     if not args.path:
         parser.print_help(sys.stderr)

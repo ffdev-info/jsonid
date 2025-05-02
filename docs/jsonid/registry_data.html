@@ -46,14 +46,14 @@ el.replaceWith(d);
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="src.jsonid.registry_data.registry"><code class="name flex">
-<span>def <span class="ident">registry</span></span>(<span>) ‑> list[<a title="src.jsonid.registry_data.RegistryEntry" href="#src.jsonid.registry_data.RegistryEntry">RegistryEntry</a>]</span>
+<span>def <span class="ident">registry</span></span>(<span>) ‑> list[<a title="src.jsonid.registry_class.RegistryEntry" href="registry_class.html#src.jsonid.registry_class.RegistryEntry">RegistryEntry</a>]</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def registry() -&gt; list[RegistryEntry]:
+<pre><code class="python">def registry() -&gt; list[registry_class.RegistryEntry]:
     &#34;&#34;&#34;Return a registry object to the caller.&#34;&#34;&#34;
     return _registry</code></pre>
 </details>
@@ -62,199 +62,6 @@ el.replaceWith(d);
 </dl>
 </section>
 <section>
-<h2 class="section-title" id="header-classes">Classes</h2>
-<dl>
-<dt id="src.jsonid.registry_data.RegistryEntry"><code class="flex name class">
-<span>class <span class="ident">RegistryEntry</span></span>
-<span>(</span><span>identifier: str = '',<br>name: list = &lt;factory&gt;,<br>version: str | None = None,<br>description: list = &lt;factory&gt;,<br>pronom: str = '',<br>wikidata: str = '',<br>loc: str = '',<br>archive_team: str = '',<br>rfc: str = '',<br>mime: list[str] = &lt;factory&gt;,<br>markers: list[dict] = &lt;factory&gt;,<br>depth: int = 0,<br>additional: str = '')</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@dataclass
-class RegistryEntry:  # pylint: disable=R0902
-    &#34;&#34;&#34;Class that represents information that might be derived from
-    a registry.
-    &#34;&#34;&#34;
-
-    identifier: str = &#34;&#34;
-    name: list = field(default_factory=list)
-    version: Optional[str | None] = None
-    description: list = field(default_factory=list)
-    pronom: str = &#34;&#34;
-    wikidata: str = &#34;&#34;
-    loc: str = &#34;&#34;
-    archive_team: str = &#34;&#34;
-    rfc: str = &#34;&#34;
-    mime: list[str] = field(default_factory=list)
-    markers: list[dict] = field(default_factory=list)
-    depth: int = 0
-    additional: str = &#34;&#34;
-
-    def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            return self.__dict__ == other.__dict__
-        return False
-
-    def __str__(self):
-        &#34;&#34;&#34;Return summary string.&#34;&#34;&#34;
-        if self.identifier == JSON_ID:
-            data = {
-                &#34;identifiers&#34;: [
-                    {&#34;rfc&#34;: self.rfc},
-                    {&#34;pronom&#34;: self.pronom},
-                    {&#34;loc&#34;: self.loc},
-                    {&#34;wikidata&#34;: self.wikidata},
-                ],
-                &#34;documentation&#34;: [
-                    {&#34;archive_team&#34;: self.archive_team},
-                ],
-                &#34;mime&#34;: self.mime,
-                &#34;name&#34;: self.name,
-                &#34;depth&#34;: self.depth,
-                &#34;additional&#34;: self.additional,
-            }
-            return yaml.dump(data, indent=2, allow_unicode=True).strip()
-        data = {
-            &#34;identifiers&#34;: [
-                {&#34;rfc&#34;: self.rfc},
-                {&#34;pronom&#34;: self.pronom},
-                {&#34;loc&#34;: self.loc},
-                {&#34;wikidata&#34;: self.wikidata},
-            ],
-            &#34;documentation&#34;: [
-                {&#34;archive_team&#34;: self.archive_team},
-            ],
-            &#34;mime&#34;: self.mime,
-            &#34;name&#34;: self.name,
-            &#34;additional&#34;: self.additional,
-        }
-        return yaml.dump(data, indent=2, allow_unicode=True).strip()
-
-    def json(self):
-        &#34;&#34;&#34;Override default __dict__ behavior.&#34;&#34;&#34;
-        obj = self
-        new_markers = []
-        for marker in obj.markers:
-            try:
-                replace_me = marker[&#34;ISTYPE&#34;]
-                if isinstance(replace_me, type):
-                    if replace_me.__name__ == &#34;dict&#34;:
-                        replace_me = &#34;map&#34;
-                    elif replace_me.__name__ == &#34;int&#34;:
-                        replace_me = &#34;integer&#34;
-                    elif replace_me.__name__ == &#34;list&#34;:
-                        replace_me = &#34;list&#34;
-                    elif replace_me.__name__ == &#34;str&#34;:
-                        replace_me = &#34;string&#34;
-                marker[&#34;ISTYPE&#34;] = replace_me
-                new_markers.append(marker)
-            except KeyError:
-                pass
-        if not new_markers:
-            return obj.__dict__
-        obj.markers = new_markers
-        return obj.__dict__</code></pre>
-</details>
-<div class="desc"><p>Class that represents information that might be derived from
-a registry.</p></div>
-<h3>Instance variables</h3>
-<dl>
-<dt id="src.jsonid.registry_data.RegistryEntry.additional"><code class="name">var <span class="ident">additional</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.registry_data.RegistryEntry.archive_team"><code class="name">var <span class="ident">archive_team</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.registry_data.RegistryEntry.depth"><code class="name">var <span class="ident">depth</span> : int</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.registry_data.RegistryEntry.description"><code class="name">var <span class="ident">description</span> : list</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.registry_data.RegistryEntry.identifier"><code class="name">var <span class="ident">identifier</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.registry_data.RegistryEntry.loc"><code class="name">var <span class="ident">loc</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.registry_data.RegistryEntry.markers"><code class="name">var <span class="ident">markers</span> : list[dict]</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.registry_data.RegistryEntry.mime"><code class="name">var <span class="ident">mime</span> : list[str]</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.registry_data.RegistryEntry.name"><code class="name">var <span class="ident">name</span> : list</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.registry_data.RegistryEntry.pronom"><code class="name">var <span class="ident">pronom</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.registry_data.RegistryEntry.rfc"><code class="name">var <span class="ident">rfc</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.registry_data.RegistryEntry.version"><code class="name">var <span class="ident">version</span> : str | None</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.registry_data.RegistryEntry.wikidata"><code class="name">var <span class="ident">wikidata</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-</dl>
-<h3>Methods</h3>
-<dl>
-<dt id="src.jsonid.registry_data.RegistryEntry.json"><code class="name flex">
-<span>def <span class="ident">json</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def json(self):
-    &#34;&#34;&#34;Override default __dict__ behavior.&#34;&#34;&#34;
-    obj = self
-    new_markers = []
-    for marker in obj.markers:
-        try:
-            replace_me = marker[&#34;ISTYPE&#34;]
-            if isinstance(replace_me, type):
-                if replace_me.__name__ == &#34;dict&#34;:
-                    replace_me = &#34;map&#34;
-                elif replace_me.__name__ == &#34;int&#34;:
-                    replace_me = &#34;integer&#34;
-                elif replace_me.__name__ == &#34;list&#34;:
-                    replace_me = &#34;list&#34;
-                elif replace_me.__name__ == &#34;str&#34;:
-                    replace_me = &#34;string&#34;
-            marker[&#34;ISTYPE&#34;] = replace_me
-            new_markers.append(marker)
-        except KeyError:
-            pass
-    if not new_markers:
-        return obj.__dict__
-    obj.markers = new_markers
-    return obj.__dict__</code></pre>
-</details>
-<div class="desc"><p>Override default <strong>dict</strong> behavior.</p></div>
-</dd>
-</dl>
-</dd>
-</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -270,29 +77,6 @@ a registry.</p></div>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="src.jsonid.registry_data.registry" href="#src.jsonid.registry_data.registry">registry</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-classes">Classes</a></h3>
-<ul>
-<li>
-<h4><code><a title="src.jsonid.registry_data.RegistryEntry" href="#src.jsonid.registry_data.RegistryEntry">RegistryEntry</a></code></h4>
-<ul class="two-column">
-<li><code><a title="src.jsonid.registry_data.RegistryEntry.additional" href="#src.jsonid.registry_data.RegistryEntry.additional">additional</a></code></li>
-<li><code><a title="src.jsonid.registry_data.RegistryEntry.archive_team" href="#src.jsonid.registry_data.RegistryEntry.archive_team">archive_team</a></code></li>
-<li><code><a title="src.jsonid.registry_data.RegistryEntry.depth" href="#src.jsonid.registry_data.RegistryEntry.depth">depth</a></code></li>
-<li><code><a title="src.jsonid.registry_data.RegistryEntry.description" href="#src.jsonid.registry_data.RegistryEntry.description">description</a></code></li>
-<li><code><a title="src.jsonid.registry_data.RegistryEntry.identifier" href="#src.jsonid.registry_data.RegistryEntry.identifier">identifier</a></code></li>
-<li><code><a title="src.jsonid.registry_data.RegistryEntry.json" href="#src.jsonid.registry_data.RegistryEntry.json">json</a></code></li>
-<li><code><a title="src.jsonid.registry_data.RegistryEntry.loc" href="#src.jsonid.registry_data.RegistryEntry.loc">loc</a></code></li>
-<li><code><a title="src.jsonid.registry_data.RegistryEntry.markers" href="#src.jsonid.registry_data.RegistryEntry.markers">markers</a></code></li>
-<li><code><a title="src.jsonid.registry_data.RegistryEntry.mime" href="#src.jsonid.registry_data.RegistryEntry.mime">mime</a></code></li>
-<li><code><a title="src.jsonid.registry_data.RegistryEntry.name" href="#src.jsonid.registry_data.RegistryEntry.name">name</a></code></li>
-<li><code><a title="src.jsonid.registry_data.RegistryEntry.pronom" href="#src.jsonid.registry_data.RegistryEntry.pronom">pronom</a></code></li>
-<li><code><a title="src.jsonid.registry_data.RegistryEntry.rfc" href="#src.jsonid.registry_data.RegistryEntry.rfc">rfc</a></code></li>
-<li><code><a title="src.jsonid.registry_data.RegistryEntry.version" href="#src.jsonid.registry_data.RegistryEntry.version">version</a></code></li>
-<li><code><a title="src.jsonid.registry_data.RegistryEntry.wikidata" href="#src.jsonid.registry_data.RegistryEntry.wikidata">wikidata</a></code></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>

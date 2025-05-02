@@ -111,14 +111,14 @@ we encountered.</p></div>
 </code></pre></div>
 </dd>
 <dt id="src.jsonid.registry.matcher"><code class="name flex">
-<span>def <span class="ident">matcher</span></span>(<span>data: dict) ‑> list</span>
+<span>def <span class="ident">matcher</span></span>(<span>data: dict, encoding: str = '') ‑> list</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def matcher(data: dict) -&gt; list:
+<pre><code class="python">def matcher(data: dict, encoding: str = &#34;&#34;) -&gt; list:
     &#34;&#34;&#34;Matcher for registry objects&#34;&#34;&#34;
     logger.debug(&#34;type: &#39;%s&#39;&#34;, type(data))
     if isinstance(data, str):
@@ -137,6 +137,7 @@ we encountered.</p></div>
                 continue
             if registry_entry in matches:
                 continue
+            registry_entry.encoding = encoding
             matches.append(registry_entry)
         except TypeError as err:
             logger.debug(&#34;%s&#34;, err)
@@ -146,6 +147,7 @@ we encountered.</p></div>
         json_only = JSON_ONLY
         json_only.depth = get_depth(data)
         json_only.additional = additional
+        json_only.encoding = encoding
         return [json_only]
     logger.debug(matches)
     return matches</code></pre>
@@ -153,14 +155,14 @@ we encountered.</p></div>
 <div class="desc"><p>Matcher for registry objects</p></div>
 </dd>
 <dt id="src.jsonid.registry.process_markers"><code class="name flex">
-<span>def <span class="ident">process_markers</span></span>(<span>registry_entry: <a title="src.jsonid.registry_data.RegistryEntry" href="registry_data.html#src.jsonid.registry_data.RegistryEntry">RegistryEntry</a>,<br>data: dict) ‑> bool</span>
+<span>def <span class="ident">process_markers</span></span>(<span>registry_entry: <a title="src.jsonid.registry_class.RegistryEntry" href="registry_class.html#src.jsonid.registry_class.RegistryEntry">RegistryEntry</a>,<br>data: dict) ‑> bool</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def process_markers(registry_entry: registry_data.RegistryEntry, data: dict) -&gt; bool:
+<pre><code class="python">def process_markers(registry_entry: registry_class.RegistryEntry, data: dict) -&gt; bool:
     &#34;&#34;&#34;Run through the markers for an entry in the registry.
     Attempt to exit early if there isn&#39;t a match.
     &#34;&#34;&#34;
@@ -175,7 +177,9 @@ we encountered.</p></div>
                 break
             except KeyError:
                 return False
+    top_level_pointer = data  # ensure we&#39;re always looking at top-level dict
     for marker in registry_entry.markers:
+        data = top_level_pointer
         try:
             _ = marker[registry_matchers.MARKER_GOTO]
             data = registry_matchers.at_goto(marker, data)

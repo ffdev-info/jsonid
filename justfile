@@ -38,10 +38,11 @@ package-upload: clean package-deps package-check
 package: package-upload
 
 # Generate documentation
-docs:
+docs: && htm
    rm -rf docs/*
    pdoc3 --force --html -o docs src/
    mv -f docs/src/* docs/.
+   mkdir docs/registry
    rm -rf docs/src
 
 # Export registry as HTM
