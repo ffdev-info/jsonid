@@ -1,104 +1,16 @@
 """JSON registry data."""
 
-from dataclasses import dataclass, field
-from typing import Final, Optional
-
-import yaml
-
-JSON_ID: Final[int] = "jrid:0000"
-
-
-@dataclass
-class RegistryEntry:  # pylint: disable=R0902
-    """Class that represents information that might be derived from
-    a registry.
-    """
-
-    identifier: str = ""
-    name: list = field(default_factory=list)
-    version: Optional[str | None] = None
-    description: list = field(default_factory=list)
-    pronom: str = ""
-    wikidata: str = ""
-    loc: str = ""
-    archive_team: str = ""
-    rfc: str = ""
-    mime: list[str] = field(default_factory=list)
-    markers: list[dict] = field(default_factory=list)
-    depth: int = 0
-    additional: str = ""
-    encoding: str = ""
-
-    def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            return self.__dict__ == other.__dict__
-        return False
-
-    def __str__(self):
-        """Return summary string."""
-        if self.identifier == JSON_ID:
-            data = {
-                "identifiers": [
-                    {"rfc": self.rfc},
-                    {"pronom": self.pronom},
-                    {"loc": self.loc},
-                    {"wikidata": self.wikidata},
-                ],
-                "documentation": [
-                    {"archive_team": self.archive_team},
-                ],
-                "mime": self.mime,
-                "name": self.name,
-                "depth": self.depth,
-                "additional": self.additional,
-                "encoding": self.encoding,
-            }
-            return yaml.dump(data, indent=2, allow_unicode=True).strip()
-        data = {
-            "identifiers": [
-                {"rfc": self.rfc},
-                {"pronom": self.pronom},
-                {"loc": self.loc},
-                {"wikidata": self.wikidata},
-            ],
-            "documentation": [
-                {"archive_team": self.archive_team},
-            ],
-            "mime": self.mime,
-            "name": self.name,
-            "additional": self.additional,
-            "encoding": self.encoding,
-        }
-        return yaml.dump(data, indent=2, allow_unicode=True).strip()
-
-    def json(self):
-        """Override default __dict__ behavior."""
-        obj = self
-        new_markers = []
-        for marker in obj.markers:
-            try:
-                replace_me = marker["ISTYPE"]
-                if isinstance(replace_me, type):
-                    if replace_me.__name__ == "dict":
-                        replace_me = "map"
-                    elif replace_me.__name__ == "int":
-                        replace_me = "integer"
-                    elif replace_me.__name__ == "list":
-                        replace_me = "list"
-                    elif replace_me.__name__ == "str":
-                        replace_me = "string"
-                marker["ISTYPE"] = replace_me
-                new_markers.append(marker)
-            except KeyError:
-                pass
-        if not new_markers:
-            return obj.__dict__
-        obj.markers = new_markers
-        return obj.__dict__
+try:
+    import registry_class
+except ModuleNotFoundError:
+    try:
+        from src.jsonid import registry_class
+    except ModuleNotFoundError:
+        from jsonid import registry_class
 
 
 _registry = [
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0001",
         name=[{"@en": "package lock file"}],
         description=[{"@en": "node manifest file manifestation"}],
@@ -108,7 +20,7 @@ _registry = [
             {"KEY": "packages", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0002",
         name=[{"@en": "ocfl inventory (all versions)"}],
         description=[{"@en": "ocfl inventory file"}],
@@ -119,7 +31,7 @@ _registry = [
             {"KEY": "manifest", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0003",
         name=[{"@en": "gocfl config file"}],
         description=[{"@en": "gocfl config file"}],
@@ -127,7 +39,7 @@ _registry = [
             {"KEY": "extensionName", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0004",
         name=[{"@en": "dataverse dataset file"}],
         markers=[
@@ -137,7 +49,7 @@ _registry = [
             {"KEY": "identifier", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0005",
         name=[{"@en": "rocrate (all versions)"}],
         markers=[
@@ -145,7 +57,7 @@ _registry = [
             {"KEY": "@context", "ENDSWITH": "/context"},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0006",
         name=[{"@en": "ro-crate (1.1)"}],
         markers=[
@@ -158,7 +70,7 @@ _registry = [
             },
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0007",
         name=[{"@en": "json schema document"}],
         markers=[
@@ -167,7 +79,7 @@ _registry = [
             {"KEY": "$defs", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0008",
         name=[{"@en": "iiif image api (all versions)"}],
         markers=[
@@ -177,7 +89,7 @@ _registry = [
             {"KEY": "protocol", "IS": "http://iiif.io/api/image"},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0009",
         name=[{"@en": "JSON-LD (generic)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/JSON-LD",
@@ -186,7 +98,7 @@ _registry = [
             {"KEY": "id", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0010",
         name=[{"@en": "gocfl metafile metadata"}],
         markers=[
@@ -200,7 +112,7 @@ _registry = [
             {"KEY": "last_changed", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0011",
         name=[{"@en": "siegfried report (all versions)"}],
         markers=[
@@ -210,7 +122,7 @@ _registry = [
             {"KEY": "identifiers", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0012",
         name=[{"@en": "sops encrypted secrets file"}],
         markers=[
@@ -219,7 +131,7 @@ _registry = [
             {"GOTO": "sops", "KEY": "pgp", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0013",
         name=[{"@en": "sparql query (generic)"}],
         markers=[
@@ -227,7 +139,7 @@ _registry = [
             {"KEY": "results", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0014",
         name=[{"@en": "wikidata results (generic)"}],
         markers=[
@@ -236,7 +148,7 @@ _registry = [
             {"KEY": "endpoint", "IS": "https://query.wikidata.org/sparql"},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0015",
         name=[{"@en": "google link file"}],
         pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/1073",
@@ -245,7 +157,7 @@ _registry = [
         ],
     ),
     # Also: id can be "bookmarks.json", "inbox.json", "likes.json"
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0016",
         name=[{"@en": "activity streams json (generic)"}],
         wikidata="https://www.wikidata.org/entity/Q4677626",
@@ -254,7 +166,7 @@ _registry = [
             {"KEY": "id", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0017",
         name=[{"@en": "open resume"}],
         description=[{"@en": "an open source data-oriented resume builder"}],
@@ -264,7 +176,7 @@ _registry = [
             {"KEY": "education", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0018",
         name=[
             {"@en": "jacker song: http://fileformats.archiveteam.org/wiki/Jacker_song"}
@@ -278,7 +190,7 @@ _registry = [
             {"KEY": "namespace", "IS": "jacker"},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0019",
         name=[{"@en": "JSON Patch"}],
         mime="application/json-patch+json",
@@ -289,7 +201,7 @@ _registry = [
             {"INDEX": 0, "KEY": "path", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0020",
         name=[
             {"@en": "GL Transmission Format: GLTF runtime 3D asset library (Generic)"}
@@ -302,7 +214,7 @@ _registry = [
             {"KEY": "description", "IS": "The root object for a glTF asset."},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0021",
         name=[{"@en": "Tweet Object"}],
         pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/1311",
@@ -314,7 +226,7 @@ _registry = [
             {"KEY": "user", "ISTYPE": dict},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0022",
         name=[{"@en": "sandboxels save file"}],
         pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/1956",
@@ -323,7 +235,7 @@ _registry = [
             {"GOTO": "meta", "KEY": "gameVersion", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0023",
         name=[{"@en": "dublin core metadata (archivematica)"}],
         markers=[
@@ -331,7 +243,7 @@ _registry = [
             {"INDEX": 0, "KEY": "dc.type", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0024",
         name=[{"@en": "tika recursive metadata"}],
         markers=[
@@ -341,7 +253,7 @@ _registry = [
             {"INDEX": 0, "KEY": "X-TIKA:parse_time_millis", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0025",
         name=[{"@en": "JavaScript package.json file"}],
         markers=[
@@ -352,7 +264,7 @@ _registry = [
             {"KEY": "dependencies", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0026",
         name=[{"@en": "Parcore schema documents"}],
         pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/1311",
@@ -362,7 +274,7 @@ _registry = [
             {"KEY": "definitions", "ISTYPE": dict},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0027",
         name=[{"@en": "coriolis.io ship loadout"}],
         wikidata="http://www.wikidata.org/entity/Q105849952",
@@ -371,7 +283,7 @@ _registry = [
             {"KEY": "name", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0028",
         name=[{"@en": "coriolis.io ship loadout (schema)"}],
         markers=[
@@ -380,7 +292,7 @@ _registry = [
             {"KEY": "id", "STARTSWITH": "https://coriolis.io/schemas/ship-loadout/"},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0029",
         name=[{"@en": "JSON Web Token (JWT)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/JSON_Web_Tokens",
@@ -390,7 +302,7 @@ _registry = [
             {"KEY": "typ", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0030",
         name=[{"@en": "JHOVE JhoveView Output (generic)"}],
         markers=[
@@ -401,7 +313,7 @@ _registry = [
     ),
     # JSON RPC uses three different keys, error, method, result. JSONID
     # Isn't expressive enough to test three keys in one go yet.
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0031",
         name=[{"@en": "JSON RPC 2.0 (error)"}],
         markers=[
@@ -409,7 +321,7 @@ _registry = [
             {"KEY": "error", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0032",
         name=[{"@en": "JSON RPC 2.0 (request)"}],
         markers=[
@@ -417,7 +329,7 @@ _registry = [
             {"KEY": "method", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0033",
         name=[{"@en": "JSON RPC 2.0 (response)"}],
         markers=[
@@ -425,7 +337,7 @@ _registry = [
             {"KEY": "result", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0034",
         name=[{"@en": "Jupyter Notebook (Generic)"}],
         pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/1119",
@@ -438,7 +350,7 @@ _registry = [
             {"KEY": "cells", "ISTYPE": list},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0035",
         name=[{"@en": "CSV Dialect Description Format (CDDF) (Generic)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/CSV_Dialect_Description_Format",
@@ -451,7 +363,7 @@ _registry = [
             {"GOTO": "dialect", "KEY": "skipinitialspace", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0036",
         name=[{"@en": "CSV Dialect Description Format (CDDF) (1.2 - 1.x)"}],
         version="1.2",
@@ -466,7 +378,7 @@ _registry = [
             {"KEY": "header", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0037",
         name=[{"@en": "GeoJSON Feature Object"}],
         archive_team="http://fileformats.archiveteam.org/wiki/GeoJSON",
@@ -479,7 +391,7 @@ _registry = [
             {"KEY": "properties", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0038",
         name=[{"@en": "GeoJSON Feature Collection Object"}],
         archive_team="http://fileformats.archiveteam.org/wiki/GeoJSON",
@@ -491,7 +403,7 @@ _registry = [
             {"KEY": "features", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0039",
         name=[{"@en": "HAR (HTTP Archive) (Generic)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/HAR",
@@ -501,7 +413,7 @@ _registry = [
             {"GOTO": "log", "KEY": "entries", "ISTYPE": list},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0040",
         name=[{"@en": "JSON API"}],
         archive_team="http://fileformats.archiveteam.org/wiki/JSON_API",
@@ -512,7 +424,7 @@ _registry = [
             {"KEY": "jsonapi", "ISTYPE": dict},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0041",
         name=[{"@en": "Max (Interactive Software) .maxpat JSON (Generic)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/Max",
@@ -522,7 +434,7 @@ _registry = [
             {"GOTO": "patcher", "KEY": "bglocked", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0042",
         name=[{"@en": "Open Web App Manifest (Firefox Marketplace)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/Open_Web_App_Manifest",
@@ -534,7 +446,7 @@ _registry = [
             {"GOTO": "developer", "KEY": "name", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0043",
         name=[{"@en": "PiskelApp Canvas (Generic)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/Piskel_canvas",
@@ -545,7 +457,7 @@ _registry = [
             {"GOTO": "piskel", "KEY": "layers", "ISTYPE": list},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0044",
         name=[{"@en": "Apple PassKit (PKPass) pass.json"}],
         archive_team="http://fileformats.archiveteam.org/wiki/PKPass",
@@ -559,7 +471,7 @@ _registry = [
             {"KEY": "description", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0045",
         name=[{"@en": "Scratch Visual Programming Language - project.json"}],
         version="3.0",
@@ -569,7 +481,7 @@ _registry = [
             {"GOTO": "meta", "KEY": "semver", "IS": "3.0.0"},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0046",
         name=[{"@en": "Scratch Visual Programming Language - project.json"}],
         version="2.0",
@@ -583,7 +495,7 @@ _registry = [
             {"GOTO": "info", "KEY": "userAgent", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0047",
         name=[{"@en": "Sketch project file meta.json (Generic)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/Sketch",
@@ -597,7 +509,7 @@ _registry = [
         ],
     ),
     # Datapackage.org Schemas.
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0048",
         name=[
             {"@en": "Data Package Schema (Datapackage.org (Open Knowledge Foundation))"}
@@ -610,7 +522,7 @@ _registry = [
             {"KEY": "required", "ISTYPE": list},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0049",
         name=[
             {
@@ -625,7 +537,7 @@ _registry = [
             {"KEY": "oneOf", "ISTYPE": list},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0050",
         name=[
             {
@@ -640,7 +552,7 @@ _registry = [
             {"KEY": "properties", "ISTYPE": dict},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0051",
         name=[
             {
@@ -656,7 +568,7 @@ _registry = [
         ],
     ),
     # iPuz puzzles.
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0052",
         name=[{"@en": "ipuz: open format for puzzles"}],
         archive_team="http://fileformats.archiveteam.org/wiki/IPUZ",
@@ -666,7 +578,7 @@ _registry = [
             {"KEY": "puzzle", "ISTYPE": list},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0053",
         name=[{"@en": "SNIA Self-contained Information Retention Format (SIRF)"}],
         loc="https://www.loc.gov/preservation/digital/formats/fdd/fdd000584.shtml",
@@ -677,7 +589,7 @@ _registry = [
             {"KEY": "objectsSet", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0054",
         name=[{"@en": "Firefox Bookmarks Backup File"}],
         archive_team="http://fileformats.archiveteam.org/wiki/Firefox_bookmarks",
@@ -692,7 +604,7 @@ _registry = [
             {"KEY": "typeCode", "ISTYPE": int},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0055",
         name=[{"@en": "Lottie vector graphics"}],
         archive_team="http://fileformats.archiveteam.org/wiki/Lottie",
@@ -704,7 +616,7 @@ _registry = [
             {"KEY": "layers", "ISTYPE": list},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0056",
         name=[{"@en": "Camtasia TSCPROJ file"}],
         markers=[
@@ -717,7 +629,7 @@ _registry = [
             {"KEY": "metadata", "EXISTS": None},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0057",
         name=[{"@en": "Grafana Dashboard Configuration"}],
         markers=[
@@ -729,7 +641,7 @@ _registry = [
             {"KEY": "panels", "ISTYPE": list},
         ],
     ),
-    RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="jrid:0058",
         name=[{"@en": "Power Bi DataModelSchema"}],
         markers=[
@@ -741,6 +653,6 @@ _registry = [
 ]
 
 
-def registry() -> list[RegistryEntry]:
+def registry() -> list[registry_class.RegistryEntry]:
     """Return a registry object to the caller."""
     return _registry

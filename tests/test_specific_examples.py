@@ -6,10 +6,10 @@ import json
 
 import pytest
 
-from src.jsonid import jsonid, registry, registry_data
+from src.jsonid import jsonid, registry, registry_class
 
 specific_registry = [
-    registry_data.RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="id0019",
         name=[{"@en": "JSON Patch RFC 6902"}],
         markers=[

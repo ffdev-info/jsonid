@@ -7,16 +7,16 @@ from typing import Final
 
 import pytest
 
-from src.jsonid import registry, registry_data
+from src.jsonid import registry, registry_class
 
 fundamentals_registry = [
-    registry_data.RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="test_id1",
         name="one key with integer, one key with string",
         version="1",
         markers=[{"KEY": "test1", "IS": 1}, {"KEY": "test2", "IS": "data"}],
     ),
-    registry_data.RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="test_id2",
         name="one key with integer one key with nested data",
         version="1",
@@ -25,7 +25,7 @@ fundamentals_registry = [
             {"KEY": "test3", "IS": {"test4": {"test5": None}}},
         ],
     ),
-    registry_data.RegistryEntry(
+    registry_class.RegistryEntry(
         identifier="test_id3",
         name="key only identification (allows testing for only keys)",
         version="1",
@@ -100,7 +100,7 @@ def test_json_only():
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
     res = registry.matcher(json_loaded)
-    assert res[0].identifier == registry_data.JSON_ID
+    assert res[0].identifier == registry_class.JSON_ID
     assert res[0].description[0]["@en"] == registry.IS_JSON
 
 

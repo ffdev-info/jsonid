@@ -8,7 +8,7 @@ from typing import Final
 import pytest
 
 from src.jsonid.registry import matcher
-from src.jsonid.registry_data import RegistryEntry
+from src.jsonid.registry_class import RegistryEntry
 
 spec_registry = [
     RegistryEntry(

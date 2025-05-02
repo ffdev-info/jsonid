@@ -5,13 +5,14 @@ import logging
 from typing import Final, Union
 
 try:
+    import registry_class
     import registry_data
     import registry_matchers
 except ModuleNotFoundError:
     try:
-        from src.jsonid import registry_data, registry_matchers
+        from src.jsonid import registry_class, registry_data, registry_matchers
     except ModuleNotFoundError:
-        from jsonid import registry_data, registry_matchers
+        from jsonid import registry_class, registry_data, registry_matchers
 
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ class IdentificationFailure(Exception):
     """Raise when identification fails."""
 
 
-NIL_ENTRY: Final[registry_data.RegistryEntry] = registry_data.RegistryEntry()
+NIL_ENTRY: Final[registry_class.RegistryEntry] = registry_class.RegistryEntry()
 
 IS_JSON: Final[str] = "parses as JSON but might not conform to a schema"
 
@@ -33,8 +34,8 @@ TYPE_INT: Final[list] = [{"@en": "data is integer type"}]
 TYPE_BOOL: Final[list] = [{"@en": "data is boolean type"}]
 TYPE_ERR: Final[list] = [{"@en": "error processing data"}]
 
-JSON_ONLY: Final[registry_data.RegistryEntry] = registry_data.RegistryEntry(
-    identifier=registry_data.JSON_ID,
+JSON_ONLY: Final[registry_class.RegistryEntry] = registry_class.RegistryEntry(
+    identifier=registry_class.JSON_ID,
     name=[{"@en": "JavaScript Object Notation (JSON)"}],
     description=[{"@en": IS_JSON}],
     version=None,
@@ -101,7 +102,7 @@ def get_additional(data: Union[dict, list, float, int]) -> str:
     return TYPE_ERR
 
 
-def process_markers(registry_entry: registry_data.RegistryEntry, data: dict) -> bool:
+def process_markers(registry_entry: registry_class.RegistryEntry, data: dict) -> bool:
     """Run through the markers for an entry in the registry.
     Attempt to exit early if there isn't a match.
     """
