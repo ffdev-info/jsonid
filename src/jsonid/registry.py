@@ -116,7 +116,9 @@ def process_markers(registry_entry: registry_data.RegistryEntry, data: dict) -> 
                 break
             except KeyError:
                 return False
+    top_level_pointer = data  # ensure we're always looking at top-level dict
     for marker in registry_entry.markers:
+        data = top_level_pointer
         try:
             _ = marker[registry_matchers.MARKER_GOTO]
             data = registry_matchers.at_goto(marker, data)
