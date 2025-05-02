@@ -680,13 +680,25 @@ _registry = [
         archive_team="http://fileformats.archiveteam.org/wiki/Firefox_bookmarks",
         wikidata="http://www.wikidata.org/entity/Q105857338",
         markers=[
-            {"KEY": "guid", "EXISts": None},
+            {"KEY": "guid", "EXISTS": None},
             {"KEY": "title", "EXISTS": None},
             {"KEY": "index", "ISTYPE": int},
             {"KEY": "dateAdded", "ISTYPE": int},
             {"KEY": "lastModified", "ISTYPE": int},
             {"KEY": "id", "ISTYPE": int},
             {"KEY": "typeCode", "ISTYPE": int},
+        ],
+    ),
+    RegistryEntry(
+        identifier="jrid:0055",
+        name=[{"@en": "Lottie vector graphics"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/Lottie",
+        wikidata="http://www.wikidata.org/entity/Q98855048",
+        markers=[
+            {"KEY": "h", "EXISTS": None},
+            {"KEY": "w", "EXISTS": None},
+            {"KEY": "assets", "ISTYPE": list},
+            {"KEY": "layers", "ISTYPE": list},
         ],
     ),
 ]
