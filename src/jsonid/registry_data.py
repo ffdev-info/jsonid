@@ -701,6 +701,19 @@ _registry = [
             {"KEY": "layers", "ISTYPE": list},
         ],
     ),
+    RegistryEntry(
+        identifier="jrid:0056",
+        name=[{"@en": "Camtasia TSCPROJ file"}],
+        markers=[
+            {"KEY": "title", "EXISTS": None},
+            {"KEY": "description", "EXISTS": None},
+            {"KEY": "author", "EXISTS": None},
+            {"KEY": "height", "ISTYPE": float},
+            {"KEY": "width", "ISTYPE": float},
+            {"GOTO": "authoringClientName", "KEY": "name", "EXISTS": None},
+            {"KEY": "metadata", "EXISTS": None},
+        ],
+    ),
 ]
 
 
