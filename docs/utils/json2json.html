@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
-<title>src.jsonid.jsonid API documentation</title>
-<meta name="description" content="jsonid entry-point.">
+<title>src.utils.json2json API documentation</title>
+<meta name="description" content="json2json will convert JSON compatible objects from one encoding
+to UTF-8.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -33,10 +34,11 @@ el.replaceWith(d);
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>src.jsonid.jsonid</code></h1>
+<h1 class="title">Module <code>src.utils.json2json</code></h1>
 </header>
 <section id="section-intro">
-<p>jsonid entry-point.</p>
+<p>json2json will convert JSON compatible objects from one encoding
+to UTF-8.</p>
 </section>
 <section>
 </section>
@@ -45,7 +47,7 @@ el.replaceWith(d);
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="src.jsonid.jsonid.create_manifest"><code class="name flex">
+<dt id="src.utils.json2json.create_manifest"><code class="name flex">
 <span>async def <span class="ident">create_manifest</span></span>(<span>path: str) ‑> list[str]</span>
 </code></dt>
 <dd>
@@ -65,77 +67,70 @@ el.replaceWith(d);
 </details>
 <div class="desc"><p>Get a list of paths to process.</p></div>
 </dd>
-<dt id="src.jsonid.jsonid.decode"><code class="name flex">
-<span>def <span class="ident">decode</span></span>(<span>content: str)</span>
+<dt id="src.utils.json2json.identify_json"><code class="name flex">
+<span>async def <span class="ident">identify_json</span></span>(<span>paths: list[str])</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def decode(content: str):
-    &#34;&#34;&#34;Decode the given content stream.&#34;&#34;&#34;
-    data = &#34;&#34;
-    try:
-        data = json.loads(content)
-    except json.decoder.JSONDecodeError as err:
-        logger.debug(&#34;(decode) can&#39;t process: %s&#34;, err)
-        return False, None
-    return True, data</code></pre>
-</details>
-<div class="desc"><p>Decode the given content stream.</p></div>
-</dd>
-<dt id="src.jsonid.jsonid.get_date_time"><code class="name flex">
-<span>def <span class="ident">get_date_time</span></span>(<span>) ‑> str</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_date_time() -&gt; str:
-    &#34;&#34;&#34;Return a datetime string for now(),&#34;&#34;&#34;
-    return datetime.datetime.now(timezone.utc).strftime(version.UTC_TIME_FORMAT)</code></pre>
-</details>
-<div class="desc"><p>Return a datetime string for now(),</p></div>
-</dd>
-<dt id="src.jsonid.jsonid.identify_json"><code class="name flex">
-<span>async def <span class="ident">identify_json</span></span>(<span>paths: list[str], binary: bool)</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def identify_json(paths: list[str], binary: bool):
+<pre><code class="python">async def identify_json(paths: list[str]):
     &#34;&#34;&#34;Identify objects&#34;&#34;&#34;
     for idx, path in enumerate(paths):
-        if os.path.getsize(path) == 0:
-            logger.debug(&#34;&#39;%s&#39; is an empty file&#34;)
-            if binary:
-                logger.warning(&#34;report on binary object...&#34;)
-            continue
         valid, data = await identify_plaintext_bytestream(path)
         if not valid:
-            logger.debug(&#34;%s: is not plaintext&#34;, path)
-            if binary:
-                logger.warning(&#34;report on binary object...&#34;)
             continue
-        if data != &#34;&#34;:
-            logger.debug(&#34;processing: %s&#34;, path)
-            if idx == 0:
-                print(&#34;---&#34;)
-                print(version_header())
-                print(&#34;---&#34;)
-            res = registry.matcher(data)
-            print(f&#34;file: {path}&#34;)
-            for item in res:
-                print(item)
-            print(&#34;---&#34;)</code></pre>
+        print(json.dumps(data, indent=2))</code></pre>
 </details>
 <div class="desc"><p>Identify objects</p></div>
 </dd>
-<dt id="src.jsonid.jsonid.main"><code class="name flex">
+<dt id="src.utils.json2json.identify_plaintext_bytestream"><code class="name flex">
+<span>async def <span class="ident">identify_plaintext_bytestream</span></span>(<span>path: str) ‑> Tuple[bool, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def identify_plaintext_bytestream(path: str) -&gt; Tuple[bool, str]:
+    &#34;&#34;&#34;Ensure that the file is a palintext bytestream and can be
+    processed as JSON.
+    &#34;&#34;&#34;
+    logger.debug(&#34;attempting to open: %s&#34;, path)
+    with open(path, &#34;r&#34;, encoding=&#34;utf-8&#34;) as obj:
+        try:
+            content = obj.read()
+            json_data = json.loads(content)
+            return True, json_data
+        except UnicodeDecodeError:
+            pass
+        except json.decoder.JSONDecodeError:
+            pass
+    with open(path, &#34;r&#34;, encoding=&#34;utf-16&#34;) as obj:
+        try:
+            content = obj.read()
+            json_data = json.loads(content)
+            return True, json_data
+        except UnicodeError:
+            pass
+        except json.decoder.JSONDecodeError:
+            pass
+    with open(path, &#34;r&#34;, encoding=&#34;utf-16LE&#34;) as obj:
+        try:
+            content = obj.read()
+            json_data = json.loads(content)
+            return True, json_data
+        except UnicodeDecodeError:
+            pass
+        except json.decoder.JSONDecodeError:
+            pass
+    return False, None</code></pre>
+</details>
+<div class="desc"><p>Ensure that the file is a palintext bytestream and can be
+processed as JSON.</p></div>
+</dd>
+<dt id="src.utils.json2json.main"><code class="name flex">
 <span>def <span class="ident">main</span></span>(<span>) ‑> None</span>
 </code></dt>
 <dd>
@@ -146,8 +141,8 @@ el.replaceWith(d);
 <pre><code class="python">def main() -&gt; None:
     &#34;&#34;&#34;Primary entry point for this script.&#34;&#34;&#34;
     parser = argparse.ArgumentParser(
-        prog=&#34;json-id&#34;,
-        description=&#34;proof-of-concept identifier for JSON objects on disk based on identifying valid objects and their key-values&#34;,
+        prog=&#34;json2json&#34;,
+        description=&#34;parse JSON UTF-16 (BE-LE) objects and output them as UTF-8 for the sake of developer ergonomics&#34;,
         epilog=&#34;for more information visit https://github.com/ffdev-info/json-id&#34;,
     )
     parser.add_argument(
@@ -161,105 +156,57 @@ el.replaceWith(d);
         help=&#34;file path to process&#34;,
         required=False,
     )
-    parser.add_argument(
-        &#34;--binary&#34;,
-        help=&#34;report on binary formats as well as plaintext&#34;,
-        required=False,
-        action=&#34;store_true&#34;,
-    )
-    parser.add_argument(
-        &#34;--registry&#34;,
-        help=&#34;path to a custom registry to lead into memory replacing the default&#34;,
-        required=False,
-    )
-    parser.add_argument(
-        &#34;--pronom&#34;,
-        help=&#34;return a PRONOM-centric view of the results&#34;,
-        required=False,
-    )
-    parser.add_argument(
-        &#34;--export&#34;,
-        help=&#34;export the embedded registry&#34;,
-        required=False,
-        action=&#34;store_true&#34;,
-    )
-    parser.add_argument(
-        &#34;--check&#34;,
-        help=&#34;check the registry entrues are correct&#34;,
-        required=False,
-        action=&#34;store_true&#34;,
-    )
-    parser.add_argument(
-        &#34;--language&#34;,
-        help=&#34;return results in different languages&#34;,
-        required=False,
-    )
     args = parser.parse_args()
     logging.getLogger(__name__).setLevel(logging.DEBUG if args.debug else logging.INFO)
     logger.debug(&#34;debug logging is configured&#34;)
-    if args.registry:
-        raise NotImplementedError(&#34;custom registry is not yet available&#34;)
-    if args.pronom:
-        raise NotImplementedError(&#34;pronom view is not yet implemented&#34;)
-    if args.language:
-        raise NotImplementedError(&#34;multiple languages are not yet implemented&#34;)
-    if args.export:
-        export.exportJSON()
-        sys.exit()
-    if args.check:
-        if not helpers.entry_check():
-            logger.error(&#34;registry entries are not correct&#34;)
-            sys.exit(1)
-        sys.exit()
     if not args.path:
         parser.print_help(sys.stderr)
         sys.exit()
     asyncio.run(
         process_data(
             path=args.path,
-            binary=args.binary,
         )
     )</code></pre>
 </details>
 <div class="desc"><p>Primary entry point for this script.</p></div>
 </dd>
-<dt id="src.jsonid.jsonid.process_data"><code class="name flex">
-<span>async def <span class="ident">process_data</span></span>(<span>path: str, binary: bool)</span>
+<dt id="src.utils.json2json.process_data"><code class="name flex">
+<span>async def <span class="ident">process_data</span></span>(<span>path: str)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def process_data(path: str, binary: bool):
+<pre><code class="python">async def process_data(path: str):
     &#34;&#34;&#34;Process all objects at a given path&#34;&#34;&#34;
     logger.debug(&#34;processing: %s&#34;, path)
 
     if &#34;*&#34; in path:
-        return await process_glob(path, binary)
+        return await process_glob(path)
     if not os.path.exists(path):
         logger.error(&#34;path: &#39;%s&#39; does not exist&#34;, path)
         sys.exit(1)
     if os.path.isfile(path):
-        await identify_json([path], binary)
+        await identify_json([path])
         sys.exit(0)
     paths = await create_manifest(path)
     if not paths:
         logger.info(&#34;no files in directory: %s&#34;, path)
         sys.exit(1)
-    await identify_json(paths, binary)</code></pre>
+    await identify_json(paths)</code></pre>
 </details>
 <div class="desc"><p>Process all objects at a given path</p></div>
 </dd>
-<dt id="src.jsonid.jsonid.process_glob"><code class="name flex">
-<span>async def <span class="ident">process_glob</span></span>(<span>glob_path: str, binary: bool)</span>
+<dt id="src.utils.json2json.process_glob"><code class="name flex">
+<span>async def <span class="ident">process_glob</span></span>(<span>glob_path: str)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def process_glob(glob_path: str, binary: bool):
+<pre><code class="python">async def process_glob(glob_path: str):
     &#34;&#34;&#34;Process glob patterns provided by the user.&#34;&#34;&#34;
     paths = []
     for path in glob.glob(glob_path):
@@ -267,24 +214,9 @@ el.replaceWith(d);
             paths = paths + await create_manifest(path)
         if os.path.isfile(path):
             paths.append(path)
-    await identify_json(paths, binary)</code></pre>
+    await identify_json(paths)</code></pre>
 </details>
 <div class="desc"><p>Process glob patterns provided by the user.</p></div>
-</dd>
-<dt id="src.jsonid.jsonid.version_header"><code class="name flex">
-<span>def <span class="ident">version_header</span></span>(<span>) ‑> str</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def version_header() -&gt; str:
-    &#34;&#34;&#34;Output a formatted version header.&#34;&#34;&#34;
-    return f&#34;&#34;&#34;jsonid: {version.get_version()}
-scandate: {get_date_time()}&#34;&#34;&#34;.strip()</code></pre>
-</details>
-<div class="desc"><p>Output a formatted version header.</p></div>
 </dd>
 </dl>
 </section>
@@ -298,19 +230,17 @@ scandate: {get_date_time()}&#34;&#34;&#34;.strip()</code></pre>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="src.jsonid" href="index.html">src.jsonid</a></code></li>
+<li><code><a title="src.utils" href="index.html">src.utils</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="two-column">
-<li><code><a title="src.jsonid.jsonid.create_manifest" href="#src.jsonid.jsonid.create_manifest">create_manifest</a></code></li>
-<li><code><a title="src.jsonid.jsonid.decode" href="#src.jsonid.jsonid.decode">decode</a></code></li>
-<li><code><a title="src.jsonid.jsonid.get_date_time" href="#src.jsonid.jsonid.get_date_time">get_date_time</a></code></li>
-<li><code><a title="src.jsonid.jsonid.identify_json" href="#src.jsonid.jsonid.identify_json">identify_json</a></code></li>
-<li><code><a title="src.jsonid.jsonid.main" href="#src.jsonid.jsonid.main">main</a></code></li>
-<li><code><a title="src.jsonid.jsonid.process_data" href="#src.jsonid.jsonid.process_data">process_data</a></code></li>
-<li><code><a title="src.jsonid.jsonid.process_glob" href="#src.jsonid.jsonid.process_glob">process_glob</a></code></li>
-<li><code><a title="src.jsonid.jsonid.version_header" href="#src.jsonid.jsonid.version_header">version_header</a></code></li>
+<ul class="">
+<li><code><a title="src.utils.json2json.create_manifest" href="#src.utils.json2json.create_manifest">create_manifest</a></code></li>
+<li><code><a title="src.utils.json2json.identify_json" href="#src.utils.json2json.identify_json">identify_json</a></code></li>
+<li><code><a title="src.utils.json2json.identify_plaintext_bytestream" href="#src.utils.json2json.identify_plaintext_bytestream">identify_plaintext_bytestream</a></code></li>
+<li><code><a title="src.utils.json2json.main" href="#src.utils.json2json.main">main</a></code></li>
+<li><code><a title="src.utils.json2json.process_data" href="#src.utils.json2json.process_data">process_data</a></code></li>
+<li><code><a title="src.utils.json2json.process_glob" href="#src.utils.json2json.process_glob">process_glob</a></code></li>
 </ul>
 </li>
 </ul>

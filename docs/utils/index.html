@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
-<title>src.jsonid.helpers API documentation</title>
-<meta name="description" content="Code helperrs.">
+<title>src.utils API documentation</title>
+<meta name="description" content="">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -33,60 +33,23 @@ el.replaceWith(d);
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>src.jsonid.helpers</code></h1>
+<h1 class="title">Namespace <code>src.utils</code></h1>
 </header>
 <section id="section-intro">
-<p>Code helperrs.</p>
 </section>
 <section>
-</section>
-<section>
-</section>
-<section>
-<h2 class="section-title" id="header-functions">Functions</h2>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt id="src.jsonid.helpers.entry_check"><code class="name flex">
-<span>def <span class="ident">entry_check</span></span>(<span>) ‑> bool</span>
-</code></dt>
+<dt><code class="name"><a title="src.utils.json2json" href="json2json.html">src.utils.json2json</a></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def entry_check() -&gt; bool:
-    &#34;&#34;&#34;Make sure the entries are all unique.&#34;&#34;&#34;
-    data = registry_data.registry()
-    ids = [datum.identifier for datum in data]
-    return len(set(ids)) == len(data)</code></pre>
-</details>
-<div class="desc"><p>Make sure the entries are all unique.</p></div>
-</dd>
-<dt id="src.jsonid.helpers.timeit"><code class="name flex">
-<span>def <span class="ident">timeit</span></span>(<span>func)</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def timeit(func):
-    &#34;&#34;&#34;Decorator to output the time taken for a function&#34;&#34;&#34;
-
-    async def wrapper(*args, **kwargs):
-        start = time.perf_counter()
-        result = await func(*args, **kwargs)
-        end = time.perf_counter()
-        elapsed = end - start
-        func_name = _function_name(str(func)).strip()
-        # pylint: disable=W1203
-        logger.debug(f&#34;Time taken: {elapsed:.6f} seconds ({func_name}())&#34;)
-        return result
-
-    return wrapper</code></pre>
-</details>
-<div class="desc"><p>Decorator to output the time taken for a function</p></div>
+<div class="desc"><p>json2json will convert JSON compatible objects from one encoding
+to UTF-8.</p></div>
 </dd>
 </dl>
+</section>
+<section>
+</section>
+<section>
 </section>
 <section>
 </section>
@@ -98,13 +61,12 @@ el.replaceWith(d);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="src.jsonid" href="index.html">src.jsonid</a></code></li>
+<li><code><a title="src" href="../index.html">src</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="src.jsonid.helpers.entry_check" href="#src.jsonid.helpers.entry_check">entry_check</a></code></li>
-<li><code><a title="src.jsonid.helpers.timeit" href="#src.jsonid.helpers.timeit">timeit</a></code></li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="src.utils.json2json" href="json2json.html">src.utils.json2json</a></code></li>
 </ul>
 </li>
 </ul>

@@ -63,6 +63,10 @@ el.replaceWith(d);
     if not data:
         if data is False:
             return TYPE_BOOL
+        if isinstance(data, list):
+            return TYPE_LIST
+        if isinstance(data, dict):
+            return TYPE_DICT
         return TYPE_NONE
     if isinstance(data, dict):
         return TYPE_DICT

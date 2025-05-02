@@ -101,14 +101,62 @@ class RegistryEntry:  # pylint: disable=R0902
     def __str__(self):
         &#34;&#34;&#34;Return summary string.&#34;&#34;&#34;
         if self.identifier == JSON_ID:
-            return f&#34;&#34;&#34;{self.identifier}:
-        name: {self.name}
-        pronom: {self.pronom}
-        depth: {self.depth}
-        additional: {self.additional}&#34;&#34;&#34;.strip()
-        return f&#34;&#34;&#34;{self.identifier}:
-      name: {self.name}
-      pronom: {self.pronom}&#34;&#34;&#34;.strip()</code></pre>
+            data = {
+                &#34;identifiers&#34;: [
+                    {&#34;rfc&#34;: self.rfc},
+                    {&#34;pronom&#34;: self.pronom},
+                    {&#34;loc&#34;: self.loc},
+                    {&#34;wikidata&#34;: self.wikidata},
+                ],
+                &#34;documentation&#34;: [
+                    {&#34;archive_team&#34;: self.archive_team},
+                ],
+                &#34;mime&#34;: self.mime,
+                &#34;name&#34;: self.name,
+                &#34;depth&#34;: self.depth,
+                &#34;additional&#34;: self.additional,
+            }
+            return yaml.dump(data, indent=2, allow_unicode=True).strip()
+        data = {
+            &#34;identifiers&#34;: [
+                {&#34;rfc&#34;: self.rfc},
+                {&#34;pronom&#34;: self.pronom},
+                {&#34;loc&#34;: self.loc},
+                {&#34;wikidata&#34;: self.wikidata},
+            ],
+            &#34;documentation&#34;: [
+                {&#34;archive_team&#34;: self.archive_team},
+            ],
+            &#34;mime&#34;: self.mime,
+            &#34;name&#34;: self.name,
+            &#34;additional&#34;: self.additional,
+        }
+        return yaml.dump(data, indent=2, allow_unicode=True).strip()
+
+    def json(self):
+        &#34;&#34;&#34;Override default __dict__ behavior.&#34;&#34;&#34;
+        obj = self
+        new_markers = []
+        for marker in obj.markers:
+            try:
+                replace_me = marker[&#34;ISTYPE&#34;]
+                if isinstance(replace_me, type):
+                    if replace_me.__name__ == &#34;dict&#34;:
+                        replace_me = &#34;map&#34;
+                    elif replace_me.__name__ == &#34;int&#34;:
+                        replace_me = &#34;integer&#34;
+                    elif replace_me.__name__ == &#34;list&#34;:
+                        replace_me = &#34;list&#34;
+                    elif replace_me.__name__ == &#34;str&#34;:
+                        replace_me = &#34;string&#34;
+                marker[&#34;ISTYPE&#34;] = replace_me
+                new_markers.append(marker)
+            except KeyError:
+                pass
+        if not new_markers:
+            return obj.__dict__
+        obj.markers = new_markers
+        return obj.__dict__</code></pre>
 </details>
 <div class="desc"><p>Class that represents information that might be derived from
 a registry.</p></div>
@@ -167,6 +215,44 @@ a registry.</p></div>
 <div class="desc"></div>
 </dd>
 </dl>
+<h3>Methods</h3>
+<dl>
+<dt id="src.jsonid.registry_data.RegistryEntry.json"><code class="name flex">
+<span>def <span class="ident">json</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def json(self):
+    &#34;&#34;&#34;Override default __dict__ behavior.&#34;&#34;&#34;
+    obj = self
+    new_markers = []
+    for marker in obj.markers:
+        try:
+            replace_me = marker[&#34;ISTYPE&#34;]
+            if isinstance(replace_me, type):
+                if replace_me.__name__ == &#34;dict&#34;:
+                    replace_me = &#34;map&#34;
+                elif replace_me.__name__ == &#34;int&#34;:
+                    replace_me = &#34;integer&#34;
+                elif replace_me.__name__ == &#34;list&#34;:
+                    replace_me = &#34;list&#34;
+                elif replace_me.__name__ == &#34;str&#34;:
+                    replace_me = &#34;string&#34;
+            marker[&#34;ISTYPE&#34;] = replace_me
+            new_markers.append(marker)
+        except KeyError:
+            pass
+    if not new_markers:
+        return obj.__dict__
+    obj.markers = new_markers
+    return obj.__dict__</code></pre>
+</details>
+<div class="desc"><p>Override default <strong>dict</strong> behavior.</p></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -196,6 +282,7 @@ a registry.</p></div>
 <li><code><a title="src.jsonid.registry_data.RegistryEntry.depth" href="#src.jsonid.registry_data.RegistryEntry.depth">depth</a></code></li>
 <li><code><a title="src.jsonid.registry_data.RegistryEntry.description" href="#src.jsonid.registry_data.RegistryEntry.description">description</a></code></li>
 <li><code><a title="src.jsonid.registry_data.RegistryEntry.identifier" href="#src.jsonid.registry_data.RegistryEntry.identifier">identifier</a></code></li>
+<li><code><a title="src.jsonid.registry_data.RegistryEntry.json" href="#src.jsonid.registry_data.RegistryEntry.json">json</a></code></li>
 <li><code><a title="src.jsonid.registry_data.RegistryEntry.loc" href="#src.jsonid.registry_data.RegistryEntry.loc">loc</a></code></li>
 <li><code><a title="src.jsonid.registry_data.RegistryEntry.markers" href="#src.jsonid.registry_data.RegistryEntry.markers">markers</a></code></li>
 <li><code><a title="src.jsonid.registry_data.RegistryEntry.mime" href="#src.jsonid.registry_data.RegistryEntry.mime">mime</a></code></li>
