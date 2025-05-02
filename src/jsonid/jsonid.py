@@ -178,6 +178,8 @@ def main() -> None:
     )
     parser.add_argument(
         "--path",
+        "--paths",
+        "-p",
         help="file path to process",
         required=False,
     )
