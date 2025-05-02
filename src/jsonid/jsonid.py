@@ -214,6 +214,12 @@ def main() -> None:
         action="store_true",
     )
     parser.add_argument(
+        "--html",
+        help="output the registry as html",
+        required=False,
+        action="store_true",
+    )
+    parser.add_argument(
         "--language",
         help="return results in different languages",
         required=False,
@@ -234,6 +240,9 @@ def main() -> None:
         if not helpers.entry_check():
             logger.error("registry entries are not correct")
             sys.exit(1)
+        sys.exit()
+    if args.html:
+        helpers.html()
         sys.exit()
     if not args.path:
         parser.print_help(sys.stderr)

@@ -44,6 +44,11 @@ docs:
    mv -f docs/src/* docs/.
    rm -rf docs/src
 
+# Export registry as HTM
+htm:
+   rm -rf docs/registry/*
+   python jsonid.py -htm > docs/registry/index.htm
+
 # Serve the documentation
 serve-docs:
    python -m http.server --directory docs/
