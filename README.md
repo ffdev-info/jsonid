@@ -69,8 +69,8 @@ That's already a pretty good position to be in.
 
 The ruleset should then allow you to identify a decent number of JSON objects,
 especially those that have a well-defined structure. Examples we have in the
-registry data include things like ActivityPub streams, RO-CRATE metadata,
-IIIF API data and so on.
+[registry data][registry-htm-1] include things like ActivityPub streams,
+RO-CRATE metadata, IIIF API data and so on.
 
 If the ruleset works for JSON we might be able to apply it to other formats
 such as YAML, and TOML in future.
@@ -206,6 +206,12 @@ Test for the existence of keys `sops` in the primary JSON object.
 >
 > Goto the `sops` key and test for the existence of keys: `kms` and `pgp`
 within the `sops` object/value.
+
+### Local rules
+
+The plan is to allow local rules to be run alongside the global ruleset. I
+expect this will be a bit further down the line when the ruleset and
+metaddata is more stabilised.
 
 ## PRONOM
 
