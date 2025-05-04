@@ -126,6 +126,7 @@ def html():
             markers=marker_snippet.strip().format(marker_text=marker_text),
         )
         list_item = list_snippet.strip().format(id=id_, name=name)
+        list_item = list_item + "\n"
         content_arr.append(row)
         list_arr.append(list_item)
     table = """
