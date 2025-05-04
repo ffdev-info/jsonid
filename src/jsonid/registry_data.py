@@ -162,7 +162,7 @@ _registry = [
     registry_class.RegistryEntry(
         identifier="jrid:0016",
         name=[{"@en": "activity streams json (generic)"}],
-        wikidata="https://www.wikidata.org/entity/Q4677626",
+        wikidata="http://www.wikidata.org/entity/Q4677626",
         markers=[
             {"KEY": "@context", "STARTSWITH": "https://www.w3.org/ns/activitystreams"},
             {"KEY": "id", "EXISTS": None},
@@ -220,7 +220,7 @@ _registry = [
         identifier="jrid:0021",
         name=[{"@en": "Tweet Object"}],
         pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/1311",
-        wikidata="https://www.wikidata.org/entity/Q85415600",
+        wikidata="http://www.wikidata.org/entity/Q85415600",
         markers=[
             {"KEY": "created_at", "ISTYPE": str},
             {"KEY": "id", "ISTYPE": int},
@@ -671,7 +671,7 @@ _registry = [
     registry_class.RegistryEntry(
         identifier="jrid:0060",
         name=[{"@en": "JSON Entity Model Schema (Minecraft OptiFine)"}],
-        wikidata="https://www.wikidata.org/entity/Q105857389",
+        wikidata="http://www.wikidata.org/entity/Q105857389",
         markers=[
             {"KEY": "$schema", "STARTSWITH": "http://json-schema.org"},
             {"KEY": "$schema", "ENDSWITH": "/schema"},
@@ -685,9 +685,18 @@ _registry = [
     registry_class.RegistryEntry(
         identifier="jrid:0061",
         name=[{"@en": "JSON Entity Model (Minecraft OptiFine)"}],
-        wikidata="https://www.wikidata.org/entity/Q105857389",
+        wikidata="http://www.wikidata.org/entity/Q105857389",
         markers=[
             {"KEY": "models", "ISTYPE": list},
+        ],
+    ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0062",
+        name=[{"@en": "JSON Playlist File (JSPF)"}],
+        wikidata="http://www.wikidata.org/entity/Q105857388",
+        markers=[
+            {"GOTO": "playlist", "KEY": "title", "ISTYPE": str},
+            {"GOTO": "playlist", "KEY": "track", "ISTYPE": list},
         ],
     ),
 ]
