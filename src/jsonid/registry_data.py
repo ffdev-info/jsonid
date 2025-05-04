@@ -668,6 +668,28 @@ _registry = [
             {"INDEX": 0, "KEY": "image", "ISTYPE": dict},
         ],
     ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0060",
+        name=[{"@en": "JSON Entity Model Schema (Minecraft OptiFine)"}],
+        wikidata="https://www.wikidata.org/entity/Q105857389",
+        markers=[
+            {"KEY": "$schema", "STARTSWITH": "http://json-schema.org"},
+            {"KEY": "$schema", "ENDSWITH": "/schema"},
+            {"KEY": "title", "IS": "Custom Entity Models Model"},
+            {"KEY": "type", "IS": "object"},
+            {"GOTO": "properties", "KEY": "models", "ISTYPE": dict},
+            {"KEY": "required", "IS": ["models"]},
+            {"KEY": "additionalProperties", "ISTYPE": bool},
+        ],
+    ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0061",
+        name=[{"@en": "JSON Entity Model (Minecraft OptiFine)"}],
+        wikidata="https://www.wikidata.org/entity/Q105857389",
+        markers=[
+            {"KEY": "models", "ISTYPE": list},
+        ],
+    ),
 ]
 
 
