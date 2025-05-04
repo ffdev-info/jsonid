@@ -656,6 +656,18 @@ _registry = [
             {"GOTO": "model", "KEY": "defaultPowerBIDataSourceVersion", "ISTYPE": str},
         ],
     ),
+    # ImageMagick convert output could benefit from being able to
+    # search one dictionary deeper as it looks like [{{"data": "???"}}]
+    # and this proposed marker is probably quite weak, although it
+    # does require an array and two keys.
+    registry_class.RegistryEntry(
+        identifier="jrid:0059",
+        name=[{"@en": "ImageMagick Convert Output"}],
+        markers=[
+            {"INDEX": 0, "KEY": "version", "ISTYPE": str},
+            {"INDEX": 0, "KEY": "image", "ISTYPE": dict},
+        ],
+    ),
 ]
 
 
