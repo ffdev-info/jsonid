@@ -17,7 +17,7 @@ PyPi: [here][pypi-download-1].
 
 `jsonid` borrows from the Python approach to ask forgiveness rather than
 permission (EAFP) to attempt to open every object it scans and see if it
-parses as JSON. If it doesn't we move along. If it does, we then have an
+parses as JSON. If it doesn't, we move along. If it does, we then have an
 opportunity to identify the characteristics of the JSON we have opened.
 
 Python being high-level also provides an easier path to processing files
@@ -54,13 +54,20 @@ EOF: "7D"
 
 But if I then want to match on `key 2` as well as `key 1` things start getting
 complicated as they aren't guaranteed by the JSON specification to be in the
-same "position' (if we think about order visually). When other keys are used in
-the object they aren't necessarily guaranteed to be next to each other.
+same "position" (if we think about order visually). When other keys are used in
+the object they aren't even guaranteed to be next to one another.
 
-`jsonid` tries to compensate for this by using the format's own strengths to
-parse binary data as JSON and then if successful, use a grammar describing
-specific key-valyes as "markers" that can begin to help to identify the
-JSON objects that we might be looking at.
+This particular example is a 'map' object whose most important property
+is consistent retrieval of information through its "keys". Further
+complexity can be added when we are dealing with maps embedded in a "list" or
+"array", or simply just maps of arbitrary depth.
+
+`jsonid` tries to compensate for JSON's complexities by using the format's
+own strengths to parse binary data as JSON and then if is successful,
+use a JSON-inspired grammar to describe keys and key-value pairs as "markers"
+that can potentially identify the JSON objects that we are looking at.
+Certainly narrow down the potential instances of JSON objects that we might
+be looking at.
 
 ## What does `jsonid` get you?
 
@@ -73,7 +80,11 @@ especially those that have a well-defined structure. Examples we have in the
 RO-CRATE metadata, IIIF API data and so on.
 
 If the ruleset works for JSON we might be able to apply it to other formats
-such as YAML, and TOML in future.
+that can represent equivalent data structures in the future
+such as [YAML][yaml-spec], and [TOML][toml-spec].
+
+[yaml-spec]: https://yaml.org/
+[toml-spec]: https://toml.io/en/
 
 ## Ruleset
 
