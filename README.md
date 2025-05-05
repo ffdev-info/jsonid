@@ -5,10 +5,14 @@
     src="https://github.com/ffdev-info/jsonid/blob/main/static/images/JSON_logo-crockford.png?raw=true"
     alt="JSON ID logo based on JSON Logo by Douglas Crockford"
     width="200px" />
+<br>
+<br>
 <!-- markdownlint-enable -->
 
-[JSON][json-1]IDentification tool, and ruleset. `jsonid` can be downloaded via
-PyPi: [here][pypi-download-1].
+![PyPI - Version](https://img.shields.io/pypi/v/jsonid?style=plastic&color=purple)
+
+[JSON][json-1]IDentification ruleset and utility. `jsonid` can be downloaded from
+[pypi.org][pypi-download-1].
 
 [json-1]: https://www.json.org/json-en.html
 [pypi-download-1]: https://pypi.org/project/jsonid/
