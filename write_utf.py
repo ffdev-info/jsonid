@@ -21,22 +21,18 @@ def write_json():
 
     json_map = '{"a": "b"}\n'
     json_list = "[]\n"
-    json_text = '"test"\n'
     json_int = "123\n"
     json_float = "1.11\n"
     json_map_whitespace = '      \n\n\n\n{"a": "b"}\n'
     json_list_whitespace = "      \n\n\n\n[]\n"
-    json_empty = "\n"
 
     to_write = {
         "map": json_map,
         "list": json_list,
-        "text": json_text,
         "int": json_int,
         "float": json_float,
         "map_whitespace": json_map_whitespace,
         "list_whitespace": json_list_whitespace,
-        "empty": json_empty,
     }
 
     supported_encodings: Final[list] = [
