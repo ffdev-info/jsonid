@@ -88,7 +88,8 @@ def test_get_depth(depth_test, expected_depth):
 @pytest.mark.asyncio
 async def test_utf16(tmp_path):
     """Test UTF-16 handling by mocking the BOM but then not providing
-    any valid JSON data."""
+    any valid JSON data.
+    """
 
     json_data = '{"a": "b"}'
     dir_ = tmp_path / "jsonid-utf16"
@@ -115,4 +116,17 @@ async def test_utf16(tmp_path):
     file_.write_text(json_data, encoding="UTF-16LE")
 
     res = await jsonid.identify_plaintext_bytestream(file_)
-    assert res == (True, {"a": "b"}, "UTF-16LE")
+    assert res == (
+        True,
+        {"a": "b"},
+        "UTF-16",
+    )  # apparently this is equivalent to plain UTF-16.
+
+    json_data = '{"a": "b"}'
+    dir_ = tmp_path / "jsonid-utf16BE"
+    dir_.mkdir()
+    file_ = dir_ / "utftest.json"
+    file_.write_text(json_data, encoding="UTF-16BE")
+
+    res = await jsonid.identify_plaintext_bytestream(file_)
+    assert res == (True, {"a": "b"}, "UTF-16BE")
