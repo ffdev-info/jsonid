@@ -59,7 +59,6 @@ async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str]:
     """
     logger.debug("attempting to open: %s", path)
     valid = False
-
     supported_encodings: Final[list] = [
         "UTF-8",
         "UTF-16",
@@ -69,20 +68,20 @@ async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str]:
         "UTF-32LE",
         "UTF-32BE",
     ]
-
+    copied = None
+    with open(path, "rb") as json_stream:
+        copied = json_stream.read()
     for encoding in supported_encodings:
-        logger.debug("attempting to open as: %s", encoding)
-        with open(path, "r", encoding=encoding) as obj:
-            try:
-                content = obj.read()
-                valid, data = decode(content)
-            except UnicodeDecodeError as err:
-                logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
-            except UnicodeError as err:
-                logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
+        logger.debug("attempting to read data as: %s", encoding)
+        try:
+            content = copied.decode(encoding)
+            valid, data = decode(content)
+        except UnicodeDecodeError as err:
+            logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
+        except UnicodeError as err:
+            logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
         if valid:
             return valid, data, encoding
-
     return False, None, None
 
 
