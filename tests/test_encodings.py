@@ -13,8 +13,8 @@ json_list: Final[str] = "[]\n"
 json_text: Final[str] = '"test"\n'
 json_int: Final[str] = "123\n"
 json_float: Final[str] = "1.11\n"
-json_map_whitespace: Final[str] = '      \n\n\n\n{"a": "b"}\n'
-json_list_whitespace: Final[str] = "      \n\n\n\n[]\n"
+json_map_whitespace: Final[str] = '      \n\n\t\n{"a": "b"}\n'
+json_list_whitespace: Final[str] = "      \n\n\t\n[]\n"
 
 to_write: Final[dict] = {
     "map": json_map,
