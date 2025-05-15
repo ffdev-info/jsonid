@@ -44,3 +44,7 @@ repos:
           "-sn", # Don't display the pylint score.
           "--rcfile=.pylintrc"
         ]
+exclude: |
+    (?x)(
+        ^samples/
+    )
