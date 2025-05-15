@@ -25,6 +25,8 @@ def write_json():
     json_float = "1.11\n"
     json_map_whitespace = '      \n\n\n\n{"a": "b"}\n'
     json_list_whitespace = "      \n\n\n\n[]\n"
+    json_big5 = '{"\u5ee3\u5dde": "\u5ee3\u5dde"}\n'
+    json_shift_jis = '{"\u307d\u3063\u3077\u308b\u30e1\u30a4\u30eb": "\u307d\u3063\u3077\u308b\u30e1\u30a4\u30eb"}\n'
 
     to_write = {
         "map": json_map,
@@ -33,6 +35,8 @@ def write_json():
         "float": json_float,
         "map_whitespace": json_map_whitespace,
         "list_whitespace": json_list_whitespace,
+        "big5": json_big5,
+        "shift_jis": json_shift_jis,
     }
 
     supported_encodings: Final[list] = [
@@ -43,6 +47,8 @@ def write_json():
         "UTF-32",
         "UTF-32LE",
         "UTF-32BE",
+        "BIG5",
+        "SHIFT-JIS",
     ]
 
     for key, value in to_write.items():

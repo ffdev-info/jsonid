@@ -67,6 +67,8 @@ async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str]:
         "UTF-32",
         "UTF-32LE",
         "UTF-32BE",
+        "SHIFT-JIS",
+        "BIG5",
     ]
     copied = None
     with open(path, "rb") as json_stream:

@@ -15,6 +15,9 @@ json_int: Final[str] = "123\n"
 json_float: Final[str] = "1.11\n"
 json_map_whitespace: Final[str] = '      \n\n\t\n{"a": "b"}\n'
 json_list_whitespace: Final[str] = "      \n\n\t\n[]\n"
+json_big5 = '{"\u5ee3\u5dde": "\u5ee3\u5dde"}\n'
+json_shift_jis = '{"\u307d\u3063\u3077\u308b\u30e1\u30a4\u30eb": "\u307d\u3063\u3077\u308b\u30e1\u30a4\u30eb"}\n'
+
 
 to_write: Final[dict] = {
     "map": json_map,
@@ -23,6 +26,8 @@ to_write: Final[dict] = {
     "float": json_float,
     "map_whitespace": json_map_whitespace,
     "list_whitespace": json_list_whitespace,
+    "big5": json_big5,
+    "shift_jis": json_shift_jis,
 }
 
 encoding_tests = [
@@ -33,6 +38,8 @@ encoding_tests = [
     ("UTF-32", to_write),
     ("UTF-32LE", to_write),
     ("UTF-32BE", to_write),
+    ("BIG5", to_write),
+    ("SHIFT-JIS", to_write),
 ]
 
 
