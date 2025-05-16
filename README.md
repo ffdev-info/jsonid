@@ -10,9 +10,10 @@
 **[JSON][json-1]ID**entification tool and ruleset. `jsonid` can be downloaded
 from pypi.org.
 
-![PyPI - Version](https://img.shields.io/pypi/v/jsonid?style=plastic&color=purple)
+[![PyPI - Version](https://img.shields.io/pypi/v/jsonid?style=plastic&color=purple)][pypi-json-id-1]
 
 [json-1]: https://www.json.org/json-en.html
+[pypi-json-id-1]: https://pypi.org/project/jsonid/
 
 ## Function
 
