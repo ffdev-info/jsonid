@@ -699,6 +699,19 @@ _registry = [
             {"GOTO": "playlist", "KEY": "track", "ISTYPE": list},
         ],
     ),
+    # Example: https://github.com/readyplayerme/Lyra-Sample
+    registry_class.RegistryEntry(
+        identifier="jrid:0063",
+        name=[{"@en": "Unreal Engine Project (Generic)"}],
+        wikidata="http://www.wikidata.org/entity/Q105856666",
+        markers=[
+            {"KEY": "FileVersion", "ISTYPE": int},
+            {"KEY": "EngineAssociation", "ISTYPE": str},
+            {"KEY": "Description", "ISTYPE": str},
+            {"KEY": "Modules", "ISTYPE": list},
+            {"KEY": "Plugins", "ISTYPE": list},
+        ],
+    ),
 ]
 
 
