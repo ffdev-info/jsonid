@@ -46,5 +46,6 @@ repos:
         ]
 exclude: |
     (?x)(
-        ^samples/
+        ^samples/|
+        ^docs/
     )

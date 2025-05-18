@@ -88,21 +88,21 @@ def html():
 
     data = registry_data.registry()
     content = """
-        <tr>
-            <td id="{id}">{id}</td>
-            <td class="markers">{name}</td>
-            <td>{pronom}</td>
-            <td>{loc}</td>
-            <td>{wikidata}</td>
-            <td>{archiveteam}</td>
-            <td class="markers">{markers}</td>
-        </tr>
+<tr>
+    <td id="{id}">{id}</td>
+    <td class="markers">{name}</td>
+    <td>{pronom}</td>
+    <td>{loc}</td>
+    <td>{wikidata}</td>
+    <td>{archiveteam}</td>
+    <td class="markers">{markers}</td>
+</tr>{newline}
     """
     marker_snippet = """
-        <pre>{marker_text}</pre>
+<pre>{marker_text}</pre>
     """
     list_snippet = """
-        <li class="contents"><code><a href="#{id}">{id}: {name}</a></code></li>
+<li class="contents"><code><a href="#{id}">{id}: {name}</a></code></li>
     """
     content_arr = []
     list_arr = []
@@ -116,7 +116,7 @@ def html():
         marker_text = ""
         for marker in datum.markers:
             marker_text = f"{marker_text}{marker}\n"
-        row = content.format(
+        row = content.strip().format(
             id=id_,
             name=name,
             pronom=pronom,
@@ -124,6 +124,7 @@ def html():
             archiveteam=archiveteam,
             loc=loc,
             markers=marker_snippet.strip().format(marker_text=marker_text),
+            newline="\n",
         )
         list_item = list_snippet.strip().format(id=id_, name=name)
         list_item = list_item + "\n"
