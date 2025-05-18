@@ -53,7 +53,7 @@ def decode(content: str):
 
 
 @helpers.timeit
-async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str]:
+async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str, str]:
     """Ensure that the file is a palintext bytestream and can be
     processed as JSON.
     """
@@ -98,7 +98,7 @@ def version_header() -> str:
 scandate: {get_date_time()}""".strip()
 
 
-async def identify_json(paths: list[str], binary: bool):
+async def identify_json(paths: list[str], binary: bool, simple: bool):
     """Identify objects"""
     for idx, path in enumerate(paths):
         if os.path.getsize(path) == 0:
@@ -114,11 +114,27 @@ async def identify_json(paths: list[str], binary: bool):
             continue
         if data != "":
             logger.debug("processing: %s", path)
+            res = registry.matcher(data, encoding=encoding)
+            if simple:
+                for item in res:
+                    name_ = item.name[0]["@en"]
+                    version_ = item.version
+                    if version_ is not None:
+                        name_ = f"{name_}: {version_}"
+                    print(
+                        json.dumps(
+                            {
+                                "identifier": item.identifier,
+                                "filename": os.path.basename(path),
+                                "encoding": item.encoding,
+                            }
+                        )
+                    )
+                continue
             if idx == 0:
                 print("---")
                 print(version_header())
                 print("---")
-            res = registry.matcher(data, encoding=encoding)
             print(f"file: {path}")
             for item in res:
                 print(item)
@@ -136,7 +152,7 @@ async def create_manifest(path: str) -> list[str]:
     return paths
 
 
-async def process_glob(glob_path: str, binary: bool):
+async def process_glob(glob_path: str, binary: bool, simple: bool):
     """Process glob patterns provided by the user."""
     paths = []
     for path in glob.glob(glob_path):
@@ -144,26 +160,26 @@ async def process_glob(glob_path: str, binary: bool):
             paths = paths + await create_manifest(path)
         if os.path.isfile(path):
             paths.append(path)
-    await identify_json(paths, binary)
+    await identify_json(paths, binary, simple)
 
 
-async def process_data(path: str, binary: bool):
+async def process_data(path: str, binary: bool, simple: bool):
     """Process all objects at a given path"""
     logger.debug("processing: %s", path)
 
     if "*" in path:
-        return await process_glob(path, binary)
+        return await process_glob(path, binary, simple)
     if not os.path.exists(path):
         logger.error("path: '%s' does not exist", path)
         sys.exit(1)
     if os.path.isfile(path):
-        await identify_json([path], binary)
+        await identify_json([path], binary, simple)
         sys.exit(0)
     paths = await create_manifest(path)
     if not paths:
         logger.info("no files in directory: %s", path)
         sys.exit(1)
-    await identify_json(paths, binary)
+    await identify_json(paths, binary, simple)
 
 
 def main() -> None:
@@ -189,6 +205,12 @@ def main() -> None:
     parser.add_argument(
         "--binary",
         help="report on binary formats as well as plaintext",
+        required=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--simple",
+        help="provide a simple single-line (JSONL) output",
         required=False,
         action="store_true",
     )
@@ -252,6 +274,7 @@ def main() -> None:
         process_data(
             path=args.path,
             binary=args.binary,
+            simple=args.simple,
         )
     )
 
