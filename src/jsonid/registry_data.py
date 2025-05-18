@@ -741,6 +741,20 @@ _registry = [
             {"KEY": "product", "ISTYPE": dict},
         ],
     ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0066",
+        name=[{"@en": "QMK Firmware Keymap"}],
+        wikidata="http://www.wikidata.org/entity/Q105857362",
+        markers=[
+            {"KEY": "version", "ISTYPE": int},
+            {"KEY": "notes", "ISTYPE": str},
+            {"KEY": "keymap", "ISTYPE": str},
+            {"KEY": "keyboard", "ISTYPE": str},
+            {"KEY": "layout", "ISTYPE": str},
+            {"KEY": "layers", "ISTYPE": list},
+            {"KEY": "author", "ISTYPE": str},
+        ],
+    ),
 ]
 
 
