@@ -40,6 +40,10 @@ logging.Formatter.converter = time.gmtime
 
 logger = logging.getLogger(__name__)
 
+# FFB traditionally stands for first four bytes, but of course this
+# value might not be 4 in this script.
+FFB: Final[int] = 42
+
 
 def decode(content: str):
     """Decode the given content stream."""
@@ -50,6 +54,23 @@ def decode(content: str):
         logger.debug("(decode) can't process: %s", err)
         return False, None
     return True, data
+
+
+async def text_check(chars: str) -> bool:
+    """Check the first characters of the file to figure out if the
+    file is text. Return `True` if the file is text, i.e. no binary
+    bytes are detected.
+
+    via. https://stackoverflow.com/a/7392391
+    """
+    text_chars = bytearray(
+        {0, 7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F}
+    )
+    for char in chars:
+        is_binary = bool(chr(char).encode().translate(None, text_chars))
+        if is_binary is True:
+            return False
+    return True
 
 
 @helpers.timeit
@@ -72,9 +93,11 @@ async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str, str]:
     ]
     copied = None
     with open(path, "rb") as json_stream:
-        copied = json_stream.read()
+        first_chars = json_stream.read(FFB)
+        if not await text_check(first_chars):
+            return False, None, None
+        copied = first_chars + json_stream.read()
     for encoding in supported_encodings:
-        logger.debug("attempting to read data as: %s", encoding)
         try:
             content = copied.decode(encoding)
             valid, data = decode(content)
