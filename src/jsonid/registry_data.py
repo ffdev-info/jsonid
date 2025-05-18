@@ -728,6 +728,19 @@ _registry = [
             {"KEY": "Description", "ISTYPE": str},
         ],
     ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0065",
+        name=[{"@en": "Canadian Product Incident Report form"}],
+        wikidata="http://www.wikidata.org/entity/Q105857241",
+        markers=[
+            {"KEY": "form", "ISTYPE": dict},
+            {"GOTO": "form", "KEY": "formIdentifier", "EXISTS": None},
+            {"KEY": "report", "ISTYPE": dict},
+            {"KEY": "submission", "ISTYPE": dict},
+            {"KEY": "submitter", "ISTYPE": dict},
+            {"KEY": "product", "ISTYPE": dict},
+        ],
+    ),
 ]
 
 
