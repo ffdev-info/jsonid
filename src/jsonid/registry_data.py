@@ -699,7 +699,7 @@ _registry = [
             {"GOTO": "playlist", "KEY": "track", "ISTYPE": list},
         ],
     ),
-    # Example: https://github.com/readyplayerme/Lyra-Sample
+    # Example: https://github.com/readyplayerme/Lyra-Sample.
     registry_class.RegistryEntry(
         identifier="jrid:0063",
         name=[{"@en": "Unreal Engine Project (Generic)"}],
@@ -710,6 +710,22 @@ _registry = [
             {"KEY": "Description", "ISTYPE": str},
             {"KEY": "Modules", "ISTYPE": list},
             {"KEY": "Plugins", "ISTYPE": list},
+        ],
+    ),
+    # Examples also at:  https://github.com/readyplayerme/Lyra-Sample.
+    registry_class.RegistryEntry(
+        identifier="jrid:0064",
+        name=[{"@en": "Unreal Engine Plugin (Generic)"}],
+        wikidata="http://www.wikidata.org/entity/Q105856746",
+        markers=[
+            {"KEY": "FileVersion", "ISTYPE": int},
+            {"KEY": "Version", "ISTYPE": int},
+            {"KEY": "FriendlyName", "ISTYPE": str},
+            {"KEY": "EnabledByDefault", "ISTYPE": bool},
+            {"KEY": "MarketplaceURL", "ISTYPE": str},
+            {"KEY": "DocsURL", "ISTYPE": str},
+            {"KEY": "Modules", "ISTYPE": list},
+            {"KEY": "Description", "ISTYPE": str},
         ],
     ),
 ]
