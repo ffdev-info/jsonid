@@ -755,6 +755,20 @@ _registry = [
             {"KEY": "author", "ISTYPE": str},
         ],
     ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0067",
+        name=[{"@en": "Trizbort.io Adventure Game Map"}],
+        wikidata="http://www.wikidata.org/entity/Q105857377",
+        markers=[
+            {"GOTO": "settings", "KEY": "basic", "EXISTS": None},
+            {"GOTO": "settings", "KEY": "grid", "EXISTS": None},
+            {"KEY": "title", "ISTYPE": str},
+            {"KEY": "author", "ISTYPE": str},
+            {"KEY": "elements", "ISTYPE": list},
+            {"KEY": "description", "ISTYPE": str},
+            {"KEY": "startRoom", "ISTYPE": int},
+        ],
+    ),
 ]
 
 
