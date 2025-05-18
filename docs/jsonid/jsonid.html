@@ -100,14 +100,14 @@ el.replaceWith(d);
 <div class="desc"><p>Return a datetime string for now(),</p></div>
 </dd>
 <dt id="src.jsonid.jsonid.identify_json"><code class="name flex">
-<span>async def <span class="ident">identify_json</span></span>(<span>paths: list[str], binary: bool)</span>
+<span>async def <span class="ident">identify_json</span></span>(<span>paths: list[str], binary: bool, simple: bool)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def identify_json(paths: list[str], binary: bool):
+<pre><code class="python">async def identify_json(paths: list[str], binary: bool, simple: bool):
     &#34;&#34;&#34;Identify objects&#34;&#34;&#34;
     for idx, path in enumerate(paths):
         if os.path.getsize(path) == 0:
@@ -123,11 +123,27 @@ el.replaceWith(d);
             continue
         if data != &#34;&#34;:
             logger.debug(&#34;processing: %s&#34;, path)
+            res = registry.matcher(data, encoding=encoding)
+            if simple:
+                for item in res:
+                    name_ = item.name[0][&#34;@en&#34;]
+                    version_ = item.version
+                    if version_ is not None:
+                        name_ = f&#34;{name_}: {version_}&#34;
+                    print(
+                        json.dumps(
+                            {
+                                &#34;identifier&#34;: item.identifier,
+                                &#34;filename&#34;: os.path.basename(path),
+                                &#34;encoding&#34;: item.encoding,
+                            }
+                        )
+                    )
+                continue
             if idx == 0:
                 print(&#34;---&#34;)
                 print(version_header())
                 print(&#34;---&#34;)
-            res = registry.matcher(data, encoding=encoding)
             print(f&#34;file: {path}&#34;)
             for item in res:
                 print(item)
@@ -166,6 +182,12 @@ el.replaceWith(d);
     parser.add_argument(
         &#34;--binary&#34;,
         help=&#34;report on binary formats as well as plaintext&#34;,
+        required=False,
+        action=&#34;store_true&#34;,
+    )
+    parser.add_argument(
+        &#34;--simple&#34;,
+        help=&#34;provide a simple single-line (JSONL) output&#34;,
         required=False,
         action=&#34;store_true&#34;,
     )
@@ -229,48 +251,49 @@ el.replaceWith(d);
         process_data(
             path=args.path,
             binary=args.binary,
+            simple=args.simple,
         )
     )</code></pre>
 </details>
 <div class="desc"><p>Primary entry point for this script.</p></div>
 </dd>
 <dt id="src.jsonid.jsonid.process_data"><code class="name flex">
-<span>async def <span class="ident">process_data</span></span>(<span>path: str, binary: bool)</span>
+<span>async def <span class="ident">process_data</span></span>(<span>path: str, binary: bool, simple: bool)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def process_data(path: str, binary: bool):
+<pre><code class="python">async def process_data(path: str, binary: bool, simple: bool):
     &#34;&#34;&#34;Process all objects at a given path&#34;&#34;&#34;
     logger.debug(&#34;processing: %s&#34;, path)
 
     if &#34;*&#34; in path:
-        return await process_glob(path, binary)
+        return await process_glob(path, binary, simple)
     if not os.path.exists(path):
         logger.error(&#34;path: &#39;%s&#39; does not exist&#34;, path)
         sys.exit(1)
     if os.path.isfile(path):
-        await identify_json([path], binary)
+        await identify_json([path], binary, simple)
         sys.exit(0)
     paths = await create_manifest(path)
     if not paths:
         logger.info(&#34;no files in directory: %s&#34;, path)
         sys.exit(1)
-    await identify_json(paths, binary)</code></pre>
+    await identify_json(paths, binary, simple)</code></pre>
 </details>
 <div class="desc"><p>Process all objects at a given path</p></div>
 </dd>
 <dt id="src.jsonid.jsonid.process_glob"><code class="name flex">
-<span>async def <span class="ident">process_glob</span></span>(<span>glob_path: str, binary: bool)</span>
+<span>async def <span class="ident">process_glob</span></span>(<span>glob_path: str, binary: bool, simple: bool)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def process_glob(glob_path: str, binary: bool):
+<pre><code class="python">async def process_glob(glob_path: str, binary: bool, simple: bool):
     &#34;&#34;&#34;Process glob patterns provided by the user.&#34;&#34;&#34;
     paths = []
     for path in glob.glob(glob_path):
@@ -278,9 +301,38 @@ el.replaceWith(d);
             paths = paths + await create_manifest(path)
         if os.path.isfile(path):
             paths.append(path)
-    await identify_json(paths, binary)</code></pre>
+    await identify_json(paths, binary, simple)</code></pre>
 </details>
 <div class="desc"><p>Process glob patterns provided by the user.</p></div>
+</dd>
+<dt id="src.jsonid.jsonid.text_check"><code class="name flex">
+<span>async def <span class="ident">text_check</span></span>(<span>chars: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def text_check(chars: str) -&gt; bool:
+    &#34;&#34;&#34;Check the first characters of the file to figure out if the
+    file is text. Return `True` if the file is text, i.e. no binary
+    bytes are detected.
+
+    via. https://stackoverflow.com/a/7392391
+    &#34;&#34;&#34;
+    text_chars = bytearray(
+        {0, 7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F}
+    )
+    for char in chars:
+        is_binary = bool(chr(char).encode().translate(None, text_chars))
+        if is_binary is True:
+            return False
+    return True</code></pre>
+</details>
+<div class="desc"><p>Check the first characters of the file to figure out if the
+file is text. Return <code>True</code> if the file is text, i.e. no binary
+bytes are detected.</p>
+<p>via. <a href="https://stackoverflow.com/a/7392391">https://stackoverflow.com/a/7392391</a></p></div>
 </dd>
 <dt id="src.jsonid.jsonid.version_header"><code class="name flex">
 <span>def <span class="ident">version_header</span></span>(<span>) ‑> str</span>
@@ -321,6 +373,7 @@ scandate: {get_date_time()}&#34;&#34;&#34;.strip()</code></pre>
 <li><code><a title="src.jsonid.jsonid.main" href="#src.jsonid.jsonid.main">main</a></code></li>
 <li><code><a title="src.jsonid.jsonid.process_data" href="#src.jsonid.jsonid.process_data">process_data</a></code></li>
 <li><code><a title="src.jsonid.jsonid.process_glob" href="#src.jsonid.jsonid.process_glob">process_glob</a></code></li>
+<li><code><a title="src.jsonid.jsonid.text_check" href="#src.jsonid.jsonid.text_check">text_check</a></code></li>
 <li><code><a title="src.jsonid.jsonid.version_header" href="#src.jsonid.jsonid.version_header">version_header</a></code></li>
 </ul>
 </li>

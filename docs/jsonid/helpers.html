@@ -113,21 +113,21 @@ el.replaceWith(d);
 
     data = registry_data.registry()
     content = &#34;&#34;&#34;
-        &lt;tr&gt;
-            &lt;td id=&#34;{id}&#34;&gt;{id}&lt;/td&gt;
-            &lt;td class=&#34;markers&#34;&gt;{name}&lt;/td&gt;
-            &lt;td&gt;{pronom}&lt;/td&gt;
-            &lt;td&gt;{loc}&lt;/td&gt;
-            &lt;td&gt;{wikidata}&lt;/td&gt;
-            &lt;td&gt;{archiveteam}&lt;/td&gt;
-            &lt;td class=&#34;markers&#34;&gt;{markers}&lt;/td&gt;
-        &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td id=&#34;{id}&#34;&gt;{id}&lt;/td&gt;
+    &lt;td class=&#34;markers&#34;&gt;{name}&lt;/td&gt;
+    &lt;td&gt;{pronom}&lt;/td&gt;
+    &lt;td&gt;{loc}&lt;/td&gt;
+    &lt;td&gt;{wikidata}&lt;/td&gt;
+    &lt;td&gt;{archiveteam}&lt;/td&gt;
+    &lt;td class=&#34;markers&#34;&gt;{markers}&lt;/td&gt;
+&lt;/tr&gt;{newline}
     &#34;&#34;&#34;
     marker_snippet = &#34;&#34;&#34;
-        &lt;pre&gt;{marker_text}&lt;/pre&gt;
+&lt;pre&gt;{marker_text}&lt;/pre&gt;
     &#34;&#34;&#34;
     list_snippet = &#34;&#34;&#34;
-        &lt;li class=&#34;contents&#34;&gt;&lt;code&gt;&lt;a href=&#34;#{id}&#34;&gt;{id}: {name}&lt;/a&gt;&lt;/code&gt;&lt;/li&gt;
+&lt;li class=&#34;contents&#34;&gt;&lt;code&gt;&lt;a href=&#34;#{id}&#34;&gt;{id}: {name}&lt;/a&gt;&lt;/code&gt;&lt;/li&gt;
     &#34;&#34;&#34;
     content_arr = []
     list_arr = []
@@ -141,7 +141,7 @@ el.replaceWith(d);
         marker_text = &#34;&#34;
         for marker in datum.markers:
             marker_text = f&#34;{marker_text}{marker}\n&#34;
-        row = content.format(
+        row = content.strip().format(
             id=id_,
             name=name,
             pronom=pronom,
@@ -149,6 +149,7 @@ el.replaceWith(d);
             archiveteam=archiveteam,
             loc=loc,
             markers=marker_snippet.strip().format(marker_text=marker_text),
+            newline=&#34;\n&#34;,
         )
         list_item = list_snippet.strip().format(id=id_, name=name)
         list_item = list_item + &#34;\n&#34;
