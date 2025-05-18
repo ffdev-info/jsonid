@@ -769,6 +769,17 @@ _registry = [
             {"KEY": "startRoom", "ISTYPE": int},
         ],
     ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0068",
+        name=[{"@en": "Allotrope Simple Model (Allotrope Foundation)"}],
+        wikidata="http://www.wikidata.org/entity/Q131232260",
+        markers=[
+            {
+                "KEY": "$asm.manifest",
+                "STARTSWITH": "http://purl.allotrope.org/manifests/",
+            },
+        ],
+    ),
 ]
 
 
