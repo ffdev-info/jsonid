@@ -27,7 +27,7 @@ NIL_ENTRY: Final[registry_class.RegistryEntry] = registry_class.RegistryEntry()
 IS_JSON: Final[str] = "parses as JSON but might not conform to a schema"
 
 TYPE_LIST: Final[list] = [{"@en": "data is list type"}]
-TYPE_DICT: Final[list] = [{"@en": "data is dict type"}]
+TYPE_DICT: Final[list] = [{"@en": "data is map (dict) type"}]
 TYPE_NONE: Final[list] = [{"@en": "data is null"}]
 TYPE_FLOAT: Final[list] = [{"@en": "data is float type"}]
 TYPE_INT: Final[list] = [{"@en": "data is integer type"}]
