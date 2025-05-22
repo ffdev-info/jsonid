@@ -75,7 +75,7 @@ _registry = [
         name=[{"@en": "json schema document"}],
         markers=[
             {"KEY": "$schema", "STARTSWITH": "https://json-schema.org/"},
-            {"KEY": "$schema", "ENDSSWITH": "/schema"},
+            {"KEY": "$schema", "ENDSWITH": "/schema"},
             {"KEY": "$defs", "EXISTS": None},
         ],
     ),
@@ -84,7 +84,7 @@ _registry = [
         name=[{"@en": "iiif image api (all versions)"}],
         markers=[
             {"KEY": "@context", "STARTSWITH": "http://iiif.io/api/image/"},
-            {"KEY": "@context", "ENDSSWITH": "/context.json"},
+            {"KEY": "@context", "ENDSWITH": "/context.json"},
             {"KEY": "type", "CONTAINS": "ImageService"},
             {"KEY": "protocol", "IS": "http://iiif.io/api/image"},
         ],
