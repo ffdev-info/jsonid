@@ -233,6 +233,30 @@ el.replaceWith(d);
 </code></pre>
 <p><a href="#div_id">jump link</a></p></div>
 </dd>
+<dt id="src.jsonid.helpers.keys_check"><code class="name flex">
+<span>def <span class="ident">keys_check</span></span>(<span>) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def keys_check() -&gt; bool:
+    &#34;&#34;&#34;Make sure keys are valid.&#34;&#34;&#34;
+    data = registry_data.registry()
+    valid = True
+    for entry in data:
+        id_ = entry.identifier
+        for marker in entry.markers:
+            for key in marker.keys():
+                if key in registry_matchers.ALL_KEYS:
+                    continue
+                logger.debug(&#34;%s: &#39;%s&#39; is not a permitted key&#34;, id_, key)
+                valid = False
+    return valid</code></pre>
+</details>
+<div class="desc"><p>Make sure keys are valid.</p></div>
+</dd>
 <dt id="src.jsonid.helpers.timeit"><code class="name flex">
 <span>def <span class="ident">timeit</span></span>(<span>func)</span>
 </code></dt>
@@ -278,6 +302,7 @@ el.replaceWith(d);
 <li><code><a title="src.jsonid.helpers.entry_check" href="#src.jsonid.helpers.entry_check">entry_check</a></code></li>
 <li><code><a title="src.jsonid.helpers.format_marker" href="#src.jsonid.helpers.format_marker">format_marker</a></code></li>
 <li><code><a title="src.jsonid.helpers.html" href="#src.jsonid.helpers.html">html</a></code></li>
+<li><code><a title="src.jsonid.helpers.keys_check" href="#src.jsonid.helpers.keys_check">keys_check</a></code></li>
 <li><code><a title="src.jsonid.helpers.timeit" href="#src.jsonid.helpers.timeit">timeit</a></code></li>
 </ul>
 </li>

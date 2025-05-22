@@ -151,6 +151,31 @@ el.replaceWith(d);
 </details>
 <div class="desc"><p>Identify objects</p></div>
 </dd>
+<dt id="src.jsonid.jsonid.init_logging"><code class="name flex">
+<span>def <span class="ident">init_logging</span></span>(<span>debug)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def init_logging(debug):
+    &#34;&#34;&#34;Initialize logging.&#34;&#34;&#34;
+    logging.basicConfig(
+        format=&#34;%(asctime)-15s %(levelname)s :: %(filename)s:%(lineno)s:%(funcName)s() :: %(message)s&#34;,  # noqa: E501
+        datefmt=&#34;%Y-%m-%d %H:%M:%S&#34;,
+        level=logging.DEBUG if debug else logging.INFO,
+        handlers=[
+            logging.StreamHandler(),
+        ],
+    )
+    logging.Formatter.converter = time.gmtime
+    global logger
+    logger = logging.getLogger(__name__)
+    logger.debug(&#34;debug logging is configured&#34;)</code></pre>
+</details>
+<div class="desc"><p>Initialize logging.</p></div>
+</dd>
 <dt id="src.jsonid.jsonid.main"><code class="name flex">
 <span>def <span class="ident">main</span></span>(<span>) ‑> None</span>
 </code></dt>
@@ -225,8 +250,7 @@ el.replaceWith(d);
         required=False,
     )
     args = parser.parse_args()
-    logging.getLogger(__name__).setLevel(logging.DEBUG if args.debug else logging.INFO)
-    logger.debug(&#34;debug logging is configured&#34;)
+    init_logging(args.debug)
     if args.registry:
         raise NotImplementedError(&#34;custom registry is not yet available&#34;)
     if args.pronom:
@@ -240,6 +264,12 @@ el.replaceWith(d);
         if not helpers.entry_check():
             logger.error(&#34;registry entries are not correct&#34;)
             sys.exit(1)
+        if not helpers.keys_check():
+            logger.error(
+                &#34;invalid keys appear in data (use `--debug` logging for more information)&#34;
+            )
+            sys.exit(1)
+        logger.info(&#34;ok&#34;)
         sys.exit()
     if args.html:
         helpers.html()
@@ -370,6 +400,7 @@ scandate: {get_date_time()}&#34;&#34;&#34;.strip()</code></pre>
 <li><code><a title="src.jsonid.jsonid.decode" href="#src.jsonid.jsonid.decode">decode</a></code></li>
 <li><code><a title="src.jsonid.jsonid.get_date_time" href="#src.jsonid.jsonid.get_date_time">get_date_time</a></code></li>
 <li><code><a title="src.jsonid.jsonid.identify_json" href="#src.jsonid.jsonid.identify_json">identify_json</a></code></li>
+<li><code><a title="src.jsonid.jsonid.init_logging" href="#src.jsonid.jsonid.init_logging">init_logging</a></code></li>
 <li><code><a title="src.jsonid.jsonid.main" href="#src.jsonid.jsonid.main">main</a></code></li>
 <li><code><a title="src.jsonid.jsonid.process_data" href="#src.jsonid.jsonid.process_data">process_data</a></code></li>
 <li><code><a title="src.jsonid.jsonid.process_glob" href="#src.jsonid.jsonid.process_glob">process_glob</a></code></li>
