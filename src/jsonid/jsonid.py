@@ -295,6 +295,7 @@ def main() -> None:
                 "invalid keys appear in data (use `--debug` logging for more information)"
             )
             sys.exit(1)
+        logger.info("ok")
         sys.exit()
     if args.html:
         helpers.html()
