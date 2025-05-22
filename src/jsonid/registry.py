@@ -28,9 +28,15 @@ class IdentificationFailure(Exception):
     """Raise when identification fails."""
 
 
+DOCTYPE_JSON: Final[str] = "JSON"
+DOCTYPE_YAML: Final[str] = "YAML"
+DOCTYPE_TOML: Final[str] = "TOML"
+
 NIL_ENTRY: Final[registry_class.RegistryEntry] = registry_class.RegistryEntry()
 
 IS_JSON: Final[str] = "parses as JSON but might not conform to a schema"
+IS_YAML: Final[str] = "parses as YAML but might not conform to a schema"
+IS_TOML: Final[str] = "parses as TOML but might not conform to a schema"
 
 TYPE_LIST: Final[list] = [{"@en": "data is list type"}]
 TYPE_DICT: Final[list] = [{"@en": "data is map (dict) type"}]
@@ -50,6 +56,29 @@ JSON_ONLY: Final[registry_class.RegistryEntry] = registry_class.RegistryEntry(
     loc="https://www.loc.gov/preservation/digital/formats/fdd/fdd000381.shtml",
     wikidata="https://www.wikidata.org/entity/Q2063",
     archive_team="http://fileformats.archiveteam.org/wiki/JSON",
+    mime=["application/json"],
+    markers=None,
+)
+
+YAML_ONLY: Final[registry_class.RegistryEntry] = registry_class.RegistryEntry(
+    identifier=registry_class.YAML_ID,
+    name=[{"@en": "YAML (YAML another markup language / YAML ain't markup language)"}],
+    description=[{"@en": IS_YAML}],
+    version=None,
+    pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/818",
+    wikidata="https://www.wikidata.org/entity/Q281876",
+    archive_team="http://fileformats.archiveteam.org/wiki/JSON",
+    mime=["application/json"],
+    markers=None,
+)
+
+TOML_ONLY: Final[registry_class.RegistryEntry] = registry_class.RegistryEntry(
+    identifier=registry_class.TOML_ID,
+    name=[{"@en": "Tom's Obvious, Minimal Language (TOML)"}],
+    description=[{"@en": IS_TOML}],
+    version=None,
+    wikidata="https://www.wikidata.org/entity/Q28449455",
+    archive_team="http://fileformats.archiveteam.org/wiki/TOML",
     mime=["application/json"],
     markers=None,
 )

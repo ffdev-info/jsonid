@@ -96,9 +96,8 @@ async def test_utf16(tmp_path):
     dir_.mkdir()
     file_ = dir_ / "utftest.json"
     file_.write_text(json_data, encoding="utf-16")
-
     res = await file_processing.identify_plaintext_bytestream(file_)
-    assert res == (True, {"a": "b"}, "UTF-16", None)
+    assert res == (True, {"a": "b"}, registry.DOCTYPE_JSON, "UTF-16", None)
 
     json_data = '{"a": "b"'
     dir_ = tmp_path / "jsonid-utf16-broken"
@@ -107,7 +106,7 @@ async def test_utf16(tmp_path):
     file_.write_text(json_data, encoding="utf-16")
 
     res = await file_processing.identify_plaintext_bytestream(file_)
-    assert res == (False, None, None, None)
+    assert res == (False, None, None, None, None)
 
     json_data = '{"a": "b"}'
     dir_ = tmp_path / "jsonid-utf16LE"
@@ -119,6 +118,7 @@ async def test_utf16(tmp_path):
     assert res == (
         True,
         {"a": "b"},
+        registry.DOCTYPE_JSON,
         "UTF-16",
         None,
     )  # apparently this is equivalent to plain UTF-16.
@@ -130,7 +130,7 @@ async def test_utf16(tmp_path):
     file_.write_text(json_data, encoding="UTF-16BE")
 
     res = await file_processing.identify_plaintext_bytestream(file_)
-    assert res == (True, {"a": "b"}, "UTF-16BE", None)
+    assert res == (True, {"a": "b"}, registry.DOCTYPE_JSON, "UTF-16BE", None)
 
 
 @pytest.mark.asyncio
