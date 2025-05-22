@@ -6,6 +6,8 @@ from typing import Final, Optional
 import yaml
 
 JSON_ID: Final[int] = "jrid:0000"
+YAML_ID: Final[int] = "jrid:yaml:0000"
+TOML_ID: Final[int] = "jrid:toml:0000"
 
 
 @dataclass
