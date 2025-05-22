@@ -185,7 +185,7 @@ _registry = [
         description=[{"@en": "via"}],
         markers=[
             {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
-            {"KEY": "$schema", "ENDSWIWITH": "/schema#"},
+            {"KEY": "$schema", "ENDSWITH": "/schema#"},
             {"KEY": "name", "IS": "Document"},
             {"KEY": "is", "IS": "http://largemind.com/schema/jacker-song-1#"},
             {"KEY": "namespace", "IS": "jacker"},
@@ -210,7 +210,7 @@ _registry = [
         archive_team="http://fileformats.archiveteam.org/wiki/GlTF",
         markers=[
             {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
-            {"KEY": "$schema", "ENDSWIWITH": "/schema#"},
+            {"KEY": "$schema", "ENDSWITH": "/schema#"},
             {"KEY": "title", "EXISTS": None},
             {"KEY": "type", "IS": "object"},
             {"KEY": "description", "IS": "The root object for a glTF asset."},
