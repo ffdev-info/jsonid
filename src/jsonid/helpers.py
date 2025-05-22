@@ -6,11 +6,12 @@ import time
 try:
     import htm_template
     import registry_data
+    import registry_matchers
 except ModuleNotFoundError:
     try:
-        from src.jsonid import htm_template, registry_data
+        from src.jsonid import htm_template, registry_data, registry_matchers
     except ModuleNotFoundError:
-        from jsonid import htm_template, registry_data
+        from jsonid import htm_template, registry_data, registry_matchers
 
 
 logger = logging.getLogger(__name__)
@@ -42,6 +43,21 @@ def entry_check() -> bool:
     data = registry_data.registry()
     ids = [datum.identifier for datum in data]
     return len(set(ids)) == len(data)
+
+
+def keys_check() -> bool:
+    """Make sure keys are valid."""
+    data = registry_data.registry()
+    valid = True
+    for entry in data:
+        id_ = entry.identifier
+        for marker in entry.markers:
+            for key in marker.keys():
+                if key in registry_matchers.ALL_KEYS:
+                    continue
+                logger.debug("%s: '%s' is not a permitted key", id_, key)
+                valid = False
+    return valid
 
 
 def format_marker(marker_text: str, marker: dict) -> str:

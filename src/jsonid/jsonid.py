@@ -1,5 +1,7 @@
 """jsonid entry-point."""
 
+# pylint: disable=C0103,W0603
+
 import argparse
 import asyncio
 import datetime
@@ -24,21 +26,24 @@ except ModuleNotFoundError:
         from jsonid import export, helpers, registry, version
 
 
-# Set up logging.
-logging.basicConfig(
-    format="%(asctime)-15s %(levelname)s :: %(filename)s:%(lineno)s:%(funcName)s() :: %(message)s",  # noqa: E501
-    datefmt="%Y-%m-%d %H:%M:%S",
-    level="INFO",
-    handlers=[
-        logging.StreamHandler(),
-    ],
-)
-
-# Format logs using UTC time.
-logging.Formatter.converter = time.gmtime
+logger = None
 
 
-logger = logging.getLogger(__name__)
+def init_logging(debug):
+    """Initialize logging."""
+    logging.basicConfig(
+        format="%(asctime)-15s %(levelname)s :: %(filename)s:%(lineno)s:%(funcName)s() :: %(message)s",  # noqa: E501
+        datefmt="%Y-%m-%d %H:%M:%S",
+        level=logging.DEBUG if debug else logging.INFO,
+        handlers=[
+            logging.StreamHandler(),
+        ],
+    )
+    logging.Formatter.converter = time.gmtime
+    global logger
+    logger = logging.getLogger(__name__)
+    logger.debug("debug logging is configured")
+
 
 # FFB traditionally stands for first four bytes, but of course this
 # value might not be 4 in this script.
@@ -271,8 +276,7 @@ def main() -> None:
         required=False,
     )
     args = parser.parse_args()
-    logging.getLogger(__name__).setLevel(logging.DEBUG if args.debug else logging.INFO)
-    logger.debug("debug logging is configured")
+    init_logging(args.debug)
     if args.registry:
         raise NotImplementedError("custom registry is not yet available")
     if args.pronom:
@@ -285,6 +289,11 @@ def main() -> None:
     if args.check:
         if not helpers.entry_check():
             logger.error("registry entries are not correct")
+            sys.exit(1)
+        if not helpers.keys_check():
+            logger.error(
+                "invalid keys appear in data (use `--debug` logging for more information)"
+            )
             sys.exit(1)
         sys.exit()
     if args.html:

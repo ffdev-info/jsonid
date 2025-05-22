@@ -18,6 +18,20 @@ MARKER_KEY_EXISTS: Final[str] = "EXISTS"
 MARKER_KEY_NO_EXIST: Final[str] = "NOEXIST"
 MARKER_IS_TYPE: Final[str] = "ISTYPE"
 
+ALL_KEYS: Final[list] = [
+    MARKER_INDEX,
+    MARKER_GOTO,
+    MARKER_KEY,
+    MARKER_CONTAINS,
+    MARKER_STARTSWITH,
+    MARKER_ENDSWITH,
+    MARKER_IS,
+    MARKER_REGEX,
+    MARKER_KEY_EXISTS,
+    MARKER_KEY_NO_EXIST,
+    MARKER_IS_TYPE,
+]
+
 
 def at_index(marker: dict, data: dict) -> dict:
     """Provide an ability to investigate an index."""
