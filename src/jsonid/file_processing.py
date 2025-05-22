@@ -6,8 +6,11 @@ import json
 import logging
 import os
 import sys
+import tomllib as toml
 from datetime import timezone
-from typing import Final, Tuple
+from typing import Any, Final, Tuple
+
+import yaml
 
 try:
     import analysis
@@ -46,15 +49,46 @@ async def text_check(chars: str) -> bool:
     return True
 
 
+async def whitespace_check(chars: str) -> bool:
+    """Check whether the file only contains whitespace.
+
+    NB. this check might take longer than needed.
+    """
+    if not chars.strip():
+        return False
+    return True
+
+
 def decode(content: str):
     """Decode the given content stream."""
     data = ""
     try:
         data = json.loads(content)
+        return True, data, registry.DOCTYPE_JSON
     except json.decoder.JSONDecodeError as err:
         logger.debug("(decode) can't process: %s", err)
-        return False, None
-    return True, data
+    try:
+        if content.strip()[:3] != "---":
+            raise TypeError
+        data = yaml.safe_load(content.strip())
+        if not isinstance(data, str):
+            return True, data, registry.DOCTYPE_YAML
+    except (
+        yaml.scanner.ScannerError,
+        yaml.parser.ParserError,
+        yaml.reader.ReaderError,
+        yaml.composer.ComposerError,
+    ) as err:
+        logger.debug("(decode) can't process: %s", err)
+    except (TypeError, IndexError):
+        # Document too short, or YAML without header is not supported.
+        pass
+    try:
+        data = toml.loads(content)
+        return True, data, registry.DOCTYPE_TOML
+    except toml.TOMLDecodeError as err:
+        logger.debug("(decode) can't process: %s", err)
+    return False, None, None
 
 
 def get_date_time() -> str:
@@ -87,6 +121,45 @@ async def analyse_json(paths: list[str]):
     return analysis_res
 
 
+# pylint: disable=R0913
+async def process_result(
+    idx: int, path: str, data: Any, doctype: str, encoding: str, simple: bool
+):
+    """Process something JSON/YAML/TOML"""
+    res = []
+    if doctype == registry.DOCTYPE_JSON:
+        res = registry.matcher(data, encoding=encoding)
+    if doctype == registry.DOCTYPE_YAML:
+        res = [registry.YAML_ONLY]
+    if doctype == registry.DOCTYPE_TOML:
+        res = [registry.TOML_ONLY]
+    if simple:
+        for item in res:
+            name_ = item.name[0]["@en"]
+            version_ = item.version
+            if version_ is not None:
+                name_ = f"{name_}: {version_}"
+            print(
+                json.dumps(
+                    {
+                        "identifier": item.identifier,
+                        "filename": os.path.basename(path),
+                        "encoding": item.encoding,
+                    }
+                )
+            )
+        return
+    if idx == 0:
+        print("---")
+        print(version_header())
+        print("---")
+    print(f"file: {path}")
+    for item in res:
+        print(item)
+    print("---")
+    return
+
+
 async def identify_json(paths: list[str], binary: bool, simple: bool):
     """Identify objects."""
     for idx, path in enumerate(paths):
@@ -95,7 +168,7 @@ async def identify_json(paths: list[str], binary: bool, simple: bool):
             if binary:
                 logger.warning("report on binary object...")
             continue
-        valid, data, encoding, _ = await identify_plaintext_bytestream(path)
+        valid, data, doctype, encoding, _ = await identify_plaintext_bytestream(path)
         if not valid:
             logger.debug("%s: is not plaintext", path)
             if binary:
@@ -103,38 +176,14 @@ async def identify_json(paths: list[str], binary: bool, simple: bool):
             continue
         if data == "":
             continue
-        logger.debug("processing: %s", path)
-        res = registry.matcher(data, encoding=encoding)
-        if simple:
-            for item in res:
-                name_ = item.name[0]["@en"]
-                version_ = item.version
-                if version_ is not None:
-                    name_ = f"{name_}: {version_}"
-                print(
-                    json.dumps(
-                        {
-                            "identifier": item.identifier,
-                            "filename": os.path.basename(path),
-                            "encoding": item.encoding,
-                        }
-                    )
-                )
-            continue
-        if idx == 0:
-            print("---")
-            print(version_header())
-            print("---")
-        print(f"file: {path}")
-        for item in res:
-            print(item)
-        print("---")
+        logger.debug("processing: %s (%s)", path, doctype)
+        await process_result(idx, path, data, doctype, encoding, simple)
 
 
 @helpers.timeit
 async def identify_plaintext_bytestream(
     path: str, analyse: bool = False
-) -> Tuple[bool, str, str, str]:
+) -> Tuple[bool, str, str, str, Any]:
     """Ensure that the file is a palintext bytestream and can be
     processed as JSON.
 
@@ -155,24 +204,29 @@ async def identify_plaintext_bytestream(
         "BIG5",
     ]
     copied = None
+    if not os.path.getsize(path):
+        logger.debug("file is zero bytes: %s", path)
+        return False, None, None, None, None
     with open(path, "rb") as json_stream:
         first_chars = json_stream.read(FFB)
         if not await text_check(first_chars):
-            return False, None, None, None
+            return False, None, None, None, None
         copied = first_chars + json_stream.read()
+        if not await whitespace_check(copied):
+            return False, None, None, None, None
     for encoding in supported_encodings:
         try:
             content = copied.decode(encoding)
-            valid, data = decode(content)
+            valid, data, doctype = decode(content)
         except UnicodeDecodeError as err:
             logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
         except UnicodeError as err:
             logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
         if valid and analyse:
-            return valid, data, encoding, content
+            return valid, data, doctype, encoding, content
         if valid:
-            return valid, data, encoding, None
-    return False, None, None, None
+            return valid, data, doctype, encoding, None
+    return False, None, None, None, None
 
 
 async def create_manifest(path: str) -> list[str]:
