@@ -44,6 +44,20 @@ def entry_check() -> bool:
     return len(set(ids)) == len(data)
 
 
+def format_marker(marker_text: str, marker: dict) -> str:
+    """Format a marker to it displays correctly."""
+    marker_formatted = {}
+    for key, value in marker.items():
+        if key == "ISTYPE":
+            new_type = (
+                str(value).replace("<class ", "").replace(">", "").replace("'", "")
+            )
+            marker_formatted[key] = new_type
+            continue
+        marker_formatted[key] = value
+    return f"{marker_text}{marker_formatted}\n"
+
+
 def html():
     """Output HTML that can be used for documentation.
 
@@ -115,7 +129,7 @@ def html():
         loc = datum.loc != ""
         marker_text = ""
         for marker in datum.markers:
-            marker_text = f"{marker_text}{marker}\n"
+            marker_text = format_marker(marker_text, marker)
         row = content.strip().format(
             id=id_,
             name=name,
