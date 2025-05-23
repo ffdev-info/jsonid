@@ -72,6 +72,7 @@ TOML_ONLY: Final[registry_class.RegistryEntry] = registry_class.RegistryEntry(
     description=[{"@en": IS_TOML}],
     version=None,
     wikidata="https://www.wikidata.org/entity/Q28449455",
+    archive_team="http://fileformats.archiveteam.org/wiki/TOML",
     mime=["application/json"],
     markers=None,
 )
