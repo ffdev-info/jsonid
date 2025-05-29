@@ -780,6 +780,34 @@ _registry = [
             },
         ],
     ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0069",
+        name=[{"@en": "Sublime Text Project"}],
+        wikidata="http://www.wikidata.org/entity/Q105852854",
+        # Ideally we would then identify the first dict in the list
+        # as having key 'path'.
+        markers=[
+            {
+                "KEY": "folders",
+                "ISTYPE": list,
+            },
+        ],
+    ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0070",
+        name=[{"@en": "Sublime Text Workspace"}],
+        wikidata="http://www.wikidata.org/entity/Q105851929",
+        markers=[
+            {"KEY": "auto_complete", "ISTYPE": dict},
+            {"KEY": "buffers", "ISTYPE": list},
+            {"KEY": "layout", "ISTYPE": dict},
+            {"KEY": "project", "ISTYPE": str},
+            {"KEY": "settings", "ISTYPE": dict},
+            {"KEY": "status_bar_visible", "ISTYPE": bool},
+            {"KEY": "side_bar_visible", "ISTYPE": bool},
+            {"KEY": "show_tabs", "ISTYPE": bool},
+        ],
+    ),
 ]
 
 
