@@ -174,7 +174,9 @@ async def process_result(
     if doctype == registry.DOCTYPE_JSON:
         res = registry.matcher(data, encoding=encoding)
     if doctype == registry.DOCTYPE_YAML:
-        res = [registry.YAML_ONLY]
+        res = registry.matcher(data, encoding=encoding)
+        #print(a)
+        #res = [registry.YAML_ONLY]
     if doctype == registry.DOCTYPE_TOML:
         res = [registry.TOML_ONLY]
     if simple:
