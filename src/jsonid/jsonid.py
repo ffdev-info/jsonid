@@ -275,6 +275,13 @@ def main() -> None:
         help="return results in different languages",
         required=False,
     )
+    parser.add_argument(
+        "--analyse",
+        help="return an analysis of a file, ideally JSON-like object, to support development",
+        required=False,
+        type=str,
+        metavar="PATH",
+    )
     args = parser.parse_args()
     init_logging(args.debug)
     if args.registry:
@@ -299,6 +306,9 @@ def main() -> None:
         sys.exit()
     if args.html:
         helpers.html()
+        sys.exit()
+    if args.analyse:
+        helpers.analyse_input()
         sys.exit()
     if not args.path:
         parser.print_help(sys.stderr)
