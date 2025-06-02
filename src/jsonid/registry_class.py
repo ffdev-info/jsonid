@@ -5,6 +5,15 @@ from typing import Final, Optional
 
 import yaml
 
+try:
+    import helpers
+except ModuleNotFoundError:
+    try:
+        from src.jsonid import helpers
+    except ModuleNotFoundError:
+        from jsonid import helpers
+
+
 JSON_ID: Final[int] = "jrid:0000"
 
 
@@ -78,15 +87,7 @@ class RegistryEntry:  # pylint: disable=R0902
         for marker in obj.markers:
             try:
                 replace_me = marker["ISTYPE"]
-                if isinstance(replace_me, type):
-                    if replace_me.__name__ == "dict":
-                        replace_me = "map"
-                    elif replace_me.__name__ == "int":
-                        replace_me = "integer"
-                    elif replace_me.__name__ == "list":
-                        replace_me = "list"
-                    elif replace_me.__name__ == "str":
-                        replace_me = "string"
+                replace_me = helpers.substitute_type_text()
                 marker["ISTYPE"] = replace_me
                 new_markers.append(marker)
             except KeyError:

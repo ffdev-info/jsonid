@@ -2,6 +2,7 @@
 
 import logging
 import time
+from typing import Union
 
 try:
     import htm_template
@@ -72,6 +73,32 @@ def format_marker(marker_text: str, marker: dict) -> str:
             continue
         marker_formatted[key] = value
     return f"{marker_text}{marker_formatted}\n"
+
+
+def substitute_type_text(replace_me: Union[str, type]):
+    """Output a text substitution for a type that will otherwise not
+    pretty-print.
+    """
+
+    # pylint: disable=R0911
+
+    if replace_me.__name__ == "dict":
+        return "map"
+    if replace_me.__name__ == "int":
+        return "integer"
+    if replace_me.__name__ == "list":
+        return "list"
+    if replace_me.__name__ == "str":
+        return "string"
+    if replace_me.__name__ == "float":
+        return "float"
+    if replace_me.__name__ == "bool":
+        return "bool"
+    if replace_me.__name__ == "NoneType":
+        return "NoneType"
+    if not isinstance(replace_me, type):
+        pass
+    return replace_me
 
 
 def html():

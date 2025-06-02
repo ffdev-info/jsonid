@@ -75,14 +75,15 @@ async def analyse_json(paths: list[str]):
         if os.path.getsize(path) == 0:
             logger.debug("'%s' is an empty file")
             continue
-        valid, data, encoding = await identify_plaintext_bytestream(path)
+        valid, data, encoding, content = await identify_plaintext_bytestream(path, True)
         if not valid:
             logger.debug("%s: is not plaintext", path)
             continue
         if data == "":
             continue
-        await analysis.analyse_input(data)
-        analysis_res.append((valid, encoding))
+        res = await analysis.analyse_input(data, content)
+        res["encoding"] = encoding
+        analysis_res.append(res)
     return analysis_res
 
 
@@ -131,9 +132,14 @@ async def identify_json(paths: list[str], binary: bool, simple: bool):
 
 
 @helpers.timeit
-async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str, str]:
+async def identify_plaintext_bytestream(
+    path: str, analyse: bool = False
+) -> Tuple[bool, str, str, str]:
     """Ensure that the file is a palintext bytestream and can be
     processed as JSON.
+
+    If analysis is `True` we try to return more low-level file
+    information to help folks make appraisal decisions.
     """
     logger.debug("attempting to open: %s", path)
     valid = False
@@ -162,9 +168,11 @@ async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str, str]:
             logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
         except UnicodeError as err:
             logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
+        if valid and analyse:
+            return valid, data, encoding, content
         if valid:
-            return valid, data, encoding
-    return False, None, None
+            return valid, data, encoding, None
+    return False, None, None, None
 
 
 async def create_manifest(path: str) -> list[str]:
@@ -210,20 +218,31 @@ async def process_data(path: str, binary: bool, simple: bool):
     await identify_json(paths, binary, simple)
 
 
+async def output_analysis(res: list) -> None:
+    """Format the output of the analysis."""
+    for item in res:
+        print(json.dumps(item, indent=2))
+
+
 async def analyse_data(path: str) -> list:
     """Process all objects at a given path"""
     logger.debug("processing: %s", path)
-
+    res = []
     if "*" in path:
         paths = await process_glob(path)
-        return await analyse_json(paths)
+        res = await analyse_json(paths)
+        await output_analysis(res)
+        sys.exit()
     if not os.path.exists(path):
         logger.error("path: '%s' does not exist", path)
         sys.exit(1)
     if os.path.isfile(path):
-        return await analyse_json([path])
+        res = await analyse_json([path])
+        await output_analysis(res)
     paths = await create_manifest(path)
     if not paths:
         logger.info("no files in directory: %s", path)
         sys.exit(1)
-    return await analyse_json(paths)
+    res = await analyse_json(paths)
+    await output_analysis(res)
+    sys.exit()
