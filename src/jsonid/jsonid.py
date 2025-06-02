@@ -106,6 +106,7 @@ def main() -> None:
     parser.add_argument(
         "--analyse",
         "--analyze",
+        "-a",
         help="return an analysis of a file, ideally JSON-like object, to support development",
         required=False,
         type=str,
