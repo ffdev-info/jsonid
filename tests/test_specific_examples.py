@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from src.jsonid import jsonid, registry, registry_class
+from src.jsonid import file_processing, registry, registry_class
 
 specific_registry = [
     registry_class.RegistryEntry(
@@ -97,7 +97,7 @@ async def test_utf16(tmp_path):
     file_ = dir_ / "utftest.json"
     file_.write_text(json_data, encoding="utf-16")
 
-    res = await jsonid.identify_plaintext_bytestream(file_)
+    res = await file_processing.identify_plaintext_bytestream(file_)
     assert res == (True, {"a": "b"}, "UTF-16")
 
     json_data = '{"a": "b"'
@@ -106,7 +106,7 @@ async def test_utf16(tmp_path):
     file_ = dir_ / "utftest.json"
     file_.write_text(json_data, encoding="utf-16")
 
-    res = await jsonid.identify_plaintext_bytestream(file_)
+    res = await file_processing.identify_plaintext_bytestream(file_)
     assert res == (False, None, None)
 
     json_data = '{"a": "b"}'
@@ -115,7 +115,7 @@ async def test_utf16(tmp_path):
     file_ = dir_ / "utftest.json"
     file_.write_text(json_data, encoding="UTF-16LE")
 
-    res = await jsonid.identify_plaintext_bytestream(file_)
+    res = await file_processing.identify_plaintext_bytestream(file_)
     assert res == (
         True,
         {"a": "b"},
@@ -128,20 +128,20 @@ async def test_utf16(tmp_path):
     file_ = dir_ / "utftest.json"
     file_.write_text(json_data, encoding="UTF-16BE")
 
-    res = await jsonid.identify_plaintext_bytestream(file_)
+    res = await file_processing.identify_plaintext_bytestream(file_)
     assert res == (True, {"a": "b"}, "UTF-16BE")
 
 
 @pytest.mark.asyncio
 async def test_text_check():
     """Make sure the text check works"""
-    assert await jsonid.text_check("\x7f".encode()) is False
-    assert await jsonid.text_check("\x03".encode()) is False
-    assert await jsonid.text_check("\x50\x4b\x03\x04".encode()) is False
-    assert await jsonid.text_check("\x50\x4b\x03".encode()) is False
-    assert await jsonid.text_check("\x01".encode()) is False
-    assert await jsonid.text_check("\x2d".encode()) is True
-    assert await jsonid.text_check("📚".encode()) is True
-    assert await jsonid.text_check("---".encode()) is True
-    assert await jsonid.text_check("{".encode()) is True
-    assert await jsonid.text_check("   \n".encode()) is True
+    assert await file_processing.text_check("\x7f".encode()) is False
+    assert await file_processing.text_check("\x03".encode()) is False
+    assert await file_processing.text_check("\x50\x4b\x03\x04".encode()) is False
+    assert await file_processing.text_check("\x50\x4b\x03".encode()) is False
+    assert await file_processing.text_check("\x01".encode()) is False
+    assert await file_processing.text_check("\x2d".encode()) is True
+    assert await file_processing.text_check("📚".encode()) is True
+    assert await file_processing.text_check("---".encode()) is True
+    assert await file_processing.text_check("{".encode()) is True
+    assert await file_processing.text_check("   \n".encode()) is True

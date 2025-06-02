@@ -6,7 +6,7 @@ from typing import Final
 
 import pytest
 
-from src.jsonid import jsonid, registry
+from src.jsonid import file_processing, registry
 
 json_map: Final[str] = '{"a": "b"}\n'
 json_list: Final[str] = "[]\n"
@@ -55,7 +55,7 @@ async def test_encodings(tmp_path, encoding, data_to_write):
     for key, value in data_to_write.items():
         json_file = dir_ / f"{encoding}-{key}.json"
         json_file.open("w", encoding=encoding).write(value)
-        res, data, _ = await jsonid.identify_plaintext_bytestream(json_file)
+        res, data, _ = await file_processing.identify_plaintext_bytestream(json_file)
         assert res is True, f"{json_file} couldn't be opened with encoding"
 
         id_ = registry.matcher(data, encoding=encoding)
