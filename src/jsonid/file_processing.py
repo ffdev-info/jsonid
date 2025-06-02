@@ -10,14 +10,15 @@ from datetime import timezone
 from typing import Final, Tuple
 
 try:
+    import analysis
     import helpers
     import registry
     import version
 except ModuleNotFoundError:
     try:
-        from src.jsonid import helpers, registry, version
+        from src.jsonid import analysis, helpers, registry, version
     except ModuleNotFoundError:
-        from jsonid import helpers, registry, version
+        from jsonid import analysis, helpers, registry, version
 
 
 logger = logging.getLogger(__name__)
@@ -67,6 +68,24 @@ def version_header() -> str:
 scandate: {get_date_time()}""".strip()
 
 
+async def analyse_json(paths: list[str]):
+    """Analyse a JSON object."""
+    analysis_res = []
+    for path in paths:
+        if os.path.getsize(path) == 0:
+            logger.debug("'%s' is an empty file")
+            continue
+        valid, data, encoding = await identify_plaintext_bytestream(path)
+        if not valid:
+            logger.debug("%s: is not plaintext", path)
+            continue
+        if data == "":
+            continue
+        await analysis.analyse_input(data)
+        analysis_res.append((valid, encoding))
+    return analysis_res
+
+
 async def identify_json(paths: list[str], binary: bool, simple: bool):
     """Identify objects"""
     for idx, path in enumerate(paths):
@@ -81,33 +100,34 @@ async def identify_json(paths: list[str], binary: bool, simple: bool):
             if binary:
                 logger.warning("report on binary object...")
             continue
-        if data != "":
-            logger.debug("processing: %s", path)
-            res = registry.matcher(data, encoding=encoding)
-            if simple:
-                for item in res:
-                    name_ = item.name[0]["@en"]
-                    version_ = item.version
-                    if version_ is not None:
-                        name_ = f"{name_}: {version_}"
-                    print(
-                        json.dumps(
-                            {
-                                "identifier": item.identifier,
-                                "filename": os.path.basename(path),
-                                "encoding": item.encoding,
-                            }
-                        )
-                    )
-                continue
-            if idx == 0:
-                print("---")
-                print(version_header())
-                print("---")
-            print(f"file: {path}")
+        if data == "":
+            continue
+        logger.debug("processing: %s", path)
+        res = registry.matcher(data, encoding=encoding)
+        if simple:
             for item in res:
-                print(item)
+                name_ = item.name[0]["@en"]
+                version_ = item.version
+                if version_ is not None:
+                    name_ = f"{name_}: {version_}"
+                print(
+                    json.dumps(
+                        {
+                            "identifier": item.identifier,
+                            "filename": os.path.basename(path),
+                            "encoding": item.encoding,
+                        }
+                    )
+                )
+            continue
+        if idx == 0:
             print("---")
+            print(version_header())
+            print("---")
+        print(f"file: {path}")
+        for item in res:
+            print(item)
+        print("---")
 
 
 @helpers.timeit
@@ -158,7 +178,7 @@ async def create_manifest(path: str) -> list[str]:
     return paths
 
 
-async def process_glob(glob_path: str, binary: bool, simple: bool):
+async def process_glob(glob_path: str):
     """Process glob patterns provided by the user."""
     paths = []
     for path in glob.glob(glob_path):
@@ -166,7 +186,7 @@ async def process_glob(glob_path: str, binary: bool, simple: bool):
             paths = paths + await create_manifest(path)
         if os.path.isfile(path):
             paths.append(path)
-    await identify_json(paths, binary, simple)
+    return paths
 
 
 async def process_data(path: str, binary: bool, simple: bool):
@@ -174,7 +194,9 @@ async def process_data(path: str, binary: bool, simple: bool):
     logger.debug("processing: %s", path)
 
     if "*" in path:
-        return await process_glob(path, binary, simple)
+        paths = await process_glob(path)
+        await identify_json(paths, binary, simple)
+        sys.exit(0)
     if not os.path.exists(path):
         logger.error("path: '%s' does not exist", path)
         sys.exit(1)
@@ -186,3 +208,22 @@ async def process_data(path: str, binary: bool, simple: bool):
         logger.info("no files in directory: %s", path)
         sys.exit(1)
     await identify_json(paths, binary, simple)
+
+
+async def analyse_data(path: str) -> list:
+    """Process all objects at a given path"""
+    logger.debug("processing: %s", path)
+
+    if "*" in path:
+        paths = await process_glob(path)
+        return await analyse_json(paths)
+    if not os.path.exists(path):
+        logger.error("path: '%s' does not exist", path)
+        sys.exit(1)
+    if os.path.isfile(path):
+        return await analyse_json([path])
+    paths = await create_manifest(path)
+    if not paths:
+        logger.info("no files in directory: %s", path)
+        sys.exit(1)
+    return await analyse_json(paths)

@@ -74,19 +74,6 @@ def format_marker(marker_text: str, marker: dict) -> str:
     return f"{marker_text}{marker_formatted}\n"
 
 
-def analyse_input():
-    """Analyse a given input and output statistics, e.g.
-
-    * No. keys at top level.
-    * Keys at top level.
-    * Key-types at top level.
-    * Possibly deopt of keys at top-level.
-    * Possibly total depth (recursive).
-
-    """
-    logger.warning("analyse is not yet implemented")
-
-
 def html():
     """Output HTML that can be used for documentation.
 

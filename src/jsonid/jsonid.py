@@ -105,6 +105,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--analyse",
+        "--analyze",
         help="return an analysis of a file, ideally JSON-like object, to support development",
         required=False,
         type=str,
@@ -136,7 +137,7 @@ def main() -> None:
         helpers.html()
         sys.exit()
     if args.analyse:
-        helpers.analyse_input()
+        asyncio.run(file_processing.analyse_data(args.analyse))
         sys.exit()
     if not args.path:
         parser.print_help(sys.stderr)
