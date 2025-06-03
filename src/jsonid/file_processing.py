@@ -94,7 +94,7 @@ async def identify_json(paths: list[str], binary: bool, simple: bool):
             if binary:
                 logger.warning("report on binary object...")
             continue
-        valid, data, encoding = await identify_plaintext_bytestream(path)
+        valid, data, encoding, _ = await identify_plaintext_bytestream(path)
         if not valid:
             logger.debug("%s: is not plaintext", path)
             if binary:
@@ -152,7 +152,7 @@ async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str, str]:
     with open(path, "rb") as json_stream:
         first_chars = json_stream.read(FFB)
         if not await text_check(first_chars):
-            return False, None, None
+            return False, None, None, None
         copied = first_chars + json_stream.read()
     for encoding in supported_encodings:
         try:

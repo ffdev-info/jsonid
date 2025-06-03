@@ -55,7 +55,7 @@ async def test_encodings(tmp_path, encoding, data_to_write):
     for key, value in data_to_write.items():
         json_file = dir_ / f"{encoding}-{key}.json"
         json_file.open("w", encoding=encoding).write(value)
-        res, data, _ = await file_processing.identify_plaintext_bytestream(json_file)
+        res, data, _, _ = await file_processing.identify_plaintext_bytestream(json_file)
         assert res is True, f"{json_file} couldn't be opened with encoding"
 
         id_ = registry.matcher(data, encoding=encoding)
