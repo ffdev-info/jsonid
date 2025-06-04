@@ -76,14 +76,14 @@ to UTF-8.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def identify_json(paths: list[str]):
-    &#34;&#34;&#34;Identify objects&#34;&#34;&#34;
+    &#34;&#34;&#34;Identify objects.&#34;&#34;&#34;
     for idx, path in enumerate(paths):
         valid, data, _, _ = await identify_plaintext_bytestream(path)
         if not valid:
             continue
         print(json.dumps(data, indent=2))</code></pre>
 </details>
-<div class="desc"><p>Identify objects</p></div>
+<div class="desc"><p>Identify objects.</p></div>
 </dd>
 <dt id="src.utils.json2json.identify_plaintext_bytestream"><code class="name flex">
 <span>async def <span class="ident">identify_plaintext_bytestream</span></span>(<span>path: str) ‑> Tuple[bool, str]</span>
@@ -179,7 +179,7 @@ processed as JSON.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def process_data(path: str):
-    &#34;&#34;&#34;Process all objects at a given path&#34;&#34;&#34;
+    &#34;&#34;&#34;Process all objects at a given path.&#34;&#34;&#34;
     logger.debug(&#34;processing: %s&#34;, path)
 
     if &#34;*&#34; in path:
@@ -196,7 +196,7 @@ processed as JSON.</p></div>
         sys.exit(1)
     await identify_json(paths)</code></pre>
 </details>
-<div class="desc"><p>Process all objects at a given path</p></div>
+<div class="desc"><p>Process all objects at a given path.</p></div>
 </dd>
 <dt id="src.utils.json2json.process_glob"><code class="name flex">
 <span>async def <span class="ident">process_glob</span></span>(<span>glob_path: str)</span>

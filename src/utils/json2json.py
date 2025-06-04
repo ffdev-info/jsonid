@@ -60,7 +60,7 @@ async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str]:
 
 
 async def identify_json(paths: list[str]):
-    """Identify objects"""
+    """Identify objects."""
     for idx, path in enumerate(paths):
         valid, data, _, _ = await identify_plaintext_bytestream(path)
         if not valid:
@@ -91,7 +91,7 @@ async def process_glob(glob_path: str):
 
 
 async def process_data(path: str):
-    """Process all objects at a given path"""
+    """Process all objects at a given path."""
     logger.debug("processing: %s", path)
 
     if "*" in path:

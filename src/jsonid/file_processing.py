@@ -88,7 +88,7 @@ async def analyse_json(paths: list[str]):
 
 
 async def identify_json(paths: list[str], binary: bool, simple: bool):
-    """Identify objects"""
+    """Identify objects."""
     for idx, path in enumerate(paths):
         if os.path.getsize(path) == 0:
             logger.debug("'%s' is an empty file")
@@ -198,7 +198,7 @@ async def process_glob(glob_path: str):
 
 
 async def process_data(path: str, binary: bool, simple: bool):
-    """Process all objects at a given path"""
+    """Process all objects at a given path."""
     logger.debug("processing: %s", path)
 
     if "*" in path:
@@ -225,7 +225,7 @@ async def output_analysis(res: list) -> None:
 
 
 async def analyse_data(path: str) -> list:
-    """Process all objects at a given path"""
+    """Process all objects at a given path."""
     logger.debug("processing: %s", path)
     res = []
     if "*" in path:

@@ -54,7 +54,7 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def analyse_data(path: str) -&gt; list:
-    &#34;&#34;&#34;Process all objects at a given path&#34;&#34;&#34;
+    &#34;&#34;&#34;Process all objects at a given path.&#34;&#34;&#34;
     logger.debug(&#34;processing: %s&#34;, path)
     res = []
     if &#34;*&#34; in path:
@@ -76,7 +76,7 @@ el.replaceWith(d);
     await output_analysis(res)
     sys.exit()</code></pre>
 </details>
-<div class="desc"><p>Process all objects at a given path</p></div>
+<div class="desc"><p>Process all objects at a given path.</p></div>
 </dd>
 <dt id="src.jsonid.file_processing.analyse_json"><code class="name flex">
 <span>async def <span class="ident">analyse_json</span></span>(<span>paths: list[str])</span>
@@ -169,7 +169,7 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def identify_json(paths: list[str], binary: bool, simple: bool):
-    &#34;&#34;&#34;Identify objects&#34;&#34;&#34;
+    &#34;&#34;&#34;Identify objects.&#34;&#34;&#34;
     for idx, path in enumerate(paths):
         if os.path.getsize(path) == 0:
             logger.debug(&#34;&#39;%s&#39; is an empty file&#34;)
@@ -211,7 +211,7 @@ el.replaceWith(d);
             print(item)
         print(&#34;---&#34;)</code></pre>
 </details>
-<div class="desc"><p>Identify objects</p></div>
+<div class="desc"><p>Identify objects.</p></div>
 </dd>
 <dt id="src.jsonid.file_processing.output_analysis"><code class="name flex">
 <span>async def <span class="ident">output_analysis</span></span>(<span>res: list) ‑> None</span>
@@ -237,7 +237,7 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def process_data(path: str, binary: bool, simple: bool):
-    &#34;&#34;&#34;Process all objects at a given path&#34;&#34;&#34;
+    &#34;&#34;&#34;Process all objects at a given path.&#34;&#34;&#34;
     logger.debug(&#34;processing: %s&#34;, path)
 
     if &#34;*&#34; in path:
@@ -256,7 +256,7 @@ el.replaceWith(d);
         sys.exit(1)
     await identify_json(paths, binary, simple)</code></pre>
 </details>
-<div class="desc"><p>Process all objects at a given path</p></div>
+<div class="desc"><p>Process all objects at a given path.</p></div>
 </dd>
 <dt id="src.jsonid.file_processing.process_glob"><code class="name flex">
 <span>async def <span class="ident">process_glob</span></span>(<span>glob_path: str)</span>
