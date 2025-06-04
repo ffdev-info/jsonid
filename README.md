@@ -268,6 +268,46 @@ name:
 
 The structure should become more concrete as `jsonid` is formalized.
 
+## Analysis
+
+`jsonid` provides an analysis mechanism to help developers of identifiers. It
+might also help users talk about interesting properties about the objects
+being analysed, and provide consistent fingerprinting for data that has
+different byte-alignment but is otherwise identical.
+
+> **NB.**: Comments on existing statistics or ideas for new ones are
+appreciated.
+
+### Example analysis
+
+```json
+{
+  "content_length": 329,
+  "number_of_lines": 32,
+  "line_warning": false,
+  "top_level_keys_count": 4,
+  "top_level_keys": [
+    "key1",
+    "key2",
+    "key3",
+    "key4"
+  ],
+  "top_level_types": [
+    "list",
+    "map",
+    "list",
+    "list"
+  ],
+  "depth": 8,
+  "heterogeneous_list_types": true,
+  "fingerprint": {
+    "unf": "UNF:6:sAsKNmjOtnpJtXi3Q6jVrQ==",
+    "cid": "bafkreibho6naw5r7j23gxu6rzocrud4pc6fjsnteyjveirtnbs3uxemv2u"
+  },
+  "encoding": "UTF-8"
+}
+```
+
 ## Utils
 
 ### json2json
