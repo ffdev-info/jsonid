@@ -45,112 +45,6 @@ el.replaceWith(d);
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="src.jsonid.jsonid.create_manifest"><code class="name flex">
-<span>async def <span class="ident">create_manifest</span></span>(<span>path: str) ‑> list[str]</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def create_manifest(path: str) -&gt; list[str]:
-    &#34;&#34;&#34;Get a list of paths to process.&#34;&#34;&#34;
-    paths = []
-    for root, _, files in os.walk(path):
-        for file in files:
-            file_path = os.path.join(root, file)
-            logger.debug(file_path)
-            paths.append(file_path)
-    return paths</code></pre>
-</details>
-<div class="desc"><p>Get a list of paths to process.</p></div>
-</dd>
-<dt id="src.jsonid.jsonid.decode"><code class="name flex">
-<span>def <span class="ident">decode</span></span>(<span>content: str)</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def decode(content: str):
-    &#34;&#34;&#34;Decode the given content stream.&#34;&#34;&#34;
-    data = &#34;&#34;
-    try:
-        data = json.loads(content)
-    except json.decoder.JSONDecodeError as err:
-        logger.debug(&#34;(decode) can&#39;t process: %s&#34;, err)
-        return False, None
-    return True, data</code></pre>
-</details>
-<div class="desc"><p>Decode the given content stream.</p></div>
-</dd>
-<dt id="src.jsonid.jsonid.get_date_time"><code class="name flex">
-<span>def <span class="ident">get_date_time</span></span>(<span>) ‑> str</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_date_time() -&gt; str:
-    &#34;&#34;&#34;Return a datetime string for now(),&#34;&#34;&#34;
-    return datetime.datetime.now(timezone.utc).strftime(version.UTC_TIME_FORMAT)</code></pre>
-</details>
-<div class="desc"><p>Return a datetime string for now(),</p></div>
-</dd>
-<dt id="src.jsonid.jsonid.identify_json"><code class="name flex">
-<span>async def <span class="ident">identify_json</span></span>(<span>paths: list[str], binary: bool, simple: bool)</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def identify_json(paths: list[str], binary: bool, simple: bool):
-    &#34;&#34;&#34;Identify objects&#34;&#34;&#34;
-    for idx, path in enumerate(paths):
-        if os.path.getsize(path) == 0:
-            logger.debug(&#34;&#39;%s&#39; is an empty file&#34;)
-            if binary:
-                logger.warning(&#34;report on binary object...&#34;)
-            continue
-        valid, data, encoding = await identify_plaintext_bytestream(path)
-        if not valid:
-            logger.debug(&#34;%s: is not plaintext&#34;, path)
-            if binary:
-                logger.warning(&#34;report on binary object...&#34;)
-            continue
-        if data != &#34;&#34;:
-            logger.debug(&#34;processing: %s&#34;, path)
-            res = registry.matcher(data, encoding=encoding)
-            if simple:
-                for item in res:
-                    name_ = item.name[0][&#34;@en&#34;]
-                    version_ = item.version
-                    if version_ is not None:
-                        name_ = f&#34;{name_}: {version_}&#34;
-                    print(
-                        json.dumps(
-                            {
-                                &#34;identifier&#34;: item.identifier,
-                                &#34;filename&#34;: os.path.basename(path),
-                                &#34;encoding&#34;: item.encoding,
-                            }
-                        )
-                    )
-                continue
-            if idx == 0:
-                print(&#34;---&#34;)
-                print(version_header())
-                print(&#34;---&#34;)
-            print(f&#34;file: {path}&#34;)
-            for item in res:
-                print(item)
-            print(&#34;---&#34;)</code></pre>
-</details>
-<div class="desc"><p>Identify objects</p></div>
-</dd>
 <dt id="src.jsonid.jsonid.init_logging"><code class="name flex">
 <span>def <span class="ident">init_logging</span></span>(<span>debug)</span>
 </code></dt>
@@ -249,6 +143,15 @@ el.replaceWith(d);
         help=&#34;return results in different languages&#34;,
         required=False,
     )
+    parser.add_argument(
+        &#34;--analyse&#34;,
+        &#34;--analyze&#34;,
+        &#34;-a&#34;,
+        help=&#34;return an analysis of a file, ideally JSON-like object, to support development&#34;,
+        required=False,
+        type=str,
+        metavar=&#34;PATH&#34;,
+    )
     args = parser.parse_args()
     init_logging(args.debug)
     if args.registry:
@@ -274,11 +177,14 @@ el.replaceWith(d);
     if args.html:
         helpers.html()
         sys.exit()
+    if args.analyse:
+        asyncio.run(file_processing.analyse_data(args.analyse))
+        sys.exit()
     if not args.path:
         parser.print_help(sys.stderr)
         sys.exit()
     asyncio.run(
-        process_data(
+        file_processing.process_data(
             path=args.path,
             binary=args.binary,
             simple=args.simple,
@@ -286,98 +192,6 @@ el.replaceWith(d);
     )</code></pre>
 </details>
 <div class="desc"><p>Primary entry point for this script.</p></div>
-</dd>
-<dt id="src.jsonid.jsonid.process_data"><code class="name flex">
-<span>async def <span class="ident">process_data</span></span>(<span>path: str, binary: bool, simple: bool)</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def process_data(path: str, binary: bool, simple: bool):
-    &#34;&#34;&#34;Process all objects at a given path&#34;&#34;&#34;
-    logger.debug(&#34;processing: %s&#34;, path)
-
-    if &#34;*&#34; in path:
-        return await process_glob(path, binary, simple)
-    if not os.path.exists(path):
-        logger.error(&#34;path: &#39;%s&#39; does not exist&#34;, path)
-        sys.exit(1)
-    if os.path.isfile(path):
-        await identify_json([path], binary, simple)
-        sys.exit(0)
-    paths = await create_manifest(path)
-    if not paths:
-        logger.info(&#34;no files in directory: %s&#34;, path)
-        sys.exit(1)
-    await identify_json(paths, binary, simple)</code></pre>
-</details>
-<div class="desc"><p>Process all objects at a given path</p></div>
-</dd>
-<dt id="src.jsonid.jsonid.process_glob"><code class="name flex">
-<span>async def <span class="ident">process_glob</span></span>(<span>glob_path: str, binary: bool, simple: bool)</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def process_glob(glob_path: str, binary: bool, simple: bool):
-    &#34;&#34;&#34;Process glob patterns provided by the user.&#34;&#34;&#34;
-    paths = []
-    for path in glob.glob(glob_path):
-        if os.path.isdir(path):
-            paths = paths + await create_manifest(path)
-        if os.path.isfile(path):
-            paths.append(path)
-    await identify_json(paths, binary, simple)</code></pre>
-</details>
-<div class="desc"><p>Process glob patterns provided by the user.</p></div>
-</dd>
-<dt id="src.jsonid.jsonid.text_check"><code class="name flex">
-<span>async def <span class="ident">text_check</span></span>(<span>chars: str) ‑> bool</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def text_check(chars: str) -&gt; bool:
-    &#34;&#34;&#34;Check the first characters of the file to figure out if the
-    file is text. Return `True` if the file is text, i.e. no binary
-    bytes are detected.
-
-    via. https://stackoverflow.com/a/7392391
-    &#34;&#34;&#34;
-    text_chars = bytearray(
-        {0, 7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F}
-    )
-    for char in chars:
-        is_binary = bool(chr(char).encode().translate(None, text_chars))
-        if is_binary is True:
-            return False
-    return True</code></pre>
-</details>
-<div class="desc"><p>Check the first characters of the file to figure out if the
-file is text. Return <code>True</code> if the file is text, i.e. no binary
-bytes are detected.</p>
-<p>via. <a href="https://stackoverflow.com/a/7392391">https://stackoverflow.com/a/7392391</a></p></div>
-</dd>
-<dt id="src.jsonid.jsonid.version_header"><code class="name flex">
-<span>def <span class="ident">version_header</span></span>(<span>) ‑> str</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def version_header() -&gt; str:
-    &#34;&#34;&#34;Output a formatted version header.&#34;&#34;&#34;
-    return f&#34;&#34;&#34;jsonid: {version.get_version()}
-scandate: {get_date_time()}&#34;&#34;&#34;.strip()</code></pre>
-</details>
-<div class="desc"><p>Output a formatted version header.</p></div>
 </dd>
 </dl>
 </section>
@@ -395,17 +209,9 @@ scandate: {get_date_time()}&#34;&#34;&#34;.strip()</code></pre>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="two-column">
-<li><code><a title="src.jsonid.jsonid.create_manifest" href="#src.jsonid.jsonid.create_manifest">create_manifest</a></code></li>
-<li><code><a title="src.jsonid.jsonid.decode" href="#src.jsonid.jsonid.decode">decode</a></code></li>
-<li><code><a title="src.jsonid.jsonid.get_date_time" href="#src.jsonid.jsonid.get_date_time">get_date_time</a></code></li>
-<li><code><a title="src.jsonid.jsonid.identify_json" href="#src.jsonid.jsonid.identify_json">identify_json</a></code></li>
+<ul class="">
 <li><code><a title="src.jsonid.jsonid.init_logging" href="#src.jsonid.jsonid.init_logging">init_logging</a></code></li>
 <li><code><a title="src.jsonid.jsonid.main" href="#src.jsonid.jsonid.main">main</a></code></li>
-<li><code><a title="src.jsonid.jsonid.process_data" href="#src.jsonid.jsonid.process_data">process_data</a></code></li>
-<li><code><a title="src.jsonid.jsonid.process_glob" href="#src.jsonid.jsonid.process_glob">process_glob</a></code></li>
-<li><code><a title="src.jsonid.jsonid.text_check" href="#src.jsonid.jsonid.text_check">text_check</a></code></li>
-<li><code><a title="src.jsonid.jsonid.version_header" href="#src.jsonid.jsonid.version_header">version_header</a></code></li>
 </ul>
 </li>
 </ul>

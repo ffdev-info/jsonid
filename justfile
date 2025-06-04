@@ -42,6 +42,7 @@ docs: && htm
    rm -rf docs/*
    pdoc3 --force --html -o docs src/
    mv -f docs/src/* docs/.
+   cp static/images/JSON_logo-crockford.png docs/favicon.ico
    mkdir docs/registry
    rm -rf docs/src
 
@@ -49,6 +50,7 @@ docs: && htm
 htm:
    rm -rf docs/registry/*
    python jsonid.py --htm > docs/registry/index.htm
+   cp static/images/JSON_logo-crockford.png docs/registry/favicon.ico
 
 # Serve the documentation
 serve-docs:

@@ -78,7 +78,7 @@ to UTF-8.</p>
 <pre><code class="python">async def identify_json(paths: list[str]):
     &#34;&#34;&#34;Identify objects&#34;&#34;&#34;
     for idx, path in enumerate(paths):
-        valid, data = await identify_plaintext_bytestream(path)
+        valid, data, _, _ = await identify_plaintext_bytestream(path)
         if not valid:
             continue
         print(json.dumps(data, indent=2))</code></pre>

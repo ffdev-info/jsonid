@@ -126,15 +126,7 @@ class RegistryEntry:  # pylint: disable=R0902
         for marker in obj.markers:
             try:
                 replace_me = marker[&#34;ISTYPE&#34;]
-                if isinstance(replace_me, type):
-                    if replace_me.__name__ == &#34;dict&#34;:
-                        replace_me = &#34;map&#34;
-                    elif replace_me.__name__ == &#34;int&#34;:
-                        replace_me = &#34;integer&#34;
-                    elif replace_me.__name__ == &#34;list&#34;:
-                        replace_me = &#34;list&#34;
-                    elif replace_me.__name__ == &#34;str&#34;:
-                        replace_me = &#34;string&#34;
+                replace_me = helpers.substitute_type_text()
                 marker[&#34;ISTYPE&#34;] = replace_me
                 new_markers.append(marker)
             except KeyError:
@@ -222,15 +214,7 @@ a registry.</p></div>
     for marker in obj.markers:
         try:
             replace_me = marker[&#34;ISTYPE&#34;]
-            if isinstance(replace_me, type):
-                if replace_me.__name__ == &#34;dict&#34;:
-                    replace_me = &#34;map&#34;
-                elif replace_me.__name__ == &#34;int&#34;:
-                    replace_me = &#34;integer&#34;
-                elif replace_me.__name__ == &#34;list&#34;:
-                    replace_me = &#34;list&#34;
-                elif replace_me.__name__ == &#34;str&#34;:
-                    replace_me = &#34;string&#34;
+            replace_me = helpers.substitute_type_text()
             marker[&#34;ISTYPE&#34;] = replace_me
             new_markers.append(marker)
         except KeyError:

@@ -257,6 +257,42 @@ el.replaceWith(d);
 </details>
 <div class="desc"><p>Make sure keys are valid.</p></div>
 </dd>
+<dt id="src.jsonid.helpers.substitute_type_text"><code class="name flex">
+<span>def <span class="ident">substitute_type_text</span></span>(<span>replace_me: str | type)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def substitute_type_text(replace_me: Union[str, type]):
+    &#34;&#34;&#34;Output a text substitution for a type that will otherwise not
+    pretty-print.
+    &#34;&#34;&#34;
+
+    # pylint: disable=R0911
+
+    if replace_me.__name__ == &#34;dict&#34;:
+        return &#34;map&#34;
+    if replace_me.__name__ == &#34;int&#34;:
+        return &#34;integer&#34;
+    if replace_me.__name__ == &#34;list&#34;:
+        return &#34;list&#34;
+    if replace_me.__name__ == &#34;str&#34;:
+        return &#34;string&#34;
+    if replace_me.__name__ == &#34;float&#34;:
+        return &#34;float&#34;
+    if replace_me.__name__ == &#34;bool&#34;:
+        return &#34;bool&#34;
+    if replace_me.__name__ == &#34;NoneType&#34;:
+        return &#34;NoneType&#34;
+    if not isinstance(replace_me, type):
+        pass
+    return replace_me</code></pre>
+</details>
+<div class="desc"><p>Output a text substitution for a type that will otherwise not
+pretty-print.</p></div>
+</dd>
 <dt id="src.jsonid.helpers.timeit"><code class="name flex">
 <span>def <span class="ident">timeit</span></span>(<span>func)</span>
 </code></dt>
@@ -303,6 +339,7 @@ el.replaceWith(d);
 <li><code><a title="src.jsonid.helpers.format_marker" href="#src.jsonid.helpers.format_marker">format_marker</a></code></li>
 <li><code><a title="src.jsonid.helpers.html" href="#src.jsonid.helpers.html">html</a></code></li>
 <li><code><a title="src.jsonid.helpers.keys_check" href="#src.jsonid.helpers.keys_check">keys_check</a></code></li>
+<li><code><a title="src.jsonid.helpers.substitute_type_text" href="#src.jsonid.helpers.substitute_type_text">substitute_type_text</a></code></li>
 <li><code><a title="src.jsonid.helpers.timeit" href="#src.jsonid.helpers.timeit">timeit</a></code></li>
 </ul>
 </li>

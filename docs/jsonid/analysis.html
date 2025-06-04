@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>src.jsonid.analysis API documentation</title>
+<meta name="description" content="Simple module to analys JSON for technical metadata.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.jsonid.analysis</code></h1>
+</header>
+<section id="section-intro">
+<p>Simple module to analys JSON for technical metadata.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="src.jsonid.analysis.analyse_all_types"><code class="name flex">
+<span>async def <span class="ident">analyse_all_types</span></span>(<span>data: Any, all_depths: bool = False)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def analyse_all_types(data: Any, all_depths: bool = False):
+    &#34;&#34;&#34;Analyse types at all levels of the object to provide an
+    indication of overall complexity, and to provide some idea to
+    signature devs about what data to test for. Defaults to just the
+    top level to reduce complexity.
+    &#34;&#34;&#34;
+    try:
+        values = data.values()
+    except AttributeError:
+        if not isinstance(data, list):
+            return [type(data)]
+        values = data
+    types = []
+    for item in values:
+        types.append(helpers.substitute_type_text(type(item)))
+        if not all_depths:
+            continue
+        if isinstance(item, list):
+            type_ = await analyse_all_types(item, all_depths)
+            types.append(type_)
+        if isinstance(item, dict):
+            type_ = await analyse_all_types(item, all_depths)
+            types.append(type_)
+    return types</code></pre>
+</details>
+<div class="desc"><p>Analyse types at all levels of the object to provide an
+indication of overall complexity, and to provide some idea to
+signature devs about what data to test for. Defaults to just the
+top level to reduce complexity.</p></div>
+</dd>
+<dt id="src.jsonid.analysis.analyse_depth"><code class="name flex">
+<span>async def <span class="ident">analyse_depth</span></span>(<span>data: Any) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def analyse_depth(data: Any) -&gt; int:
+    &#34;&#34;&#34;Calculate the depth of the structure.
+
+    Depth is the maximum depth of complex list and dict data-types. NB.
+    all list, and dict types are computed to generate the output.
+    &#34;&#34;&#34;
+    try:
+        values = data.values()
+    except AttributeError:
+        if not isinstance(data, list):
+            return 1
+        values = data
+    depths = [0]
+    for item in values:
+        depth = 0
+        if isinstance(item, (dict, list)):
+            depth = depth + 1
+            depth = depth + await analyse_depth(item)
+            depths.append(depth)
+    return max(depths)</code></pre>
+</details>
+<div class="desc"><p>Calculate the depth of the structure.</p>
+<p>Depth is the maximum depth of complex list and dict data-types. NB.
+all list, and dict types are computed to generate the output.</p></div>
+</dd>
+<dt id="src.jsonid.analysis.analyse_input"><code class="name flex">
+<span>async def <span class="ident">analyse_input</span></span>(<span>data: Any, content: str, all_depths: bool = False)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def analyse_input(data: Any, content: str, all_depths: bool = False):
+    &#34;&#34;&#34;Analyse a given input and output statistics, e.g.
+
+    * No. keys at top level.
+    * Key-types at different depths.
+    * Identify heterogeneous lists.
+    * Depth of complex objects, i.e. nested dicts and lists.
+
+    &#34;&#34;&#34;
+
+    keys = data.keys()
+    depth = await analyse_depth(data)
+    content_length = len(content)
+    lines = content.count(&#34;\n&#34;)
+    line_warning = False
+    if lines == 1 and len(content) &gt; LINE_LENGTH:
+        line_warning = True
+    top_level_types = await analyse_all_types(data, all_depths)
+    heterogenerous_types = await analyse_list_types(data)
+
+    return {
+        &#34;content_length&#34;: content_length,
+        &#34;number_of_lines&#34;: lines,
+        &#34;line_warning&#34;: line_warning,
+        &#34;top_level_keys_count&#34;: len(keys),
+        &#34;top_level_keys&#34;: list(keys),
+        &#34;top_level_types&#34;: top_level_types,
+        &#34;depth&#34;: depth,
+        &#34;heterogeneous_list_types&#34;: heterogenerous_types,
+        &#34;fingerprint&#34;: await fingerprint(data),
+    }</code></pre>
+</details>
+<div class="desc"><p>Analyse a given input and output statistics, e.g.</p>
+<ul>
+<li>No. keys at top level.</li>
+<li>Key-types at different depths.</li>
+<li>Identify heterogeneous lists.</li>
+<li>Depth of complex objects, i.e. nested dicts and lists.</li>
+</ul></div>
+</dd>
+<dt id="src.jsonid.analysis.analyse_list_types"><code class="name flex">
+<span>async def <span class="ident">analyse_list_types</span></span>(<span>data: Any) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def analyse_list_types(data: Any) -&gt; bool:
+    &#34;&#34;&#34;Return information about the complexity of list objects to
+    provide some indivator to developers about when they are
+    prociessing lists of odd-complexity, e.g. when processing a list
+    of integers, SHOULD you normally have to expect a list type, bool,
+    or something  else?
+
+    NB. I have a sense _get_list_types() can be combined with this
+    function but maybe at the risk of complexity? (or it simplifies
+    things?)
+
+    At time of writing, the current method works quite niccely. Looks
+    good, might delete later.
+    &#34;&#34;&#34;
+    try:
+        values = data.values()
+    except AttributeError:
+        if not isinstance(data, list):
+            return False
+        values = data
+    complexity = []
+    for item in values:
+        if isinstance(item, list):
+            # Process list, but if list contains a list, we need to
+            # recurse.
+            complex_types = await _get_list_types(item)
+            complexity.append(complex_types)
+        if isinstance(item, dict):
+            complex_types = await analyse_list_types(item)
+            complexity.append(complex_types)
+    return True in complexity</code></pre>
+</details>
+<div class="desc"><p>Return information about the complexity of list objects to
+provide some indivator to developers about when they are
+prociessing lists of odd-complexity, e.g. when processing a list
+of integers, SHOULD you normally have to expect a list type, bool,
+or something
+else?</p>
+<p>NB. I have a sense _get_list_types() can be combined with this
+function but maybe at the risk of complexity? (or it simplifies
+things?)</p>
+<p>At time of writing, the current method works quite niccely. Looks
+good, might delete later.</p></div>
+</dd>
+<dt id="src.jsonid.analysis.fingerprint"><code class="name flex">
+<span>async def <span class="ident">fingerprint</span></span>(<span>data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def fingerprint(data: Any):
+    &#34;&#34;&#34;fingerprint the json data
+
+    Useful thoughts on normalizing a json-like data structure:
+
+       * https://stackoverflow.com/a/22003440/23789970
+    &#34;&#34;&#34;
+    return {
+        &#34;unf&#34;: await unf_fingerprint(data),
+        &#34;cid&#34;: await ipld_cid(data),
+    }</code></pre>
+</details>
+<div class="desc"><p>fingerprint the json data</p>
+<p>Useful thoughts on normalizing a json-like data structure:</p>
+<ul>
+<li><a href="https://stackoverflow.com/a/22003440/23789970">https://stackoverflow.com/a/22003440/23789970</a></li>
+</ul></div>
+</dd>
+<dt id="src.jsonid.analysis.ipld_cid"><code class="name flex">
+<span>async def <span class="ident">ipld_cid</span></span>(<span>data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def ipld_cid(data: Any):
+    &#34;&#34;&#34;Create a IPLD compatible content identifier.
+
+    Dissect the CID here: https://cid.ipfs.tech/
+    &#34;&#34;&#34;
+
+    d = json.dumps(data, sort_keys=True)
+    digest = hashlib.sha256(d.encode()).hexdigest()
+    cid_hash = cid_sha256_hash(digest.encode())
+    return cid_hash</code></pre>
+</details>
+<div class="desc"><p>Create a IPLD compatible content identifier.</p>
+<p>Dissect the CID here: <a href="https://cid.ipfs.tech/">https://cid.ipfs.tech/</a></p></div>
+</dd>
+<dt id="src.jsonid.analysis.unf_fingerprint"><code class="name flex">
+<span>async def <span class="ident">unf_fingerprint</span></span>(<span>data: Any) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def unf_fingerprint(data: Any) -&gt; str:
+    &#34;&#34;&#34;Calculate Universal Numerical Fingerprint (UNF) for the data.
+
+    UNF: https://guides.dataverse.org/en/latest/developers/unf/index.html
+    &#34;&#34;&#34;
+    res = None
+    try:
+        res = unf.unf(data)
+    except TypeError:
+        data_str = json.dumps(data, sort_keys=True)
+        res = unf.unf(data_str)
+    return res</code></pre>
+</details>
+<div class="desc"><p>Calculate Universal Numerical Fingerprint (UNF) for the data.</p>
+<p>UNF: <a href="https://guides.dataverse.org/en/latest/developers/unf/index.html">https://guides.dataverse.org/en/latest/developers/unf/index.html</a></p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src.jsonid" href="index.html">src.jsonid</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="src.jsonid.analysis.analyse_all_types" href="#src.jsonid.analysis.analyse_all_types">analyse_all_types</a></code></li>
+<li><code><a title="src.jsonid.analysis.analyse_depth" href="#src.jsonid.analysis.analyse_depth">analyse_depth</a></code></li>
+<li><code><a title="src.jsonid.analysis.analyse_input" href="#src.jsonid.analysis.analyse_input">analyse_input</a></code></li>
+<li><code><a title="src.jsonid.analysis.analyse_list_types" href="#src.jsonid.analysis.analyse_list_types">analyse_list_types</a></code></li>
+<li><code><a title="src.jsonid.analysis.fingerprint" href="#src.jsonid.analysis.fingerprint">fingerprint</a></code></li>
+<li><code><a title="src.jsonid.analysis.ipld_cid" href="#src.jsonid.analysis.ipld_cid">ipld_cid</a></code></li>
+<li><code><a title="src.jsonid.analysis.unf_fingerprint" href="#src.jsonid.analysis.unf_fingerprint">unf_fingerprint</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>
