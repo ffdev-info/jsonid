@@ -136,3 +136,4 @@ dmypy.json
 # Custom files
 NOTES
 integration-files/*
+integration_files/*
