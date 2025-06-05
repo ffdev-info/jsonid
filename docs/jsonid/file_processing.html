@@ -139,10 +139,31 @@ el.replaceWith(d);
     data = &#34;&#34;
     try:
         data = json.loads(content)
+        return True, data, registry.DOCTYPE_JSON
     except json.decoder.JSONDecodeError as err:
         logger.debug(&#34;(decode) can&#39;t process: %s&#34;, err)
-        return False, None
-    return True, data</code></pre>
+    try:
+        if content.strip()[:3] != &#34;---&#34;:
+            raise TypeError
+        data = yaml.safe_load(content.strip())
+        if not isinstance(data, str):
+            return True, data, registry.DOCTYPE_YAML
+    except (
+        yaml.scanner.ScannerError,
+        yaml.parser.ParserError,
+        yaml.reader.ReaderError,
+        yaml.composer.ComposerError,
+    ) as err:
+        logger.debug(&#34;(decode) can&#39;t process: %s&#34;, err)
+    except (TypeError, IndexError):
+        # Document too short, or YAML without header is not supported.
+        pass
+    try:
+        data = toml.loads(content)
+        return True, data, registry.DOCTYPE_TOML
+    except toml.TOMLDecodeError as err:
+        logger.debug(&#34;(decode) can&#39;t process: %s&#34;, err)
+    return False, None, None</code></pre>
 </details>
 <div class="desc"><p>Decode the given content stream.</p></div>
 </dd>
@@ -176,7 +197,7 @@ el.replaceWith(d);
             if binary:
                 logger.warning(&#34;report on binary object...&#34;)
             continue
-        valid, data, encoding, _ = await identify_plaintext_bytestream(path)
+        valid, data, doctype, encoding, _ = await identify_plaintext_bytestream(path)
         if not valid:
             logger.debug(&#34;%s: is not plaintext&#34;, path)
             if binary:
@@ -184,32 +205,8 @@ el.replaceWith(d);
             continue
         if data == &#34;&#34;:
             continue
-        logger.debug(&#34;processing: %s&#34;, path)
-        res = registry.matcher(data, encoding=encoding)
-        if simple:
-            for item in res:
-                name_ = item.name[0][&#34;@en&#34;]
-                version_ = item.version
-                if version_ is not None:
-                    name_ = f&#34;{name_}: {version_}&#34;
-                print(
-                    json.dumps(
-                        {
-                            &#34;identifier&#34;: item.identifier,
-                            &#34;filename&#34;: os.path.basename(path),
-                            &#34;encoding&#34;: item.encoding,
-                        }
-                    )
-                )
-            continue
-        if idx == 0:
-            print(&#34;---&#34;)
-            print(version_header())
-            print(&#34;---&#34;)
-        print(f&#34;file: {path}&#34;)
-        for item in res:
-            print(item)
-        print(&#34;---&#34;)</code></pre>
+        logger.debug(&#34;processing: %s (%s)&#34;, path, doctype)
+        await process_result(idx, path, data, doctype, encoding, simple)</code></pre>
 </details>
 <div class="desc"><p>Identify objects.</p></div>
 </dd>
@@ -278,6 +275,53 @@ el.replaceWith(d);
 </details>
 <div class="desc"><p>Process glob patterns provided by the user.</p></div>
 </dd>
+<dt id="src.jsonid.file_processing.process_result"><code class="name flex">
+<span>async def <span class="ident">process_result</span></span>(<span>idx: int, path: str, data: Any, doctype: str, encoding: str, simple: bool)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def process_result(
+    idx: int, path: str, data: Any, doctype: str, encoding: str, simple: bool
+):
+    &#34;&#34;&#34;Process something JSON/YAML/TOML&#34;&#34;&#34;
+    res = []
+    if doctype == registry.DOCTYPE_JSON:
+        res = registry.matcher(data, encoding=encoding)
+    if doctype == registry.DOCTYPE_YAML:
+        res = [registry.YAML_ONLY]
+    if doctype == registry.DOCTYPE_TOML:
+        res = [registry.TOML_ONLY]
+    if simple:
+        for item in res:
+            name_ = item.name[0][&#34;@en&#34;]
+            version_ = item.version
+            if version_ is not None:
+                name_ = f&#34;{name_}: {version_}&#34;
+            print(
+                json.dumps(
+                    {
+                        &#34;identifier&#34;: item.identifier,
+                        &#34;filename&#34;: os.path.basename(path),
+                        &#34;encoding&#34;: item.encoding,
+                    }
+                )
+            )
+        return
+    if idx == 0:
+        print(&#34;---&#34;)
+        print(version_header())
+        print(&#34;---&#34;)
+    print(f&#34;file: {path}&#34;)
+    for item in res:
+        print(item)
+    print(&#34;---&#34;)
+    return</code></pre>
+</details>
+<div class="desc"><p>Process something JSON/YAML/TOML</p></div>
+</dd>
 <dt id="src.jsonid.file_processing.text_check"><code class="name flex">
 <span>async def <span class="ident">text_check</span></span>(<span>chars: str) ‑> bool</span>
 </code></dt>
@@ -322,6 +366,26 @@ scandate: {get_date_time()}&#34;&#34;&#34;.strip()</code></pre>
 </details>
 <div class="desc"><p>Output a formatted version header.</p></div>
 </dd>
+<dt id="src.jsonid.file_processing.whitespace_check"><code class="name flex">
+<span>async def <span class="ident">whitespace_check</span></span>(<span>chars: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def whitespace_check(chars: str) -&gt; bool:
+    &#34;&#34;&#34;Check whether the file only contains whitespace.
+
+    NB. this check might take longer than needed.
+    &#34;&#34;&#34;
+    if not chars.strip():
+        return False
+    return True</code></pre>
+</details>
+<div class="desc"><p>Check whether the file only contains whitespace.</p>
+<p>NB. this check might take longer than needed.</p></div>
+</dd>
 </dl>
 </section>
 <section>
@@ -348,8 +412,10 @@ scandate: {get_date_time()}&#34;&#34;&#34;.strip()</code></pre>
 <li><code><a title="src.jsonid.file_processing.output_analysis" href="#src.jsonid.file_processing.output_analysis">output_analysis</a></code></li>
 <li><code><a title="src.jsonid.file_processing.process_data" href="#src.jsonid.file_processing.process_data">process_data</a></code></li>
 <li><code><a title="src.jsonid.file_processing.process_glob" href="#src.jsonid.file_processing.process_glob">process_glob</a></code></li>
+<li><code><a title="src.jsonid.file_processing.process_result" href="#src.jsonid.file_processing.process_result">process_result</a></code></li>
 <li><code><a title="src.jsonid.file_processing.text_check" href="#src.jsonid.file_processing.text_check">text_check</a></code></li>
 <li><code><a title="src.jsonid.file_processing.version_header" href="#src.jsonid.file_processing.version_header">version_header</a></code></li>
+<li><code><a title="src.jsonid.file_processing.whitespace_check" href="#src.jsonid.file_processing.whitespace_check">whitespace_check</a></code></li>
 </ul>
 </li>
 </ul>
