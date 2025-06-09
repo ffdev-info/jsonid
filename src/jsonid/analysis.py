@@ -147,7 +147,7 @@ async def analyse_all_types(data: Any, all_depths: bool = False):
         values = data.values()
     except AttributeError:
         if not isinstance(data, list):
-            return [type(data)]
+            return [helpers.substitute_type_text(type(data))]
         values = data
     types = []
     for item in values:
@@ -172,8 +172,11 @@ async def analyse_input(data: Any, content: str, all_depths: bool = False):
     * Depth of complex objects, i.e. nested dicts and lists.
 
     """
-
-    keys = data.keys()
+    keys = []
+    try:
+        keys = data.keys()
+    except AttributeError:
+        pass
     depth = await analyse_depth(data)
     content_length = len(content)
     lines = content.count("\n")
@@ -182,7 +185,6 @@ async def analyse_input(data: Any, content: str, all_depths: bool = False):
         line_warning = True
     top_level_types = await analyse_all_types(data, all_depths)
     heterogenerous_types = await analyse_list_types(data)
-
     return {
         "content_length": content_length,
         "number_of_lines": lines,

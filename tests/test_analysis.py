@@ -2,6 +2,7 @@
 
 # pylint: disable=C0103
 
+import json
 from typing import Final
 
 import pytest
@@ -22,7 +23,7 @@ spec_example_8: Final[str] = ""
 ex4_equivalent_1: Final[dict] = {"key2": "value", "key1": "value", "key3": "value"}
 ex4_equivalent_2: Final[dict] = {"key3": "value", "key2": "value", "key1": "value"}
 
-unf_simple_tests = [
+unf_simple_tests: Final[list] = [
     (example_1, "UNF:6:i6V/mh1/7flCe+qLZ7Jn2A==", []),
     (example_2, "UNF:6:47DEQpj8HBSa+/TImW+5JA==", []),
     (example_3, "UNF:6:d1QWNdwYIhjx0pONjMCE8w==", []),
@@ -102,7 +103,7 @@ depth_10: Final[dict] = {
     "key2": [1, 2, {"key3": [1, 2, 3, {"key4": [1, {"key5": 2}]}]}],
 }
 
-depth_tests = [
+depth_tests: Final[list] = [
     (depth_1, 1),
     (depth_2, 8),
     (depth_3, 3),
@@ -164,7 +165,7 @@ complex_14: Final[dict] = {
     "key2": [1, 2, {"key3": [1, 2, 3, {"key4": [1, {"key5": 2}]}]}],
 }
 
-complex_tests = [
+complex_tests: Final[list] = [
     (complex_1, True),
     (complex_2, False),
     (complex_3, True),
@@ -195,6 +196,9 @@ top_level_1: Final[dict] = {
     "key2": [1, 2, {"key3": [1, 2, 3, {"key4": [1, {"key5": 2}]}]}],
 }
 
+top_level_2 = top_level_1
+top_level_3: Final[float] = 3.1415
+
 top_level_res_1: Final[dict] = [
     "map",
     ["integer"],
@@ -222,10 +226,15 @@ top_level_res_2: Final[dict] = [
     "list",
 ]
 
+top_level_res_3: Final[list] = [
+    "float",
+]
 
-top_level_tests = [
+
+top_level_tests: Final[list] = [
     (top_level_1, top_level_res_1, True),
-    (top_level_1, top_level_res_2, False),
+    (top_level_2, top_level_res_2, False),
+    (top_level_3, top_level_res_3, False),
 ]
 
 
@@ -235,3 +244,37 @@ async def test_top_level_types(example, expected, depth_all):
     """Test the types analysis."""
     res = await analysis.analyse_all_types(example, depth_all)
     assert res == expected
+
+
+integration_1: Final[dict] = {}
+integration_2: Final[float] = 3.1415
+integration_3: Final[int] = 1
+integration_4: Final[list] = []
+integration_5: Final[list] = ""
+
+integration_content_1: Final[str] = "{}"
+integration_content_2: Final[str] = "3.1415"
+integration_content_3: Final[str] = "1"
+integration_content_4: Final[str] = "[]"
+integration_content_5: Final[str] = ""
+
+integration_tests = [
+    (integration_1, integration_content_1),
+    (integration_2, integration_content_2),
+    (integration_3, integration_content_3),
+    (integration_4, integration_content_4),
+    (integration_5, integration_content_5),
+]
+
+
+@pytest.mark.parametrize("data, content", integration_tests)
+@pytest.mark.asyncio
+async def test_analysis_partial_integration(data, content):
+    """Perform a partial integration test to make sure output is
+    as expected in exceptional cases.
+    """
+    res = await analysis.analyse_input(data, content, False)
+    try:
+        json.dumps(res)
+    except Exception as err:  # pylint: disable=W0718
+        assert False, f"JSON dumps should work for analysis: {err}"
