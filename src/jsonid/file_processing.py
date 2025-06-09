@@ -13,6 +13,11 @@ from typing import Any, Final, Tuple
 import yaml
 
 try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
+
+try:
     import analysis
     import helpers
     import registry
@@ -70,7 +75,7 @@ def decode(content: str):
     try:
         if content.strip()[:3] != "---":
             raise TypeError
-        data = yaml.safe_load(content.strip())
+        data = yaml.load(content.strip(), Loader=Loader)
         if not isinstance(data, str):
             return True, data, registry.DOCTYPE_YAML
     except (
@@ -109,13 +114,16 @@ async def analyse_json(paths: list[str]):
         if os.path.getsize(path) == 0:
             logger.debug("'%s' is an empty file")
             continue
-        valid, data, encoding, content = await identify_plaintext_bytestream(path, True)
+        valid, data, doctype, encoding, content = await identify_plaintext_bytestream(
+            path, True
+        )
         if not valid:
             logger.debug("%s: is not plaintext", path)
             continue
         if data == "":
             continue
         res = await analysis.analyse_input(data, content)
+        res["doctype"] = doctype
         res["encoding"] = encoding
         analysis_res.append(res)
     return analysis_res
@@ -293,6 +301,7 @@ async def analyse_data(path: str) -> list:
     if os.path.isfile(path):
         res = await analyse_json([path])
         await output_analysis(res)
+        sys.exit(1)
     paths = await create_manifest(path)
     if not paths:
         logger.info("no files in directory: %s", path)
