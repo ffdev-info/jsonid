@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from src.jsonid import file_processing, registry, registry_class
+from src.jsonid import analysis, file_processing, registry, registry_class
 
 specific_registry = [
     registry_class.RegistryEntry(
@@ -82,7 +82,7 @@ specific_tests = [
 @pytest.mark.parametrize("depth_test, expected_depth", specific_tests)
 def test_get_depth(depth_test, expected_depth):
     """Assert depth tests work."""
-    assert registry.get_depth(depth_test) == expected_depth
+    assert analysis.analyse_depth(depth_test) == expected_depth
 
 
 @pytest.mark.asyncio

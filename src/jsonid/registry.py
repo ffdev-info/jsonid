@@ -5,14 +5,20 @@ import logging
 from typing import Final, Union
 
 try:
+    import analysis
     import registry_class
     import registry_data
     import registry_matchers
 except ModuleNotFoundError:
     try:
-        from src.jsonid import registry_class, registry_data, registry_matchers
+        from src.jsonid import (
+            analysis,
+            registry_class,
+            registry_data,
+            registry_matchers,
+        )
     except ModuleNotFoundError:
-        from jsonid import registry_class, registry_data, registry_matchers
+        from jsonid import analysis, registry_class, registry_data, registry_matchers
 
 
 logger = logging.getLogger(__name__)
@@ -47,21 +53,6 @@ JSON_ONLY: Final[registry_class.RegistryEntry] = registry_class.RegistryEntry(
     mime=["application/json"],
     markers=None,
 )
-
-
-def get_depth(data: Union[dict, list]) -> list[str]:
-    """Provide some details about the complexity of this data.
-
-    Implementation via:
-
-        * https://stackoverflow.com/a/30928645/23789970
-
-    """
-    if data and isinstance(data, dict):
-        return 1 + max(get_depth(data[k]) for k in data)
-    if data and isinstance(data, list):
-        return 1 + max(get_depth(k) for k in data)
-    return 0
 
 
 def _get_language(string_field: list[dict], language: str = "@en") -> str:
@@ -211,7 +202,7 @@ def matcher(data: dict, encoding: str = "") -> list:
     if len(matches) == 0 or matches[0] == NIL_ENTRY:
         additional = get_additional(data)
         json_only = JSON_ONLY
-        json_only.depth = get_depth(data)
+        json_only.depth = analysis.analyse_depth(data)
         json_only.additional = additional
         json_only.encoding = encoding
         return [json_only]

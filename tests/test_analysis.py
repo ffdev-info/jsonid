@@ -71,16 +71,21 @@ async def test_cid_fingerprint(example, expected, equivalents):
 
 
 depth_1: Final[list] = {"key1": []}
+
+# Depth == 8. The last array is empty and has no depth. Contrast this
+# with the other arrays which contain at least one array.
 depth_2: Final[int] = {
     "key1": [[[[[]]]]],
     "key2": {"key3": {"key4": 1}},
     "key5": [],
-    "ket6": [[[[[[[[]]]]]]]],
+    "key6": [[[[[[[[]]]]]]]],
 }
 
-
+# Depth == 4.
 depth_3: Final[dict] = {"key1": {"key2": {"key3": {"key4": 1}}}}
 
+# Depth == 4. The last array is empty and so has no depth. Contrast this
+# with the other arrays which contain at least one array.
 depth_4: Final[dict] = {"key1": [[[]]]}
 
 depth_5: Final[list] = [[[[]]]]
@@ -89,31 +94,49 @@ depth_6: Final[float] = 3.1415
 
 depth_7: Final[int] = 1
 
+# Depth == 6.
 depth_8: Final[dict] = {
     "key1": {"key2": {"key3": {"key4": {"key5": 1}}}},
-    "key2": {"key2": {"key3": {"key4": {"key5": 1}}}},
+    "key2": {"key2": {"key3": {"key4": {"key5": {"key6": 1}}}}},
     "key3": {"key2": {"key3": {"key4": {"key5": 1}}}},
     "key4": {"key2": {"key3": 1}},
 }
 
 depth_9: Final[list] = [[[[[1]]]], [[[[1]]]], [[[[1]]]], [[1]]]
 
+# Depth == 7.
 depth_10: Final[dict] = {
     "key1": {"key2": 1},
     "key2": [1, 2, {"key3": [1, 2, 3, {"key4": [1, {"key5": 2}]}]}],
 }
 
+# Map is empty.
+depth_11: Final[dict] = {}
+
+# Array is empty.
+depth_12: Final[dict] = []
+
+# Array contains one item.
+depth_13: Final[dict] = [[]]
+
+# Map contains one item.
+depth_14: Final[dict] = {"key1": None}
+
 depth_tests: Final[list] = [
     (depth_1, 1),
     (depth_2, 8),
-    (depth_3, 3),
+    (depth_3, 4),
     (depth_4, 3),
     (depth_5, 3),
-    (depth_6, 1),
-    (depth_7, 1),
-    (depth_8, 4),
-    (depth_9, 4),
-    (depth_10, 6),
+    (depth_6, 0),
+    (depth_7, 0),
+    (depth_8, 6),
+    (depth_9, 5),
+    (depth_10, 7),
+    (depth_11, 0),
+    (depth_12, 0),
+    (depth_13, 1),
+    (depth_14, 1),
 ]
 
 
@@ -121,7 +144,7 @@ depth_tests: Final[list] = [
 @pytest.mark.asyncio
 async def test_analyse_depth(example, expected):
     """Test depth analysis."""
-    depth = await analysis.analyse_depth(example)
+    depth = analysis.analyse_depth(example)
     assert depth == expected
 
 

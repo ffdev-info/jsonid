@@ -63,26 +63,24 @@ async def fingerprint(data: Any):
     }
 
 
-async def analyse_depth(data: Any) -> int:
-    """Calculate the depth of the structure.
+def analyse_depth(data: Any) -> int:
+    """Calculate the depth and potential complexity of the structure.
 
-    Depth is the maximum depth of complex list and dict data-types. NB.
-    all list, and dict types are computed to generate the output.
+    Depth is the maximum depth of complex list and dict data-types.
+    Empty maps or arrays are not counted, e.g. `[]` and `{}` == 0 where
+    `[[]]` and `{"key1":[]} == 1; the latter has a complex type
+    containing one item, even if the item is ostensibly `null`.
+
+    Implementation via:
+
+        * https://stackoverflow.com/a/30928645/23789970
+
     """
-    try:
-        values = data.values()
-    except AttributeError:
-        if not isinstance(data, list):
-            return 1
-        values = data
-    depths = [0]
-    for item in values:
-        depth = 0
-        if isinstance(item, (dict, list)):
-            depth = depth + 1
-            depth = depth + await analyse_depth(item)
-            depths.append(depth)
-    return max(depths)
+    if data and isinstance(data, dict):
+        return 1 + max(analyse_depth(data[k]) for k in data)
+    if data and isinstance(data, list):
+        return 1 + max(analyse_depth(k) for k in data)
+    return 0
 
 
 async def _get_list_types(data: list) -> list:
@@ -177,7 +175,7 @@ async def analyse_input(data: Any, content: str, all_depths: bool = False):
         keys = data.keys()
     except AttributeError:
         pass
-    depth = await analyse_depth(data)
+    depth = analyse_depth(data)
     content_length = len(content)
     lines = content.count("\n")
     line_warning = False
