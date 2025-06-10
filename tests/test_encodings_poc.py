@@ -14,7 +14,10 @@ def test_yaml_only():
         test1: 1
         test2: "data"
     """
-    valid, data, doctype = file_processing.decode(only_yaml.strip())
+    valid, data, doctype = file_processing.decode(
+        content=only_yaml.strip(),
+        strategy=[registry.DOCTYPE_YAML],
+    )
     assert valid is True
     assert data == {"test1": 1, "test2": "data"}
     assert doctype == registry.DOCTYPE_YAML
@@ -24,7 +27,10 @@ def test_yaml_only():
         test1: |
           test2: "data"
     """
-    valid, data, doctype = file_processing.decode(only_yaml.strip())
+    valid, data, doctype = file_processing.decode(
+        only_yaml.strip(),
+        strategy=[registry.DOCTYPE_YAML],
+    )
     assert valid is True
     assert data == {"test1": 'test2: "data"'}
     assert doctype == registry.DOCTYPE_YAML
@@ -33,7 +39,10 @@ def test_yaml_only():
         ---
         test1: [1, 2, 3]
     """
-    valid, data, doctype = file_processing.decode(only_yaml.strip())
+    valid, data, doctype = file_processing.decode(
+        only_yaml.strip(),
+        strategy=[registry.DOCTYPE_YAML],
+    )
     assert valid is True
     assert data == {"test1": [1, 2, 3]}
     assert doctype == registry.DOCTYPE_YAML
@@ -50,7 +59,10 @@ def test_toml_only():
     test1 = 1
     test2 = "data"
     """
-    valid, data, doctype = file_processing.decode(only_toml)
+    valid, data, doctype = file_processing.decode(
+        only_toml,
+        strategy=[registry.DOCTYPE_TOML],
+    )
     assert valid is True
     assert data == {"test1": 1, "test2": "data"}
     assert doctype == registry.DOCTYPE_TOML
@@ -60,7 +72,10 @@ def test_toml_only():
     test1 = 1
     test2 = "data"
     """
-    valid, data, doctype = file_processing.decode(only_toml)
+    valid, data, doctype = file_processing.decode(
+        only_toml,
+        strategy=[registry.DOCTYPE_TOML],
+    )
     assert valid is True
     assert data == {"list0": [{"test1": 1, "test2": "data"}]}
     assert doctype == registry.DOCTYPE_TOML
@@ -71,7 +86,10 @@ def test_toml_only():
     test1 = 1
     test2 = "data"
     """
-    valid, data, doctype = file_processing.decode(only_toml)
+    valid, data, doctype = file_processing.decode(
+        only_toml,
+        strategy=[registry.DOCTYPE_TOML],
+    )
     assert valid is True
     assert data == {"test0": 1, "list0": [{"test1": 1, "test2": "data"}]}
     assert doctype == registry.DOCTYPE_TOML
@@ -81,7 +99,10 @@ def test_toml_only():
     test1 = 1
     test2 = "data"
     """
-    valid, data, doctype = file_processing.decode(only_toml)
+    valid, data, doctype = file_processing.decode(
+        only_toml,
+        strategy=[registry.DOCTYPE_TOML],
+    )
     assert valid is True
     assert data == {"nested0": {"test1": 1, "test2": "data"}}
     assert doctype == registry.DOCTYPE_TOML
@@ -89,7 +110,10 @@ def test_toml_only():
     only_toml = """
     test1 = [1, 2, 3]
     """
-    valid, data, doctype = file_processing.decode(only_toml)
+    valid, data, doctype = file_processing.decode(
+        only_toml,
+        strategy=[registry.DOCTYPE_TOML],
+    )
     assert valid is True
     assert data == {"test1": [1, 2, 3]}
     assert doctype == registry.DOCTYPE_TOML

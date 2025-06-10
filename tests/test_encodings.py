@@ -56,7 +56,8 @@ async def test_encodings(tmp_path, encoding, data_to_write):
         json_file = dir_ / f"{encoding}-{key}.json"
         json_file.open("w", encoding=encoding).write(value)
         res, data, _, _, _ = await file_processing.identify_plaintext_bytestream(
-            json_file
+            path=json_file,
+            strategy=["JSON"],
         )
         assert res is True, f"{json_file} couldn't be opened with encoding"
 

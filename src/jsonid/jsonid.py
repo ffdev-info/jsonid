@@ -7,19 +7,28 @@ import asyncio
 import logging
 import sys
 import time
+from typing import Final
 
 try:
     import export
     import file_processing
     import helpers
+    import registry
 except ModuleNotFoundError:
     try:
-        from src.jsonid import export, file_processing, helpers
+        from src.jsonid import export, file_processing, helpers, registry
     except ModuleNotFoundError:
-        from jsonid import export, file_processing, helpers
+        from jsonid import export, file_processing, helpers, registry
 
 
 logger = None
+
+
+decode_strategies: Final[list] = [
+    registry.DOCTYPE_JSON,
+    registry.DOCTYPE_YAML,
+    registry.DOCTYPE_TOML,
+]
 
 
 def init_logging(debug):
@@ -38,8 +47,34 @@ def init_logging(debug):
     logger.debug("debug logging is configured")
 
 
+def _get_strategy(args: argparse.Namespace):
+    """Return a set of decode strategies for the code to identify
+    formats against.
+    """
+    strategy = list(decode_strategies)
+    if args.nojson:
+        try:
+            strategy.remove("JSON")
+        except ValueError:
+            pass
+    if args.noyaml:
+        try:
+            strategy.remove("YAML")
+        except ValueError:
+            pass
+    if args.notoml:
+        try:
+            strategy.remove("TOML")
+        except ValueError:
+            pass
+    return strategy
+
+
 def main() -> None:
     """Primary entry point for this script."""
+
+    # pylint: disable=R0912,R0915
+
     parser = argparse.ArgumentParser(
         prog="json-id",
         description="proof-of-concept identifier for JSON objects on disk based on identifying valid objects and their key-values",
@@ -56,6 +91,24 @@ def main() -> None:
         "--paths",
         "-p",
         help="file path to process",
+        required=False,
+    )
+    parser.add_argument(
+        "--nojson",
+        "-nj",
+        action="store_true",
+        required=False,
+    )
+    parser.add_argument(
+        "--noyaml",
+        "-ny",
+        action="store_true",
+        required=False,
+    )
+    parser.add_argument(
+        "--notoml",
+        "-nt",
+        action="store_true",
         required=False,
     )
     parser.add_argument(
@@ -114,6 +167,9 @@ def main() -> None:
     )
     args = parser.parse_args()
     init_logging(args.debug)
+    # Determine which decode strategy to adopt.
+    strategy = _get_strategy(args)
+    # Primary application functions.
     if args.registry:
         raise NotImplementedError("custom registry is not yet available")
     if args.pronom:
@@ -137,8 +193,19 @@ def main() -> None:
     if args.html:
         helpers.html()
         sys.exit()
+    if not strategy:
+        logger.error(
+            "please ensure there is one remaining decode strategy, e.g. %s",
+            ",".join(decode_strategies),
+        )
+        sys.exit(1)
     if args.analyse:
-        asyncio.run(file_processing.analyse_data(args.analyse))
+        asyncio.run(
+            file_processing.analyse_data(
+                path=args.analyse,
+                strategy=strategy,
+            )
+        )
         sys.exit()
     if not args.path:
         parser.print_help(sys.stderr)
@@ -146,6 +213,7 @@ def main() -> None:
     asyncio.run(
         file_processing.process_data(
             path=args.path,
+            strategy=strategy,
             binary=args.binary,
             simple=args.simple,
         )

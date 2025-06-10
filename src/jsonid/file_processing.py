@@ -64,35 +64,38 @@ async def whitespace_check(chars: str) -> bool:
     return True
 
 
-def decode(content: str):
+def decode(content: str, strategy: list):
     """Decode the given content stream."""
     data = ""
-    try:
-        data = json.loads(content)
-        return True, data, registry.DOCTYPE_JSON
-    except json.decoder.JSONDecodeError as err:
-        logger.debug("(decode) can't process: %s", err)
-    try:
-        if content.strip()[:3] != "---":
-            raise TypeError
-        data = yaml.load(content.strip(), Loader=Loader)
-        if not isinstance(data, str):
-            return True, data, registry.DOCTYPE_YAML
-    except (
-        yaml.scanner.ScannerError,
-        yaml.parser.ParserError,
-        yaml.reader.ReaderError,
-        yaml.composer.ComposerError,
-    ) as err:
-        logger.debug("(decode) can't process: %s", err)
-    except (TypeError, IndexError):
-        # Document too short, or YAML without header is not supported.
-        pass
-    try:
-        data = toml.loads(content)
-        return True, data, registry.DOCTYPE_TOML
-    except toml.TOMLDecodeError as err:
-        logger.debug("(decode) can't process: %s", err)
+    if "JSON" in strategy:
+        try:
+            data = json.loads(content)
+            return True, data, registry.DOCTYPE_JSON
+        except json.decoder.JSONDecodeError as err:
+            logger.debug("(decode) can't process: %s", err)
+    if "YAML" in strategy:
+        try:
+            if content.strip()[:3] != "---":
+                raise TypeError
+            data = yaml.load(content.strip(), Loader=Loader)
+            if not isinstance(data, str):
+                return True, data, registry.DOCTYPE_YAML
+        except (
+            yaml.scanner.ScannerError,
+            yaml.parser.ParserError,
+            yaml.reader.ReaderError,
+            yaml.composer.ComposerError,
+        ) as err:
+            logger.debug("(decode) can't process: %s", err)
+        except (TypeError, IndexError):
+            # Document too short, or YAML without header is not supported.
+            pass
+    if "TOML" in strategy:
+        try:
+            data = toml.loads(content)
+            return True, data, registry.DOCTYPE_TOML
+        except toml.TOMLDecodeError as err:
+            logger.debug("(decode) can't process: %s", err)
     return False, None, None
 
 
@@ -107,7 +110,7 @@ def version_header() -> str:
 scandate: {get_date_time()}""".strip()
 
 
-async def analyse_json(paths: list[str]):
+async def analyse_json(paths: list[str], strategy: list):
     """Analyse a JSON object."""
     analysis_res = []
     for path in paths:
@@ -115,7 +118,9 @@ async def analyse_json(paths: list[str]):
             logger.debug("'%s' is an empty file")
             continue
         valid, data, doctype, encoding, content = await identify_plaintext_bytestream(
-            path, True
+            path=path,
+            strategy=strategy,
+            analyse=True,
         )
         if not valid:
             logger.debug("%s: is not plaintext", path)
@@ -168,7 +173,7 @@ async def process_result(
     return
 
 
-async def identify_json(paths: list[str], binary: bool, simple: bool):
+async def identify_json(paths: list[str], strategy: list, binary: bool, simple: bool):
     """Identify objects."""
     for idx, path in enumerate(paths):
         if os.path.getsize(path) == 0:
@@ -176,7 +181,11 @@ async def identify_json(paths: list[str], binary: bool, simple: bool):
             if binary:
                 logger.warning("report on binary object...")
             continue
-        valid, data, doctype, encoding, _ = await identify_plaintext_bytestream(path)
+        valid, data, doctype, encoding, _ = await identify_plaintext_bytestream(
+            path=path,
+            strategy=strategy,
+            analyse=False,
+        )
         if not valid:
             logger.debug("%s: is not plaintext", path)
             if binary:
@@ -190,7 +199,7 @@ async def identify_json(paths: list[str], binary: bool, simple: bool):
 
 @helpers.timeit
 async def identify_plaintext_bytestream(
-    path: str, analyse: bool = False
+    path: str, strategy: list, analyse: bool = False
 ) -> Tuple[bool, str, str, str, Any]:
     """Ensure that the file is a palintext bytestream and can be
     processed as JSON.
@@ -225,7 +234,7 @@ async def identify_plaintext_bytestream(
     for encoding in supported_encodings:
         try:
             content = copied.decode(encoding)
-            valid, data, doctype = decode(content)
+            valid, data, doctype = decode(content, strategy)
         except UnicodeDecodeError as err:
             logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
         except UnicodeError as err:
@@ -259,25 +268,24 @@ async def process_glob(glob_path: str):
     return paths
 
 
-async def process_data(path: str, binary: bool, simple: bool):
+async def process_data(path: str, strategy: list, binary: bool, simple: bool):
     """Process all objects at a given path."""
     logger.debug("processing: %s", path)
-
     if "*" in path:
         paths = await process_glob(path)
-        await identify_json(paths, binary, simple)
+        await identify_json(paths, strategy, binary, simple)
         sys.exit(0)
     if not os.path.exists(path):
         logger.error("path: '%s' does not exist", path)
         sys.exit(1)
     if os.path.isfile(path):
-        await identify_json([path], binary, simple)
+        await identify_json([path], strategy, binary, simple)
         sys.exit(0)
     paths = await create_manifest(path)
     if not paths:
         logger.info("no files in directory: %s", path)
         sys.exit(1)
-    await identify_json(paths, binary, simple)
+    await identify_json(paths, strategy, binary, simple)
 
 
 async def output_analysis(res: list) -> None:
@@ -286,26 +294,26 @@ async def output_analysis(res: list) -> None:
         print(json.dumps(item, indent=2))
 
 
-async def analyse_data(path: str) -> list:
+async def analyse_data(path: str, strategy: list) -> list:
     """Process all objects at a given path."""
     logger.debug("processing: %s", path)
     res = []
     if "*" in path:
         paths = await process_glob(path)
-        res = await analyse_json(paths)
+        res = await analyse_json(paths=paths, strategy=strategy)
         await output_analysis(res)
         sys.exit()
     if not os.path.exists(path):
         logger.error("path: '%s' does not exist", path)
         sys.exit(1)
     if os.path.isfile(path):
-        res = await analyse_json([path])
+        res = await analyse_json(paths=[path], strategy=strategy)
         await output_analysis(res)
         sys.exit(1)
     paths = await create_manifest(path)
     if not paths:
         logger.info("no files in directory: %s", path)
         sys.exit(1)
-    res = await analyse_json(paths)
+    res = await analyse_json(paths=paths, strategy=strategy)
     await output_analysis(res)
     sys.exit()
