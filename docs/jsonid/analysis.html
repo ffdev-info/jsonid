@@ -63,7 +63,7 @@ el.replaceWith(d);
         values = data.values()
     except AttributeError:
         if not isinstance(data, list):
-            return [type(data)]
+            return [helpers.substitute_type_text(type(data))]
         values = data
     types = []
     for item in values:
@@ -84,37 +84,40 @@ signature devs about what data to test for. Defaults to just the
 top level to reduce complexity.</p></div>
 </dd>
 <dt id="src.jsonid.analysis.analyse_depth"><code class="name flex">
-<span>async def <span class="ident">analyse_depth</span></span>(<span>data: Any) ‑> int</span>
+<span>def <span class="ident">analyse_depth</span></span>(<span>data: Any) ‑> int</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def analyse_depth(data: Any) -&gt; int:
-    &#34;&#34;&#34;Calculate the depth of the structure.
+<pre><code class="python">def analyse_depth(data: Any) -&gt; int:
+    &#34;&#34;&#34;Calculate the depth and potential complexity of the structure.
 
-    Depth is the maximum depth of complex list and dict data-types. NB.
-    all list, and dict types are computed to generate the output.
+    Depth is the maximum depth of complex list and dict data-types.
+    Empty maps or arrays are not counted, e.g. `[]` and `{}` == 0 where
+    `[[]]` and `{&#34;key1&#34;:[]} == 1; the latter has a complex type
+    containing one item, even if the item is ostensibly `null`.
+
+    Implementation via:
+
+        * https://stackoverflow.com/a/30928645/23789970
+
     &#34;&#34;&#34;
-    try:
-        values = data.values()
-    except AttributeError:
-        if not isinstance(data, list):
-            return 1
-        values = data
-    depths = [0]
-    for item in values:
-        depth = 0
-        if isinstance(item, (dict, list)):
-            depth = depth + 1
-            depth = depth + await analyse_depth(item)
-            depths.append(depth)
-    return max(depths)</code></pre>
+    if data and isinstance(data, dict):
+        return 1 + max(analyse_depth(data[k]) for k in data)
+    if data and isinstance(data, list):
+        return 1 + max(analyse_depth(k) for k in data)
+    return 0</code></pre>
 </details>
-<div class="desc"><p>Calculate the depth of the structure.</p>
-<p>Depth is the maximum depth of complex list and dict data-types. NB.
-all list, and dict types are computed to generate the output.</p></div>
+<div class="desc"><p>Calculate the depth and potential complexity of the structure.</p>
+<p>Depth is the maximum depth of complex list and dict data-types.
+Empty maps or arrays are not counted, e.g. <code>[]</code> and <code>{}</code> == 0 where
+<code>[[]]</code> and `{"key1":[]} == 1; the latter has a complex type
+containing one item, even if the item is ostensibly <code>null</code>.</p>
+<p>Implementation via:</p>
+<pre><code>* &lt;https://stackoverflow.com/a/30928645/23789970&gt;
+</code></pre></div>
 </dd>
 <dt id="src.jsonid.analysis.analyse_input"><code class="name flex">
 <span>async def <span class="ident">analyse_input</span></span>(<span>data: Any, content: str, all_depths: bool = False)</span>
@@ -133,9 +136,12 @@ all list, and dict types are computed to generate the output.</p></div>
     * Depth of complex objects, i.e. nested dicts and lists.
 
     &#34;&#34;&#34;
-
-    keys = data.keys()
-    depth = await analyse_depth(data)
+    keys = []
+    try:
+        keys = data.keys()
+    except AttributeError:
+        pass
+    depth = analyse_depth(data)
     content_length = len(content)
     lines = content.count(&#34;\n&#34;)
     line_warning = False
@@ -143,7 +149,6 @@ all list, and dict types are computed to generate the output.</p></div>
         line_warning = True
     top_level_types = await analyse_all_types(data, all_depths)
     heterogenerous_types = await analyse_list_types(data)
-
     return {
         &#34;content_length&#34;: content_length,
         &#34;number_of_lines&#34;: lines,
