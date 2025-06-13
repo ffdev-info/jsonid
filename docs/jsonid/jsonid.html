@@ -80,6 +80,9 @@ el.replaceWith(d);
 </summary>
 <pre><code class="python">def main() -&gt; None:
     &#34;&#34;&#34;Primary entry point for this script.&#34;&#34;&#34;
+
+    # pylint: disable=R0912,R0915
+
     parser = argparse.ArgumentParser(
         prog=&#34;json-id&#34;,
         description=&#34;proof-of-concept identifier for JSON objects on disk based on identifying valid objects and their key-values&#34;,
@@ -96,6 +99,24 @@ el.replaceWith(d);
         &#34;--paths&#34;,
         &#34;-p&#34;,
         help=&#34;file path to process&#34;,
+        required=False,
+    )
+    parser.add_argument(
+        &#34;--nojson&#34;,
+        &#34;-nj&#34;,
+        action=&#34;store_true&#34;,
+        required=False,
+    )
+    parser.add_argument(
+        &#34;--noyaml&#34;,
+        &#34;-ny&#34;,
+        action=&#34;store_true&#34;,
+        required=False,
+    )
+    parser.add_argument(
+        &#34;--notoml&#34;,
+        &#34;-nt&#34;,
+        action=&#34;store_true&#34;,
         required=False,
     )
     parser.add_argument(
@@ -154,6 +175,9 @@ el.replaceWith(d);
     )
     args = parser.parse_args()
     init_logging(args.debug)
+    # Determine which decode strategy to adopt.
+    strategy = _get_strategy(args)
+    # Primary application functions.
     if args.registry:
         raise NotImplementedError(&#34;custom registry is not yet available&#34;)
     if args.pronom:
@@ -177,8 +201,19 @@ el.replaceWith(d);
     if args.html:
         helpers.html()
         sys.exit()
+    if not strategy:
+        logger.error(
+            &#34;please ensure there is one remaining decode strategy, e.g. %s&#34;,
+            &#34;,&#34;.join(decode_strategies),
+        )
+        sys.exit(1)
     if args.analyse:
-        asyncio.run(file_processing.analyse_data(args.analyse))
+        asyncio.run(
+            file_processing.analyse_data(
+                path=args.analyse,
+                strategy=strategy,
+            )
+        )
         sys.exit()
     if not args.path:
         parser.print_help(sys.stderr)
@@ -186,6 +221,7 @@ el.replaceWith(d);
     asyncio.run(
         file_processing.process_data(
             path=args.path,
+            strategy=strategy,
             binary=args.binary,
             simple=args.simple,
         )
