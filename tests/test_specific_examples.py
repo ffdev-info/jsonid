@@ -96,11 +96,13 @@ async def test_utf16(tmp_path):
     dir_.mkdir()
     file_ = dir_ / "utftest.json"
     file_.write_text(json_data, encoding="utf-16")
-    res = await file_processing.identify_plaintext_bytestream(
+    base_obj = await file_processing.identify_plaintext_bytestream(
         file_,
         strategy=["JSON"],
     )
-    assert res == (True, {"a": "b"}, registry.DOCTYPE_JSON, "UTF-16", None)
+    assert base_obj == file_processing.BaseCharacteristics(
+        True, {"a": "b"}, registry.DOCTYPE_JSON, "UTF-16", None
+    )
 
     json_data = '{"a": "b"'
     dir_ = tmp_path / "jsonid-utf16-broken"
@@ -108,11 +110,13 @@ async def test_utf16(tmp_path):
     file_ = dir_ / "utftest.json"
     file_.write_text(json_data, encoding="utf-16")
 
-    res = await file_processing.identify_plaintext_bytestream(
+    base_obj = await file_processing.identify_plaintext_bytestream(
         file_,
         strategy=["JSON"],
     )
-    assert res == (False, None, None, None, None)
+    assert base_obj == file_processing.BaseCharacteristics(
+        False, None, None, None, None
+    )
 
     json_data = '{"a": "b"}'
     dir_ = tmp_path / "jsonid-utf16LE"
@@ -120,11 +124,11 @@ async def test_utf16(tmp_path):
     file_ = dir_ / "utftest.json"
     file_.write_text(json_data, encoding="UTF-16LE")
 
-    res = await file_processing.identify_plaintext_bytestream(
+    base_obj = await file_processing.identify_plaintext_bytestream(
         file_,
         strategy=["JSON"],
     )
-    assert res == (
+    assert base_obj == file_processing.BaseCharacteristics(
         True,
         {"a": "b"},
         registry.DOCTYPE_JSON,
@@ -138,11 +142,13 @@ async def test_utf16(tmp_path):
     file_ = dir_ / "utftest.json"
     file_.write_text(json_data, encoding="UTF-16BE")
 
-    res = await file_processing.identify_plaintext_bytestream(
+    base_obj = await file_processing.identify_plaintext_bytestream(
         file_,
         strategy=["JSON"],
     )
-    assert res == (True, {"a": "b"}, registry.DOCTYPE_JSON, "UTF-16BE", None)
+    assert base_obj == file_processing.BaseCharacteristics(
+        True, {"a": "b"}, registry.DOCTYPE_JSON, "UTF-16BE", None
+    )
 
 
 @pytest.mark.asyncio

@@ -7,8 +7,9 @@ import logging
 import os
 import sys
 import tomllib as toml
+from dataclasses import dataclass
 from datetime import timezone
-from typing import Any, Final, Tuple
+from typing import Any, Final, Union
 
 import yaml
 
@@ -35,6 +36,26 @@ logger = logging.getLogger(__name__)
 # FFB traditionally stands for first four bytes, but of course this
 # value might not be 4 in this script.
 FFB: Final[int] = 42
+
+
+@dataclass
+class BaseCharacteristics:
+    """BaseCharacteristics wraps information about the base object
+    for ease of moving it through the code to where we need it.
+    """
+
+    # valid describes whether or not the object has been parsed
+    # correctly.
+    valid: bool = False
+    # data represents the Data as parsed by the utility.
+    data: Union[Any, None] = None
+    # doctype describes the object type we have identified.
+    doctype: Union[str, None] = None
+    # encoding describes the character encoding of the object.
+    encoding: Union[str, None] = None
+    # content is the string/byte data that was the original object and
+    # is used in the structural analysis of the object.
+    content: Union[str, None] = None
 
 
 async def text_check(chars: str) -> bool:
@@ -117,19 +138,19 @@ async def analyse_json(paths: list[str], strategy: list):
         if os.path.getsize(path) == 0:
             logger.debug("'%s' is an empty file")
             continue
-        valid, data, doctype, encoding, content = await identify_plaintext_bytestream(
+        base_obj = await identify_plaintext_bytestream(
             path=path,
             strategy=strategy,
             analyse=True,
         )
-        if not valid:
+        if not base_obj.valid:
             logger.debug("%s: is not plaintext", path)
             continue
-        if data == "":
+        if base_obj.data == "" or base_obj.data is None:
             continue
-        res = await analysis.analyse_input(data, content)
-        res["doctype"] = doctype
-        res["encoding"] = encoding
+        res = await analysis.analyse_input(base_obj.data, base_obj.content)
+        res["doctype"] = base_obj.doctype
+        res["encoding"] = base_obj.encoding
         analysis_res.append(res)
     return analysis_res
 
@@ -181,26 +202,28 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, simple: 
             if binary:
                 logger.warning("report on binary object...")
             continue
-        valid, data, doctype, encoding, _ = await identify_plaintext_bytestream(
+        base_obj = await identify_plaintext_bytestream(
             path=path,
             strategy=strategy,
             analyse=False,
         )
-        if not valid:
+        if not base_obj.valid:
             logger.debug("%s: is not plaintext", path)
             if binary:
                 logger.warning("report on binary object...")
             continue
-        if data == "":
+        if base_obj.data == "" or base_obj.data is None:
             continue
-        logger.debug("processing: %s (%s)", path, doctype)
-        await process_result(idx, path, data, doctype, encoding, simple)
+        logger.debug("processing: %s (%s)", path, base_obj.doctype)
+        await process_result(
+            idx, path, base_obj.data, base_obj.doctype, base_obj.encoding, simple
+        )
 
 
 @helpers.timeit
 async def identify_plaintext_bytestream(
     path: str, strategy: list, analyse: bool = False
-) -> Tuple[bool, str, str, str, Any]:
+) -> BaseCharacteristics:
     """Ensure that the file is a palintext bytestream and can be
     processed as JSON.
 
@@ -223,14 +246,14 @@ async def identify_plaintext_bytestream(
     copied = None
     if not os.path.getsize(path):
         logger.debug("file is zero bytes: %s", path)
-        return False, None, None, None, None
+        return BaseCharacteristics(False, None, None, None, None)
     with open(path, "rb") as json_stream:
         first_chars = json_stream.read(FFB)
         if not await text_check(first_chars):
-            return False, None, None, None, None
+            return BaseCharacteristics(False, None, None, None, None)
         copied = first_chars + json_stream.read()
         if not await whitespace_check(copied):
-            return False, None, None, None, None
+            return BaseCharacteristics(False, None, None, None, None)
     for encoding in supported_encodings:
         try:
             content = copied.decode(encoding)
@@ -240,10 +263,10 @@ async def identify_plaintext_bytestream(
         except UnicodeError as err:
             logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
         if valid and analyse:
-            return valid, data, doctype, encoding, content
+            return BaseCharacteristics(valid, data, doctype, encoding, content)
         if valid:
-            return valid, data, doctype, encoding, None
-    return False, None, None, None, None
+            return BaseCharacteristics(valid, data, doctype, encoding, None)
+    return BaseCharacteristics(False, None, None, None, None)
 
 
 async def create_manifest(path: str) -> list[str]:
