@@ -67,8 +67,9 @@ YAML_ONLY: Final[registry_class.RegistryEntry] = registry_class.RegistryEntry(
     version=None,
     pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/818",
     wikidata="https://www.wikidata.org/entity/Q281876",
-    archive_team="http://fileformats.archiveteam.org/wiki/JSON",
-    mime=["application/json"],
+    archive_team="http://fileformats.archiveteam.org/wiki/YAML",
+    loc="https://www.loc.gov/preservation/digital/formats/fdd/fdd000645.shtml",
+    mime=["application/yaml"],
     markers=None,
 )
 
@@ -79,7 +80,7 @@ TOML_ONLY: Final[registry_class.RegistryEntry] = registry_class.RegistryEntry(
     version=None,
     wikidata="https://www.wikidata.org/entity/Q28449455",
     archive_team="http://fileformats.archiveteam.org/wiki/TOML",
-    mime=["application/json"],
+    mime=["application/toml"],
     markers=None,
 )
 
