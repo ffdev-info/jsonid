@@ -810,6 +810,7 @@ _registry = [
         identifier="jrid:0071",
         name=[{"@en": "Chrome Bookmarks"}],
         wikidata="http://www.wikidata.org/entity/Q105858840",
+        archive_team="http://fileformats.archiveteam.org/wiki/Chrome_bookmarks",
         markers=[
             {"KEY": "checksum", "EXISTS": None},
             {"GOTO": "roots", "KEY": "bookmark_bar", "ISTYPE": dict},
