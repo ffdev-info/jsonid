@@ -603,11 +603,9 @@ _registry = [
         markers=[
             {"KEY": "guid", "EXISTS": None},
             {"KEY": "title", "EXISTS": None},
-            {"KEY": "index", "ISTYPE": int},
-            {"KEY": "dateAdded", "ISTYPE": int},
-            {"KEY": "lastModified", "ISTYPE": int},
             {"KEY": "id", "ISTYPE": int},
-            {"KEY": "typeCode", "ISTYPE": int},
+            {"KEY": "children", "ISTYPE": list},
+            {"KEY": "root", "IS": "placesRoot"},
         ],
     ),
     registry_class.RegistryEntry(
