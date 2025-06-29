@@ -816,6 +816,22 @@ _registry = [
             {"KEY": "version", "ISTYPE": int},
         ],
     ),
+    # website describes existence of all attributes:
+    # https://docs.asciinema.org/manual/asciicast/v1/
+    registry_class.RegistryEntry(
+        identifier="jrid:0072",
+        name=[{"@en": "asciicast v1"}],
+        markers=[
+            {"KEY": "version", "ISTYPE": int},
+            {"KEY": "width", "ISTYPE": int},
+            {"KEY": "height", "ISTYPE": int},
+            {"KEY": "duration", "ISTYPE": float},
+            {"KEY": "command", "ISTYPE": str},
+            {"KEY": "title", "ISTYPE": str},
+            {"KEY": "env", "EXISTS": None},
+            {"KEY": "stdout", "EXISTS": None},
+        ],
+    ),
 ]
 
 
