@@ -160,7 +160,7 @@ def main() -> None:
         "--analyse",
         "--analyze",
         "-a",
-        help="return an analysis of a file, ideally JSON-like object, to support development",
+        help="analyse a file in support of ruleset development and data preservation",
         required=False,
         type=str,
         metavar="PATH",
