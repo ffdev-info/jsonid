@@ -833,6 +833,22 @@ _registry = [
             {"KEY": "stdout", "EXISTS": None},
         ],
     ),
+    # MAME Plugins distributed with the project:
+    # https://github.com/mamedev/mame/tree/134d5251a19f486bac79944f122e489d4b6cd6e7/plugins
+    registry_class.RegistryEntry(
+        identifier="jrid:0073",
+        name=[{"@en": "MAME Plugin (JSON)"}],
+        wikidata="http://www.wikidata.org/entity/Q105857365",
+        archive_team="http://fileformats.archiveteam.org/wiki/MAME",
+        markers=[
+            {"GOTO": "plugin", "KEY": "name", "ISTYPE": str},
+            {"GOTO": "plugin", "KEY": "description", "ISTYPE": str},
+            {"GOTO": "plugin", "KEY": "version", "ISTYPE": str},
+            {"GOTO": "plugin", "KEY": "author", "ISTYPE": str},
+            {"GOTO": "plugin", "KEY": "type", "ISTYPE": str},
+            {"GOTO": "plugin", "KEY": "start", "ISTYPE": str},
+        ],
+    ),
 ]
 
 
