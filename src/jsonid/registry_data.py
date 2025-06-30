@@ -849,6 +849,21 @@ _registry = [
             {"GOTO": "plugin", "KEY": "start", "ISTYPE": str},
         ],
     ),
+    # TopoJSON spec:
+    # https://github.com/topojson/topojson-specification/blob/7939fe0834f36af8b935ec1827cb0abdd1e34d36/README.md#21-topology-objects
+    #
+    # Additional examples:
+    # https://github.com/topojson/topojson-server/tree/a6b85929df5dfc3de06d2bb0a4507b76967ce899/test/topojson
+    registry_class.RegistryEntry(
+        identifier="jrid:0074",
+        name=[{"@en": "TopoJSON (GeoJSON extension)"}],
+        wikidata="http://www.wikidata.org/entity/Q15838827",
+        markers=[
+            {"KEY": "type", "IS": "Topology"},
+            {"KEY": "objects", "ISTYPE": dict},
+            {"KEY": "arcs", "ISTYPE": list},
+        ],
+    ),
 ]
 
 
