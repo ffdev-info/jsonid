@@ -864,6 +864,19 @@ _registry = [
             {"KEY": "arcs", "ISTYPE": list},
         ],
     ),
+    # CryEngine; CryProject file
+    # https://github.com/search?q=cryproject&type=code
+    registry_class.RegistryEntry(
+        identifier="jrid:0075",
+        name=[{"@en": "CryProject file for CryEngine"}],
+        wikidata="http://www.wikidata.org/entity/Q105850591",
+        markers=[
+            {"KEY": "version", "ISTYPE": int},
+            {"KEY": "type", "ISTYPE": str},
+            {"KEY": "info", "ISTYPE": dict},
+            {"KEY": "content", "ISTYPE": dict},
+        ],
+    ),
 ]
 
 
