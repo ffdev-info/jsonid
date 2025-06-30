@@ -74,3 +74,7 @@ clean:
 # Check the registry entries are correct.
 check:
    python jsonid.py --check
+
+# Check the registry entries are correct (DEBUG).
+check-debug:
+   python jsonid.py --check --debug
