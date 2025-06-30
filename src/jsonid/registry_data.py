@@ -603,11 +603,9 @@ _registry = [
         markers=[
             {"KEY": "guid", "EXISTS": None},
             {"KEY": "title", "EXISTS": None},
-            {"KEY": "index", "ISTYPE": int},
-            {"KEY": "dateAdded", "ISTYPE": int},
-            {"KEY": "lastModified", "ISTYPE": int},
             {"KEY": "id", "ISTYPE": int},
-            {"KEY": "typeCode", "ISTYPE": int},
+            {"KEY": "children", "ISTYPE": list},
+            {"KEY": "root", "IS": "placesRoot"},
         ],
     ),
     registry_class.RegistryEntry(
@@ -806,6 +804,105 @@ _registry = [
             {"KEY": "status_bar_visible", "ISTYPE": bool},
             {"KEY": "side_bar_visible", "ISTYPE": bool},
             {"KEY": "show_tabs", "ISTYPE": bool},
+        ],
+    ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0071",
+        name=[{"@en": "Chrome Bookmarks"}],
+        wikidata="http://www.wikidata.org/entity/Q105858840",
+        archive_team="http://fileformats.archiveteam.org/wiki/Chrome_bookmarks",
+        markers=[
+            {"KEY": "checksum", "EXISTS": None},
+            {"GOTO": "roots", "KEY": "bookmark_bar", "ISTYPE": dict},
+            {"KEY": "version", "ISTYPE": int},
+        ],
+    ),
+    # website describes existence of all attributes:
+    # https://docs.asciinema.org/manual/asciicast/v1/
+    registry_class.RegistryEntry(
+        identifier="jrid:0072",
+        name=[{"@en": "asciicast v1"}],
+        markers=[
+            {"KEY": "version", "ISTYPE": int},
+            {"KEY": "width", "ISTYPE": int},
+            {"KEY": "height", "ISTYPE": int},
+            {"KEY": "duration", "ISTYPE": float},
+            {"KEY": "command", "ISTYPE": str},
+            {"KEY": "title", "ISTYPE": str},
+            {"KEY": "env", "EXISTS": None},
+            {"KEY": "stdout", "EXISTS": None},
+        ],
+    ),
+    # MAME Plugins distributed with the project:
+    # https://github.com/mamedev/mame/tree/134d5251a19f486bac79944f122e489d4b6cd6e7/plugins
+    registry_class.RegistryEntry(
+        identifier="jrid:0073",
+        name=[{"@en": "MAME Plugin (JSON)"}],
+        wikidata="http://www.wikidata.org/entity/Q105857365",
+        archive_team="http://fileformats.archiveteam.org/wiki/MAME",
+        markers=[
+            {"GOTO": "plugin", "KEY": "name", "ISTYPE": str},
+            {"GOTO": "plugin", "KEY": "description", "ISTYPE": str},
+            {"GOTO": "plugin", "KEY": "version", "ISTYPE": str},
+            {"GOTO": "plugin", "KEY": "author", "ISTYPE": str},
+            {"GOTO": "plugin", "KEY": "type", "ISTYPE": str},
+            {"GOTO": "plugin", "KEY": "start", "ISTYPE": str},
+        ],
+    ),
+    # TopoJSON spec:
+    # https://github.com/topojson/topojson-specification/blob/7939fe0834f36af8b935ec1827cb0abdd1e34d36/README.md#21-topology-objects
+    #
+    # Additional examples:
+    # https://github.com/topojson/topojson-server/tree/a6b85929df5dfc3de06d2bb0a4507b76967ce899/test/topojson
+    registry_class.RegistryEntry(
+        identifier="jrid:0074",
+        name=[{"@en": "TopoJSON (GeoJSON extension)"}],
+        wikidata="http://www.wikidata.org/entity/Q15838827",
+        markers=[
+            {"KEY": "type", "IS": "Topology"},
+            {"KEY": "objects", "ISTYPE": dict},
+            {"KEY": "arcs", "ISTYPE": list},
+        ],
+    ),
+    # CryEngine; CryProject file
+    # https://github.com/search?q=cryproject&type=code
+    registry_class.RegistryEntry(
+        identifier="jrid:0075",
+        name=[{"@en": "CryProject file for CryEngine"}],
+        wikidata="http://www.wikidata.org/entity/Q105850591",
+        markers=[
+            {"KEY": "version", "ISTYPE": int},
+            {"KEY": "type", "ISTYPE": str},
+            {"KEY": "info", "ISTYPE": dict},
+            {"KEY": "content", "ISTYPE": dict},
+        ],
+    ),
+    # CSL language schemas.
+    #
+    # https://citeproc-js.readthedocs.io/en/latest/csl-json/markup.html#
+    registry_class.RegistryEntry(
+        identifier="jrid:0076",
+        name=[{"@en": "Citation Style Language Citation (CSL-JSON) Schema"}],
+        markers=[
+            {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
+            {"KEY": "$schema", "ENDSWITH": "/schema#"},
+            {"KEY": "$id", "STARTSWITH": "https://resource.citationstyles.org/schema/"},
+            {"KEY": "$id", "ENDSWITH": "/input/json/csl-citation.json"},
+            {"KEY": "type", "IS": "object"},
+            {"KEY": "properties", "ISTYPE": dict},
+        ],
+    ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0077",
+        name=[{"@en": "Citation Style Language Input Data Schema"}],
+        markers=[
+            {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
+            {"KEY": "$schema", "ENDSWITH": "/schema#"},
+            {"KEY": "$id", "STARTSWITH": "https://resource.citationstyles.org/schema/"},
+            {"KEY": "$id", "ENDSWITH": "/input/json/csl-data.json"},
+            {"KEY": "type", "IS": "array"},
+            {"KEY": "items", "ISTYPE": dict},
+            {"KEY": "definitions", "ISTYPE": dict},
         ],
     ),
 ]
