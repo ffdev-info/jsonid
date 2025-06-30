@@ -877,6 +877,34 @@ _registry = [
             {"KEY": "content", "ISTYPE": dict},
         ],
     ),
+    # CSL language schemas.
+    #
+    # https://citeproc-js.readthedocs.io/en/latest/csl-json/markup.html#
+    registry_class.RegistryEntry(
+        identifier="jrid:0076",
+        name=[{"@en": "Citation Style Language Citation (CSL-JSON) Schema"}],
+        markers=[
+            {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
+            {"KEY": "$schema", "ENDSWITH": "/schema#"},
+            {"KEY": "$id", "STARTSWITH": "https://resource.citationstyles.org/schema/"},
+            {"KEY": "$id", "ENDSWITH": "/input/json/csl-citation.json"},
+            {"KEY": "type", "IS": "object"},
+            {"KEY": "properties", "ISTYPE": dict},
+        ],
+    ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0077",
+        name=[{"@en": "Citation Style Language Input Data Schema"}],
+        markers=[
+            {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
+            {"KEY": "$schema", "ENDSWITH": "/schema#"},
+            {"KEY": "$id", "STARTSWITH": "https://resource.citationstyles.org/schema/"},
+            {"KEY": "$id", "ENDSWITH": "/input/json/csl-data.json"},
+            {"KEY": "type", "IS": "array"},
+            {"KEY": "items", "ISTYPE": dict},
+            {"KEY": "definitions", "ISTYPE": dict},
+        ],
+    ),
 ]
 
 
