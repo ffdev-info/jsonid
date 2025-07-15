@@ -193,7 +193,7 @@ _registry = [
     registry_class.RegistryEntry(
         identifier="jrid:0019",
         name=[{"@en": "JSON Patch"}],
-        mime="application/json-patch+json",
+        mime=["application/json-patch+json"],
         rfc="https://datatracker.ietf.org/doc/html/rfc6902",
         archive_team="http://fileformats.archiveteam.org/wiki/JSON_Patch",
         markers=[
@@ -386,7 +386,7 @@ _registry = [
         rfc="https://datatracker.ietf.org/doc/html/rfc7946",
         loc="https://www.loc.gov/preservation/digital/formats/fdd/fdd000382.shtml",
         wikidata="http://www.wikidata.org/entity/Q5533904",
-        mime="application/vnd.geo+json",
+        mime=["application/vnd.geo+json"],
         markers=[
             {"KEY": "type", "IS": "Feature"},
             {"KEY": "geometry", "EXISTS": None},
@@ -399,7 +399,7 @@ _registry = [
         archive_team="http://fileformats.archiveteam.org/wiki/GeoJSON",
         loc="https://www.loc.gov/preservation/digital/formats/fdd/fdd000382.shtml",
         rfc="https://datatracker.ietf.org/doc/html/rfc7946",
-        mime="application/vnd.geo+json",
+        mime=["application/vnd.geo+json"],
         markers=[
             {"KEY": "type", "IS": "FeatureCollection"},
             {"KEY": "features", "EXISTS": None},
@@ -420,7 +420,7 @@ _registry = [
         identifier="jrid:0040",
         name=[{"@en": "JSON API"}],
         archive_team="http://fileformats.archiveteam.org/wiki/JSON_API",
-        mime="application/vnd.api+json",
+        mime=["application/vnd.api+json"],
         markers=[
             # "jsonapi" MAY exist but isn't guaranteed. It is unlikely
             # we will see this object as a static document.
@@ -442,7 +442,7 @@ _registry = [
         identifier="jrid:0042",
         name=[{"@en": "Open Web App Manifest (Firefox Marketplace)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/Open_Web_App_Manifest",
-        mime="application/x-web-app-manifest+json",
+        mime=["application/x-web-app-manifest+json"],
         markers=[
             {"KEY": "name", "ISTYPE": str},
             {"KEY": "description", "ISTYPE": str},
@@ -465,7 +465,7 @@ _registry = [
         identifier="jrid:0044",
         name=[{"@en": "Apple PassKit (PKPass) pass.json"}],
         archive_team="http://fileformats.archiveteam.org/wiki/PKPass",
-        mime="application/vnd.apple.pkpass",
+        mime=["application/vnd.apple.pkpass"],
         markers=[
             {"KEY": "passTypeIdentifier", "EXISTS": None},
             {"KEY": "formatVersion", "ISTYPE": int},
@@ -503,7 +503,7 @@ _registry = [
         identifier="jrid:0047",
         name=[{"@en": "Sketch project file meta.json (Generic)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/Sketch",
-        mime="application/vnd.apple.pkpass",
+        mime=["application/vnd.apple.pkpass"],
         markers=[
             {"KEY": "commit", "EXISTS": None},
             {"KEY": "pagesAndArtboards", "ISTYPE": dict},
