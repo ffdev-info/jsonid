@@ -1109,11 +1109,9 @@
     <td>True</td>
     <td class="markers"><pre>{'KEY': 'guid', 'EXISTS': None}
 {'KEY': 'title', 'EXISTS': None}
-{'KEY': 'index', 'ISTYPE': 'int'}
-{'KEY': 'dateAdded', 'ISTYPE': 'int'}
-{'KEY': 'lastModified', 'ISTYPE': 'int'}
 {'KEY': 'id', 'ISTYPE': 'int'}
-{'KEY': 'typeCode', 'ISTYPE': 'int'}
+{'KEY': 'children', 'ISTYPE': 'list'}
+{'KEY': 'root', 'IS': 'placesRoot'}
 </pre></td>
 </tr>
 <tr>
@@ -1335,6 +1333,106 @@
 {'KEY': 'show_tabs', 'ISTYPE': 'bool'}
 </pre></td>
 </tr>
+<tr>
+    <td id="jrid:0071">jrid:0071</td>
+    <td class="markers">Chrome Bookmarks</td>
+    <td>False</td>
+    <td>False</td>
+    <td>True</td>
+    <td>True</td>
+    <td class="markers"><pre>{'KEY': 'checksum', 'EXISTS': None}
+{'GOTO': 'roots', 'KEY': 'bookmark_bar', 'ISTYPE': 'dict'}
+{'KEY': 'version', 'ISTYPE': 'int'}
+</pre></td>
+</tr>
+<tr>
+    <td id="jrid:0072">jrid:0072</td>
+    <td class="markers">asciicast v1</td>
+    <td>False</td>
+    <td>False</td>
+    <td>False</td>
+    <td>False</td>
+    <td class="markers"><pre>{'KEY': 'version', 'ISTYPE': 'int'}
+{'KEY': 'width', 'ISTYPE': 'int'}
+{'KEY': 'height', 'ISTYPE': 'int'}
+{'KEY': 'duration', 'ISTYPE': 'float'}
+{'KEY': 'command', 'ISTYPE': 'str'}
+{'KEY': 'title', 'ISTYPE': 'str'}
+{'KEY': 'env', 'EXISTS': None}
+{'KEY': 'stdout', 'EXISTS': None}
+</pre></td>
+</tr>
+<tr>
+    <td id="jrid:0073">jrid:0073</td>
+    <td class="markers">MAME Plugin (JSON)</td>
+    <td>False</td>
+    <td>False</td>
+    <td>True</td>
+    <td>True</td>
+    <td class="markers"><pre>{'GOTO': 'plugin', 'KEY': 'name', 'ISTYPE': 'str'}
+{'GOTO': 'plugin', 'KEY': 'description', 'ISTYPE': 'str'}
+{'GOTO': 'plugin', 'KEY': 'version', 'ISTYPE': 'str'}
+{'GOTO': 'plugin', 'KEY': 'author', 'ISTYPE': 'str'}
+{'GOTO': 'plugin', 'KEY': 'type', 'ISTYPE': 'str'}
+{'GOTO': 'plugin', 'KEY': 'start', 'ISTYPE': 'str'}
+</pre></td>
+</tr>
+<tr>
+    <td id="jrid:0074">jrid:0074</td>
+    <td class="markers">TopoJSON (GeoJSON extension)</td>
+    <td>False</td>
+    <td>False</td>
+    <td>True</td>
+    <td>False</td>
+    <td class="markers"><pre>{'KEY': 'type', 'IS': 'Topology'}
+{'KEY': 'objects', 'ISTYPE': 'dict'}
+{'KEY': 'arcs', 'ISTYPE': 'list'}
+</pre></td>
+</tr>
+<tr>
+    <td id="jrid:0075">jrid:0075</td>
+    <td class="markers">CryProject file for CryEngine</td>
+    <td>False</td>
+    <td>False</td>
+    <td>True</td>
+    <td>False</td>
+    <td class="markers"><pre>{'KEY': 'version', 'ISTYPE': 'int'}
+{'KEY': 'type', 'ISTYPE': 'str'}
+{'KEY': 'info', 'ISTYPE': 'dict'}
+{'KEY': 'content', 'ISTYPE': 'dict'}
+</pre></td>
+</tr>
+<tr>
+    <td id="jrid:0076">jrid:0076</td>
+    <td class="markers">Citation Style Language Citation (CSL-JSON) Schema</td>
+    <td>False</td>
+    <td>False</td>
+    <td>False</td>
+    <td>False</td>
+    <td class="markers"><pre>{'KEY': '$schema', 'STARTSWITH': 'http://json-schema.org/'}
+{'KEY': '$schema', 'ENDSWITH': '/schema#'}
+{'KEY': '$id', 'STARTSWITH': 'https://resource.citationstyles.org/schema/'}
+{'KEY': '$id', 'ENDSWITH': '/input/json/csl-citation.json'}
+{'KEY': 'type', 'IS': 'object'}
+{'KEY': 'properties', 'ISTYPE': 'dict'}
+</pre></td>
+</tr>
+<tr>
+    <td id="jrid:0077">jrid:0077</td>
+    <td class="markers">Citation Style Language Input Data Schema</td>
+    <td>False</td>
+    <td>False</td>
+    <td>False</td>
+    <td>False</td>
+    <td class="markers"><pre>{'KEY': '$schema', 'STARTSWITH': 'http://json-schema.org/'}
+{'KEY': '$schema', 'ENDSWITH': '/schema#'}
+{'KEY': '$id', 'STARTSWITH': 'https://resource.citationstyles.org/schema/'}
+{'KEY': '$id', 'ENDSWITH': '/input/json/csl-data.json'}
+{'KEY': 'type', 'IS': 'array'}
+{'KEY': 'items', 'ISTYPE': 'dict'}
+{'KEY': 'definitions', 'ISTYPE': 'dict'}
+</pre></td>
+</tr>
 
             </tbody>
         </table>
@@ -1427,6 +1525,13 @@
 <li class="contents"><code><a href="#jrid:0068">jrid:0068: Allotrope Simple Model (Allotrope Foundation)</a></code></li>
 <li class="contents"><code><a href="#jrid:0069">jrid:0069: Sublime Text Project</a></code></li>
 <li class="contents"><code><a href="#jrid:0070">jrid:0070: Sublime Text Workspace</a></code></li>
+<li class="contents"><code><a href="#jrid:0071">jrid:0071: Chrome Bookmarks</a></code></li>
+<li class="contents"><code><a href="#jrid:0072">jrid:0072: asciicast v1</a></code></li>
+<li class="contents"><code><a href="#jrid:0073">jrid:0073: MAME Plugin (JSON)</a></code></li>
+<li class="contents"><code><a href="#jrid:0074">jrid:0074: TopoJSON (GeoJSON extension)</a></code></li>
+<li class="contents"><code><a href="#jrid:0075">jrid:0075: CryProject file for CryEngine</a></code></li>
+<li class="contents"><code><a href="#jrid:0076">jrid:0076: Citation Style Language Citation (CSL-JSON) Schema</a></code></li>
+<li class="contents"><code><a href="#jrid:0077">jrid:0077: Citation Style Language Input Data Schema</a></code></li>
 
                </ul>
             </li>
