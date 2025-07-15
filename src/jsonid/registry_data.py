@@ -182,7 +182,6 @@ _registry = [
         identifier="jrid:0018",
         name=[{"@en": "jacker song"}],
         archive_team="http://fileformats.archiveteam.org/wiki/Jacker_song",
-        description=[{"@en": "via"}],
         markers=[
             {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
             {"KEY": "$schema", "ENDSWITH": "/schema#"},
