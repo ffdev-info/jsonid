@@ -93,8 +93,8 @@ class RegistryEntry:  # pylint: disable=R0902
                 replace_me = helpers.substitute_type_text(replace_me)
                 marker["ISTYPE"] = replace_me
                 new_markers.append(marker)
-            except KeyError:
-                pass
+            except (KeyError, AttributeError):
+                new_markers.append(marker)
         if not new_markers:
             return obj.__dict__
         obj.markers = new_markers
