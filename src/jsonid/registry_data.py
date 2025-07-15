@@ -51,7 +51,7 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0005",
-        name=[{"@en": "rocrate (all versions)"}],
+        name=[{"@en": "RO-Crate (Generic)"}],
         markers=[
             {"KEY": "@context", "STARTSWITH": "https://w3id.org/ro/crate/"},
             {"KEY": "@context", "ENDSWITH": "/context"},
@@ -59,7 +59,7 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0006",
-        name=[{"@en": "ro-crate (1.1)"}],
+        name=[{"@en": "RO-Crate (1.1)"}],
         markers=[
             {
                 "KEY": "@context",
