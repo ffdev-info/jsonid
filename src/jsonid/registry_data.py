@@ -429,7 +429,7 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0041",
-        name=[{"@en": "Max (Interactive Software) .maxpat JSON (Generic)"}],
+        name=[{"@en": "Max Patch (Visual Programming Language) (Generic)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/Max",
         wikidata="http://www.wikidata.org/entity/Q105862509",
         markers=[
