@@ -91,7 +91,7 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0009",
-        name=[{"@en": "JSON-LD (generic)"}],
+        name=[{"@en": "JSON-LD (Generic)"}],
         archive_team="http://fileformats.archiveteam.org/wiki/JSON-LD",
         markers=[
             {"KEY": "@context", "EXISTS": None},
@@ -114,7 +114,7 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0011",
-        name=[{"@en": "siegfried report (all versions)"}],
+        name=[{"@en": "Siegfried Identification Report (Generic)"}],
         markers=[
             {"KEY": "siegfried", "EXISTS": None},
             {"KEY": "scandate", "EXISTS": None},
@@ -134,7 +134,7 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0013",
-        name=[{"@en": "sparql query (generic)"}],
+        name=[{"@en": "SPARQL Query Results (W3C) (Generic)"}],
         markers=[
             {"KEY": "head", "EXISTS": None},
             {"KEY": "results", "EXISTS": None},
@@ -142,7 +142,7 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0014",
-        name=[{"@en": "wikidata results (generic)"}],
+        name=[{"@en": "Wikidata Query Service Sparql Results (WDQS) (Generic)"}],
         markers=[
             {"KEY": "head", "EXISTS": None},
             {"KEY": "results", "EXISTS": None},
@@ -161,7 +161,7 @@ _registry = [
     # Also: id can be "bookmarks.json", "inbox.json", "likes.json"
     registry_class.RegistryEntry(
         identifier="jrid:0016",
-        name=[{"@en": "activity streams json (generic)"}],
+        name=[{"@en": "Activity Streams JSON (Generic)"}],
         wikidata="http://www.wikidata.org/entity/Q4677626",
         markers=[
             {"KEY": "@context", "STARTSWITH": "https://www.w3.org/ns/activitystreams"},
@@ -306,7 +306,7 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0030",
-        name=[{"@en": "JHOVE JhoveView Output (generic)"}],
+        name=[{"@en": "JHOVE JhoveView Output (Generic)"}],
         markers=[
             {"GOTO": "jhove", "KEY": "name", "IS": "JhoveView"},
             {"GOTO": "jhove", "KEY": "release", "EXISTS": None},
