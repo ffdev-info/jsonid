@@ -905,6 +905,16 @@ _registry = [
             {"KEY": "definitions", "ISTYPE": dict},
         ],
     ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0078",
+        name=[{"@en": "Wikidata Query Service Sparql Results (Wikiprov/Siegfried) (Generic)"}],
+        markers=[
+            {"KEY": "head", "EXISTS": None},
+            {"KEY": "results", "EXISTS": None},
+            {"KEY": "endpoint", "IS": "https://query.wikidata.org/sparql"},
+            {"KEY": "provenance", "EXISTS": None},
+        ],
+    ),
 ]
 
 
