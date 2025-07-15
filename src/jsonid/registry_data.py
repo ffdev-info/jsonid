@@ -13,7 +13,7 @@ _registry = [
     registry_class.RegistryEntry(
         identifier="jrid:0001",
         name=[{"@en": "JavaScript Package Lock"}],
-        description=[{"@en": "describes an exact node module dependency tree"}],
+        description=[{"@en": "describes an exact Node (NPM) module dependency tree"}],
         markers=[
             {"KEY": "name", "EXISTS": None},
             {"KEY": "lockfileVersion", "EXISTS": None},
@@ -257,7 +257,7 @@ _registry = [
     registry_class.RegistryEntry(
         identifier="jrid:0025",
         name=[{"@en": "JavaScript Package file"}],
-        description=[{"@en": "describes a node package for publication"}],
+        description=[{"@en": "describes a Node (NPM) package for publication"}],
         markers=[
             {"KEY": "name", "EXISTS": None},
             {"KEY": "version", "EXISTS": None},
