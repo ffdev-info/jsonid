@@ -257,7 +257,7 @@ _registry = [
     registry_class.RegistryEntry(
         identifier="jrid:0025",
         name=[{"@en": "JavaScript Package file"}],
-        description=[{"@en": "describes a node package for publication"}]
+        description=[{"@en": "describes a node package for publication"}],
         markers=[
             {"KEY": "name", "EXISTS": None},
             {"KEY": "version", "EXISTS": None},
@@ -610,6 +610,9 @@ _registry = [
     registry_class.RegistryEntry(
         identifier="jrid:0055",
         name=[{"@en": "Lottie vector graphics"}],
+        description=[
+            {"@en": "a animated file format using JSON also known as Bodymovin JSON"}
+        ],
         archive_team="http://fileformats.archiveteam.org/wiki/Lottie",
         wikidata="http://www.wikidata.org/entity/Q98855048",
         markers=[
@@ -906,7 +909,11 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0078",
-        name=[{"@en": "Wikidata Query Service Sparql Results (Wikiprov/Siegfried) (Generic)"}],
+        name=[
+            {
+                "@en": "Wikidata Query Service Sparql Results (Wikiprov/Siegfried) (Generic)"
+            }
+        ],
         markers=[
             {"KEY": "head", "EXISTS": None},
             {"KEY": "results", "EXISTS": None},
