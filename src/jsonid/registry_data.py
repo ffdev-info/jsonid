@@ -647,7 +647,7 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0058",
-        name=[{"@en": "Power Bi DataModelSchema"}],
+        name=[{"@en": "Power Bi Data Model Schema"}],
         markers=[
             {"KEY": "name", "ISTYPE": str},
             {"KEY": "compatibilityLevel", "ISTYPE": int},
