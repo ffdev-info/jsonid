@@ -135,5 +135,6 @@ dmypy.json
 
 # Custom files
 NOTES
-integration-files/*
 integration_files/*
+integration_files/
+jsonid-integration-files/
