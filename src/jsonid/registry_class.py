@@ -90,7 +90,7 @@ class RegistryEntry:  # pylint: disable=R0902
         for marker in obj.markers:
             try:
                 replace_me = marker["ISTYPE"]
-                replace_me = helpers.substitute_type_text()
+                replace_me = helpers.substitute_type_text(replace_me)
                 marker["ISTYPE"] = replace_me
                 new_markers.append(marker)
             except KeyError:
