@@ -22,7 +22,7 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0002",
-        name=[{"@en": "ocfl inventory (all versions)"}],
+        name=[{"@en": "OCFL Inventory (Generic)"}],
         description=[{"@en": "ocfl inventory file"}],
         markers=[
             {"KEY": "type", "STARTSWITH": "https://ocfl.io/"},
