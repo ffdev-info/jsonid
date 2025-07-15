@@ -79,6 +79,7 @@ class RegistryEntry:  # pylint: disable=R0902
             "name": self.name,
             "additional": self.additional,
             "encoding": self.encoding,
+            "description": self.description,
         }
         return yaml.dump(data, indent=2, allow_unicode=True).strip()
 
