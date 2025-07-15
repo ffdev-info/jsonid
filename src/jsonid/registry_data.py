@@ -81,7 +81,7 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0008",
-        name=[{"@en": "iiif image api (all versions)"}],
+        name=[{"@en": "IIIF Image API (all versions)"}],
         markers=[
             {"KEY": "@context", "STARTSWITH": "http://iiif.io/api/image/"},
             {"KEY": "@context", "ENDSWITH": "/context.json"},
