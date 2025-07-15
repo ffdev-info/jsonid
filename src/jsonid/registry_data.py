@@ -170,7 +170,7 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0017",
-        name=[{"@en": "open resume"}],
+        name=[{"@en": "Open Resume Document"}],
         description=[{"@en": "an open source data-oriented resume builder"}],
         markers=[
             {"KEY": "basics", "EXISTS": None},
