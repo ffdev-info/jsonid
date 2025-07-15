@@ -1,4 +1,4 @@
-# jsonid
+# JSONID
 
 <!-- markdownlint-disable -->
 <img
@@ -7,7 +7,7 @@
     width="200px" />
 <!-- markdownlint-enable -->
 
-**[JSON][json-1]ID**entification tool and ruleset. `jsonid` can be downloaded
+**[JSON][json-1]ID**entification tool and ruleset. JSONID can be downloaded
 from pypi.org.
 
 [![PyPI - Version](https://img.shields.io/pypi/v/jsonid?style=plastic&color=purple)][pypi-json-id-1]
@@ -17,7 +17,7 @@ from pypi.org.
 
 ## Function
 
-`jsonid` borrows from the Python approach to ask forgiveness rather than
+JSONID borrows from the Python approach to ask forgiveness rather than
 permission (EAFP) to attempt to open every object it scans and see if it
 parses as JSON. If it doesn't, we move along. If it does, we then have an
 opportunity to identify the characteristics of the JSON we have opened.
@@ -64,16 +64,16 @@ is consistent retrieval of information through its "keys". Further
 complexity can be added when we are dealing with maps embedded in a "list" or
 "array", or simply just maps of arbitrary depth.
 
-`jsonid` tries to compensate for JSON's complexities by using the format's
+JSONID tries to compensate for JSON's complexities by using the format's
 own strengths to parse binary data as JSON and then if is successful,
 use a JSON-inspired grammar to describe keys and key-value pairs as "markers"
 that can potentially identify the JSON objects that we are looking at.
 Certainly narrow down the potential instances of JSON objects that we might
 be looking at.
 
-## What does `jsonid` get you?
+## What does JSONID get you?
 
-To begin, `jsonid` should identify JSON files on your system as JSON.
+To begin, JSONID should identify JSON files on your system as JSON.
 That's already a pretty good position to be in.
 
 The ruleset should then allow you to identify a decent number of JSON objects,
@@ -90,7 +90,7 @@ such as [YAML][yaml-spec], and [TOML][toml-spec].
 
 ## Ruleset
 
-`jsonid` currently defines a small set of rules that help us to identify JSON
+JSONID currently defines a small set of rules that help us to identify JSON
 documents.
 
 The rules are described in their own data-structures. The structures are
@@ -98,7 +98,7 @@ processed as a list (they need not necessarily be in order) and each must
 match for a given set of ruls to determine what kind of JSON document we might
 be looking at.
 
-`jsonid` can identify the existence of information but you can also use
+JSONID can identify the existence of information but you can also use
 wildcards and provide some negation as required, e.g. to remove
 false-positives between similar JSON entities.
 
@@ -131,7 +131,7 @@ For example:
 
 All rules need to match for a positive ID.
 
-> **NB.**: `jsonid` is a
+> **NB.**: JSONID is a
 work-in-progress and requires community input to help determine the grammar
 in its fullness and so there is a lot of opportunity to add/remove to these
 methods as its development continues. Additionally, help formalizing the
@@ -150,12 +150,12 @@ time.
 
 A temporary "registry" module is used to store JSON markers.
 The registry is a work in progress and must be exported and
-rewritten somewhere more centralized (and easier to manage) if `jsonid` can
+rewritten somewhere more centralized (and easier to manage) if JSONID can
 prove useful to the communities that might use it (*see notes on PRONOM below*).
 
 The registry web-page is here:
 
-* [jsonid registry][registry-htm-1].
+* [JSONID registry][registry-htm-1].
 
 [registry-htm-1]: https://ffdev-info.github.io/jsonid/registry/
 
@@ -228,11 +228,11 @@ metaddata is more stabilised.
 
 ## PRONOM
 
-Ideally `jsonid` can generate evidence enough to warrant the creration of
-PRONOM IDs that can then be referenced in the `jsonid` output.
+Ideally JSON can generate evidence enough to warrant the creration of
+PRONOM IDs that can then be referenced in the JSONID output.
 
 Evantually, PRONOM or a PRONOM-like tool might host an authoritative version
-of the `jsonid` registry.
+of the JSONID registry.
 
 ## Output format
 
@@ -266,11 +266,28 @@ name:
 ---
 ```
 
-The structure should become more concrete as `jsonid` is formalized.
+The structure should become more concrete as JSONID is formalized.
+
+## Sample files
+
+### Integration files
+
+Files used in the development of JSONID are available in their
+[own repository][integration-1]/
+
+[integration-1]: https://github.com/ffdev-info/jsonid-integration-files
+
+### Fundamental examples
+
+There is a small [samples directory][samples-1] included with this
+epository demonstrating some fundamental differences in encoding and
+JSON types.
+
+[samples-1]: samples/
 
 ## Analysis
 
-`jsonid` provides an analysis mechanism to help developers of identifiers. It
+JSONID provides an analysis mechanism to help developers of identifiers. It
 might also help users talk about interesting properties about the objects
 being analysed, and provide consistent fingerprinting for data that has
 different byte-alignment but is otherwise identical.
