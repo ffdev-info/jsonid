@@ -12,8 +12,8 @@ except ModuleNotFoundError:
 _registry = [
     registry_class.RegistryEntry(
         identifier="jrid:0001",
-        name=[{"@en": "package lock file"}],
-        description=[{"@en": "node manifest file manifestation"}],
+        name=[{"@en": "JavaScript Package Lock"}],
+        description=[{"@en": "describes an exact node module dependency tree"}],
         markers=[
             {"KEY": "name", "EXISTS": None},
             {"KEY": "lockfileVersion", "EXISTS": None},
@@ -256,7 +256,8 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0025",
-        name=[{"@en": "JavaScript package.json file"}],
+        name=[{"@en": "JavaScript Package file"}],
+        description=[{"@en": "describes a node package for publication"}]
         markers=[
             {"KEY": "name", "EXISTS": None},
             {"KEY": "version", "EXISTS": None},
