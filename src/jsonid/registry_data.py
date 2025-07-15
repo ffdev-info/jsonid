@@ -268,8 +268,7 @@ _registry = [
     ),
     registry_class.RegistryEntry(
         identifier="jrid:0026",
-        name=[{"@en": "Parcore schema documents"}],
-        pronom="http://www.nationalarchives.gov.uk/PRONOM/fmt/1311",
+        name=[{"@en": "Parcore Schema Document"}],
         markers=[
             {"KEY": "$id", "STARTSWITH": "http://www.parcore.org/schema/"},
             {"KEY": "$schema", "EXISTS": None},
