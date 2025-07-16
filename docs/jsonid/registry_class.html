@@ -116,6 +116,7 @@ class RegistryEntry:  # pylint: disable=R0902
             &#34;name&#34;: self.name,
             &#34;additional&#34;: self.additional,
             &#34;encoding&#34;: self.encoding,
+            &#34;description&#34;: self.description,
         }
         return yaml.dump(data, indent=2, allow_unicode=True).strip()
 
@@ -126,11 +127,11 @@ class RegistryEntry:  # pylint: disable=R0902
         for marker in obj.markers:
             try:
                 replace_me = marker[&#34;ISTYPE&#34;]
-                replace_me = helpers.substitute_type_text()
+                replace_me = helpers.substitute_type_text(replace_me)
                 marker[&#34;ISTYPE&#34;] = replace_me
                 new_markers.append(marker)
-            except KeyError:
-                pass
+            except (KeyError, AttributeError):
+                new_markers.append(marker)
         if not new_markers:
             return obj.__dict__
         obj.markers = new_markers
@@ -214,11 +215,11 @@ a registry.</p></div>
     for marker in obj.markers:
         try:
             replace_me = marker[&#34;ISTYPE&#34;]
-            replace_me = helpers.substitute_type_text()
+            replace_me = helpers.substitute_type_text(replace_me)
             marker[&#34;ISTYPE&#34;] = replace_me
             new_markers.append(marker)
-        except KeyError:
-            pass
+        except (KeyError, AttributeError):
+            new_markers.append(marker)
     if not new_markers:
         return obj.__dict__
     obj.markers = new_markers
