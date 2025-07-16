@@ -7,7 +7,7 @@
     width="200px" />
 <!-- markdownlint-enable -->
 
-**[JSON][json-1]ID**entification tool and ruleset. JSONID can be downloaded
+[**JSONID**][json-1]entification tool and ruleset. JSONID can be downloaded
 from pypi.org.
 
 [![PyPI - Version](https://img.shields.io/pypi/v/jsonid?style=plastic&color=purple)][pypi-json-id-1]
@@ -15,7 +15,39 @@ from pypi.org.
 [json-1]: https://www.json.org/json-en.html
 [pypi-json-id-1]: https://pypi.org/project/jsonid/
 
-## Function
+<!-- markdownlint-disable MD004 -->
+
+## Contents
+
+- [Introduction](#introduction)
+- [Why?](#why)
+- [What does JSONID get you?](#what-does-jsonid-get-you)
+- [Ruleset](#ruleset)
+  - [Backed by testing](#backed-by-testing)
+- [Registry](#registry)
+  - [Registry examples](#registry-examples)
+  - [Local rules](#local-rules)
+- [PRONOM](#pronom)
+- [Output format](#output-format)
+- [Sample files](#sample-files)
+  - [Integration files](#integration-files)
+  - [Fundamental examples](#fundamental-examples)
+- [Analysis](#analysis)
+  - [Example analysis](#example-analysis)
+- [Utils](#utils)
+  - [json2json](#json2json)
+- [Docs](#docs)
+- [Developer install](#developer-install)
+  - [pip](#pip)
+  - [tox](#tox)
+  - [pre-commit](#pre-commit)
+- [Packaging](#packaging)
+  - [pyproject.toml](#pyprojecttoml)
+  - [Versioning](#versioning)
+  - [Local packaging](#local-packaging)
+  - [Publishing](#publishing)
+
+## Introduction
 
 JSONID borrows from the Python approach to ask forgiveness rather than
 permission (EAFP) to attempt to open every object it scans and see if it
