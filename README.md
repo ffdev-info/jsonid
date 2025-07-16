@@ -305,7 +305,7 @@ The structure should become more concrete as JSONID is formalized.
 ### Integration files
 
 Files used in the development of JSONID are available in their
-[own repository][integration-1]/
+[own repository][integration-1].
 
 [integration-1]: https://github.com/ffdev-info/jsonid-integration-files
 
