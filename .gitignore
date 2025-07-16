@@ -138,3 +138,6 @@ NOTES
 integration_files/*
 integration_files/
 jsonid-integration-files/
+
+# Secreta
+token.pypi
