@@ -2,4 +2,6 @@
 
 ipfs-cid==1.0.0
 PyYAML==6.0.2
+python-magic==0.4.27
+python-magic-bin==0.4.14; sys_platform == 'windows'
 unf==0.11.0

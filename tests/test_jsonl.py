@@ -2,9 +2,12 @@
 any exceptions to the rule work here.
 """
 
+import bz2
+import gzip
+
 import pytest
 
-from src.jsonid import file_processing, registry
+from src.jsonid import compressionlib, file_processing, jsonid, registry
 
 jsonl_1_valid = """
  1
@@ -38,3 +41,55 @@ def test_jsonl_processing(content, validity, doctype):
     valid, _, doctype_res = file_processing._jsonl_processing(content)
     assert valid == validity
     assert doctype_res == doctype
+
+
+bz_tests = [
+    (jsonl_1_valid, registry.DOCTYPE_JSONL, compressionlib.COMPRESSED_BZIP2),
+    (jsonl_2_valid, registry.DOCTYPE_JSONL, compressionlib.COMPRESSED_BZIP2),
+    (jsonl_3_valid, registry.DOCTYPE_JSONL, compressionlib.COMPRESSED_BZIP2),
+    (jsonl_4_invalid, None, None),
+]
+
+
+@pytest.mark.parametrize("content, doctype, compression", bz_tests)
+@pytest.mark.asyncio
+async def test_bz_jsonl(tmp_path, content, doctype, compression):
+    """Make sure we can unpack bzip content and identify its base
+    format.
+    """
+    test_dir = tmp_path / "jsonl_tests"
+    test_dir.mkdir()
+    bz = bz2.compress(content.encode())
+    test_path = test_dir / "test_filename.jsonl.bz"
+    test_path.write_bytes(bz)
+    res = await file_processing.identify_plaintext_bytestream(
+        test_path, jsonid.decode_strategies
+    )
+    assert res.doctype == doctype
+    assert res.compression == compression
+
+
+gz_tests = [
+    (jsonl_1_valid, registry.DOCTYPE_JSONL, compressionlib.COMPRESSED_GZIP),
+    (jsonl_2_valid, registry.DOCTYPE_JSONL, compressionlib.COMPRESSED_GZIP),
+    (jsonl_3_valid, registry.DOCTYPE_JSONL, compressionlib.COMPRESSED_GZIP),
+    (jsonl_4_invalid, None, None),
+]
+
+
+@pytest.mark.parametrize("content, doctype, compression", gz_tests)
+@pytest.mark.asyncio
+async def test_gz_jsonl(tmp_path, content, doctype, compression):
+    """Make sure we can unpack gzip content and identify its base
+    format.
+    """
+    test_dir = tmp_path / "jsonl_tests"
+    test_dir.mkdir()
+    test_path = test_dir / "test_filename.jsonl.gz"
+    with gzip.open(test_path, "wb") as f:
+        f.write(content.encode())
+    res = await file_processing.identify_plaintext_bytestream(
+        test_path, jsonid.decode_strategies
+    )
+    assert res.doctype == doctype
+    assert res.compression == compression

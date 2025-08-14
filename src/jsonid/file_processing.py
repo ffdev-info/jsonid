@@ -20,14 +20,15 @@ except ImportError:
 
 try:
     import analysis
+    import compressionlib
     import helpers
     import registry
     import version
 except ModuleNotFoundError:
     try:
-        from src.jsonid import analysis, helpers, registry, version
+        from src.jsonid import analysis, compressionlib, helpers, registry, version
     except ModuleNotFoundError:
-        from jsonid import analysis, helpers, registry, version
+        from jsonid import analysis, compressionlib, helpers, registry, version
 
 
 logger = logging.getLogger(__name__)
@@ -60,6 +61,9 @@ class BaseCharacteristics:
     # content is the string/byte data that was the original object and
     # is used in the structural analysis of the object.
     content: Union[str, None] = None
+    # compression describes whether or not the object was originally
+    # compressed before identification. (JSONL only)
+    compression: Union[bool, None] = None
 
 
 async def text_check(chars: str) -> bool:
@@ -284,11 +288,23 @@ async def identify_plaintext_bytestream(
     if not os.path.getsize(path):
         logger.debug("file is zero bytes: %s", path)
         return BaseCharacteristics(False, None, None, None, None)
+    compression = None
     with open(path, "rb") as json_stream:
         first_chars = json_stream.read(FFB)
         if not await text_check(first_chars):
-            return BaseCharacteristics(False, None, None, None, None)
-        copied = first_chars + json_stream.read()
+            if registry.DOCTYPE_JSONL not in strategy:
+                return BaseCharacteristics(False, None, None, None, None)
+            compression = await compressionlib.compress_check(first_chars)
+            if not compression:
+                return BaseCharacteristics(False, None, None, None, None)
+        if not compression:
+            copied = first_chars + json_stream.read()
+        elif compression:
+            copied = await compressionlib.decompress_stream(
+                path=path, compression=compression
+            )
+            if not copied:
+                return BaseCharacteristics(False, None, None, None, None)
         if not await whitespace_check(copied):
             return BaseCharacteristics(False, None, None, None, None)
     for encoding in supported_encodings:
@@ -296,9 +312,13 @@ async def identify_plaintext_bytestream(
             content = copied.decode(encoding)
             valid, data, doctype = decode(content, strategy)
             if valid and analyse:
-                return BaseCharacteristics(valid, data, doctype, encoding, content)
+                return BaseCharacteristics(
+                    valid, data, doctype, encoding, content, compression
+                )
             if valid:
-                return BaseCharacteristics(valid, data, doctype, encoding, None)
+                return BaseCharacteristics(
+                    valid, data, doctype, encoding, None, compression
+                )
         except UnicodeDecodeError as err:
             logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
         except UnicodeError as err:
