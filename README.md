@@ -300,6 +300,27 @@ name:
 
 The structure should become more concrete as JSONID is formalized.
 
+## JSONL
+
+[JSONL][jsonl-1] aka JSON Lines is a special format that requires some
+special handling in the code, first to detect whether content is in an
+"archive format" (archive in computer science terms) or aggregate (in
+PRONOM terms); and then process the content reliably.
+
+### Handling JSONL
+
+JSONL will be treated as follows:
+
+1. if a file is identified as JSONL a JSONL identification will always be
+returned. This will always be reliable.
+1. the first line of the JSONL file is treated as the authoritative object,
+that is, all other lines are expected to conform to the same schema. If
+the object can be matched against a ruleset the ID will be returned. If the
+object cannoot be matched against a ruleset then an identification of
+JSONL will be returned. All other lines are ignored.
+
+[jsonl-1]: https://jsonlines.org/
+
 ## Sample files
 
 ### Integration files

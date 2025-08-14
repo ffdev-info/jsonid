@@ -26,6 +26,7 @@ logger = None
 
 decode_strategies: Final[list] = [
     registry.DOCTYPE_JSON,
+    registry.DOCTYPE_JSONL,
     registry.DOCTYPE_YAML,
     registry.DOCTYPE_TOML,
 ]
@@ -54,17 +55,22 @@ def _get_strategy(args: argparse.Namespace):
     strategy = list(decode_strategies)
     if args.nojson:
         try:
-            strategy.remove("JSON")
+            strategy.remove(registry.DOCTYPE_JSON)
+        except ValueError:
+            pass
+    if args.nojsonl:
+        try:
+            strategy.remove(registry.DOCTYPE_JSONL)
         except ValueError:
             pass
     if args.noyaml:
         try:
-            strategy.remove("YAML")
+            strategy.remove(registry.DOCTYPE_YAML)
         except ValueError:
             pass
     if args.notoml:
         try:
-            strategy.remove("TOML")
+            strategy.remove(registry.DOCTYPE_TOML)
         except ValueError:
             pass
     return strategy
@@ -96,6 +102,12 @@ def main() -> None:
     parser.add_argument(
         "--nojson",
         "-nj",
+        action="store_true",
+        required=False,
+    )
+    parser.add_argument(
+        "--nojsonl",
+        "-njl",
         action="store_true",
         required=False,
     )

@@ -33,6 +33,10 @@ except ModuleNotFoundError:
 logger = logging.getLogger(__name__)
 
 
+class NotJSONLError(Exception):
+    """Provides an exception to handle when we can't process jsonl."""
+
+
 # FFB traditionally stands for first four bytes, but of course this
 # value might not be 4 in this script.
 FFB: Final[int] = 42
@@ -85,16 +89,47 @@ async def whitespace_check(chars: str) -> bool:
     return True
 
 
-def decode(content: str, strategy: list):
+def _json_processing(content) -> tuple:
+    """Provide a wrapper and a way to test JSON processing. We use
+    the default JSON mpdule here but we could always swap this out
+    for orjson/orjsonl or one of the other high-performance libraries.
+    """
+    try:
+        data = json.loads(content)
+        return True, data, registry.DOCTYPE_JSON
+    except json.decoder.JSONDecodeError as err:
+        logger.debug("(decode) can't process: %s as JSON", err)
+    return False, False, False
+
+
+def _jsonl_processing(content) -> tuple:
+    """Provide a wrapper and a way to test JSONL processing. We use
+    the default JSON mpdule here but we could always swap this out
+    for orjson/orjsonl or one of the other high-performance libraries."""
+    try:
+        content = content.strip().split("\n")
+        if len(content) <= 1:
+            raise NotJSONLError("content has only one newline and so is not JSONL")
+        # Load each line, one by one, as shown in the orsonjl module.
+        data = [json.loads(line) for line in content]
+        return True, data[0], registry.DOCTYPE_JSONL
+    except (NotJSONLError, json.decoder.JSONDecodeError) as err:
+        logger.debug("(decode) can't process: %s as JSONL", err)
+    return False, False, False
+
+
+def decode(content: str, strategy: list) -> tuple:
     """Decode the given content stream."""
     data = ""
-    if "JSON" in strategy:
-        try:
-            data = json.loads(content)
-            return True, data, registry.DOCTYPE_JSON
-        except json.decoder.JSONDecodeError as err:
-            logger.debug("(decode) can't process: %s", err)
-    if "YAML" in strategy:
+    if registry.DOCTYPE_JSON in strategy:
+        valid, content_, type_ = _json_processing(content)
+        if valid:
+            return valid, content_, type_
+    if registry.DOCTYPE_JSONL in strategy:
+        valid, content_, type_ = _jsonl_processing(content)
+        if valid:
+            return valid, content_, type_
+    if registry.DOCTYPE_YAML in strategy:
         try:
             if content.strip()[:3] != "---":
                 raise TypeError
@@ -111,7 +146,7 @@ def decode(content: str, strategy: list):
         except (TypeError, IndexError):
             # Document too short, or YAML without header is not supported.
             pass
-    if "TOML" in strategy:
+    if registry.DOCTYPE_TOML in strategy:
         try:
             data = toml.loads(content)
             return True, data, registry.DOCTYPE_TOML
@@ -163,6 +198,8 @@ async def process_result(
     res = []
     if doctype == registry.DOCTYPE_JSON:
         res = registry.matcher(data, encoding=encoding)
+    if doctype == registry.DOCTYPE_JSONL:
+        res = [registry.JSONL_ONLY]
     if doctype == registry.DOCTYPE_YAML:
         res = [registry.YAML_ONLY]
     if doctype == registry.DOCTYPE_TOML:
@@ -258,14 +295,14 @@ async def identify_plaintext_bytestream(
         try:
             content = copied.decode(encoding)
             valid, data, doctype = decode(content, strategy)
+            if valid and analyse:
+                return BaseCharacteristics(valid, data, doctype, encoding, content)
+            if valid:
+                return BaseCharacteristics(valid, data, doctype, encoding, None)
         except UnicodeDecodeError as err:
             logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
         except UnicodeError as err:
             logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
-        if valid and analyse:
-            return BaseCharacteristics(valid, data, doctype, encoding, content)
-        if valid:
-            return BaseCharacteristics(valid, data, doctype, encoding, None)
     return BaseCharacteristics(False, None, None, None, None)
 
 
