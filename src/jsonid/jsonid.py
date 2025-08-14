@@ -5,6 +5,7 @@
 import argparse
 import asyncio
 import logging
+import signal
 import sys
 import time
 from typing import Final
@@ -52,6 +53,14 @@ def _get_strategy(args: argparse.Namespace):
     """Return a set of decode strategies for the code to identify
     formats against.
     """
+
+    # pylint: disable=W0613
+    def signal_handler(*args):
+        logger.info("gracefully exiting...")
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+
     strategy = list(decode_strategies)
     if args.nojson:
         try:
