@@ -24,14 +24,14 @@ jsonl_3_valid = """
 {"world": "hello"}
 """
 jsonl_4_invalid = ""
-jsonl_5_not_jsonl = "[1, 2, 3]"
+jsonl_5_single_line = "[1, 2, 3]"
 
 jsonl_tests = [
     (jsonl_1_valid, True, registry.DOCTYPE_JSONL),
     (jsonl_2_valid, True, registry.DOCTYPE_JSONL),
     (jsonl_3_valid, True, registry.DOCTYPE_JSONL),
     (jsonl_4_invalid, False, False),
-    (jsonl_5_not_jsonl, False, False),
+    (jsonl_5_single_line, True, registry.DOCTYPE_JSONL),
 ]
 
 

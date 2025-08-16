@@ -115,7 +115,7 @@ def _jsonl_processing(content) -> tuple:
     for orjson/orjsonl or one of the other high-performance libraries."""
     try:
         content = content.strip().split("\n")
-        if len(content) <= JSONL_MIN_LINES:
+        if len(content) < JSONL_MIN_LINES:
             raise NotJSONLError("content has only one newline and so is not JSONL")
         # Load each line, one by one, as shown in the orsonjl module.
         data = [json.loads(line) for line in content]
