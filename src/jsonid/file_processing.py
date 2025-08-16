@@ -119,7 +119,7 @@ def _jsonl_processing(content) -> tuple:
             raise NotJSONLError("content has only one newline and so is not JSONL")
         # Load each line, one by one, as shown in the orsonjl module.
         data = [json.loads(line) for line in content]
-        return True, data[0], registry.DOCTYPE_JSONL
+        return True, data, registry.DOCTYPE_JSONL
     except (NotJSONLError, json.decoder.JSONDecodeError) as err:
         logger.debug("(decode) can't process: %s as JSONL", err)
     return False, False, False
@@ -193,6 +193,15 @@ async def analyse_json(paths: list[str], strategy: list):
         res = await analysis.analyse_input(base_obj.data, base_obj.content)
         res["doctype"] = base_obj.doctype
         res["encoding"] = base_obj.encoding
+        if base_obj.doctype == registry.DOCTYPE_JSONL:
+            res["compression"] = base_obj.compression
+            res.pop("content_length")
+            res.pop("depth")
+            res.pop("heterogeneous_list_types")
+            res.pop("line_warning")
+            res.pop("top_level_types")
+            res.pop("top_level_keys")
+            res.pop("top_level_keys_count")
         analysis_res.append(res)
     return analysis_res
 
@@ -327,6 +336,10 @@ async def identify_plaintext_bytestream(
         try:
             content = file_contents.decode(encoding)
             valid, data, doctype = decode(content, strategy)
+            if not analyse and doctype == registry.DOCTYPE_JSONL:
+                # Treat the first line of a JSONL file as the authoritative
+                # object type.
+                data = data[0]
             if valid and analyse:
                 return BaseCharacteristics(
                     valid, data, doctype, encoding, content, compression

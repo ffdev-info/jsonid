@@ -19,21 +19,26 @@ from pypi.org.
 
 ## Contents
 
+<!-- via; https://luciopaiva.com/markdown-toc/ -->
+
 - [Introduction](#introduction)
 - [Why?](#why)
 - [What does JSONID get you?](#what-does-jsonid-get-you)
 - [Ruleset](#ruleset)
-  - [Backed by testing](#backed-by-testing)
+  - [Backed by tests](#backed-by-tests)
+- [Sample files](#sample-files)
+  - [Integration files](#integration-files)
+  - [Fundamental examples](#fundamental-examples)
 - [Registry](#registry)
   - [Registry examples](#registry-examples)
   - [Local rules](#local-rules)
 - [PRONOM](#pronom)
 - [Output format](#output-format)
-- [Sample files](#sample-files)
-  - [Integration files](#integration-files)
-  - [Fundamental examples](#fundamental-examples)
+- [JSONL](#jsonl)
+  - [Handling JSONL](#handling-jsonl)
 - [Analysis](#analysis)
   - [Example analysis](#example-analysis)
+  - [JSONL technical metadata](#jsonl-technical-metadata)
 - [Utils](#utils)
   - [json2json](#json2json)
 - [Docs](#docs)
@@ -169,7 +174,7 @@ in its fullness and so there is a lot of opportunity to add/remove to these
 methods as its development continues. Additionally, help formalizing the
 grammar/ruleset would be greatly appreciated 🙏.
 
-### Backed by testing
+### Backed by tests
 
 The ruleset has been developed using test-driven-development practices (TDD)
 and the current set of tests can be reviewed in the repository's
@@ -177,6 +182,23 @@ and the current set of tests can be reviewed in the repository's
 time.
 
 [testing-1]: https://github.com/ffdev-info/jsonid/tree/main/tests
+
+## Sample files
+
+### Integration files
+
+Files used in the development of JSONID are available in their
+[own repository][integration-1].
+
+[integration-1]: https://github.com/ffdev-info/jsonid-integration-files
+
+### Fundamental examples
+
+There is a small [samples directory][samples-1] included with this
+epository demonstrating some fundamental differences in encoding and
+JSON types.
+
+[samples-1]: samples/
 
 ## Registry
 
@@ -321,23 +343,6 @@ JSONL will be returned. All other lines are ignored.
 
 [jsonl-1]: https://jsonlines.org/
 
-## Sample files
-
-### Integration files
-
-Files used in the development of JSONID are available in their
-[own repository][integration-1].
-
-[integration-1]: https://github.com/ffdev-info/jsonid-integration-files
-
-### Fundamental examples
-
-There is a small [samples directory][samples-1] included with this
-epository demonstrating some fundamental differences in encoding and
-JSON types.
-
-[samples-1]: samples/
-
 ## Analysis
 
 JSONID provides an analysis mechanism to help developers of identifiers. It
@@ -375,6 +380,46 @@ appreciated.
     "cid": "bafkreibho6naw5r7j23gxu6rzocrud4pc6fjsnteyjveirtnbs3uxemv2u"
   },
   "encoding": "UTF-8"
+}
+```
+
+### JSONL technical metadata
+
+Analysing JSONL should yield some useful information. Like many of the
+analyses output by this tool this information is a work in progress and
+time will tell if its useful.
+
+#### Line length
+
+Line length might not be a useful output for JSONL as the specification
+itself determines JSONL files are very likely to have long lines. The
+output is therefore disabled.
+
+#### Fingerptinting
+
+Fingreprinting JSONL versus standard JSON is done by treating the
+JSONL file as a list of objects in memory. An important distinction to make is
+that while this is technically correct, it's not structurally correct, i.e.
+a JSONL file is not serialized as a list, nor, need it be deserialized into
+memory as a `list` object. That being said, using a list structure in JSONID
+as a small concession enabling fingerprinting makes it a convenient choice
+and I hope it will prove beneficial.
+
+#### Example JSONL analysis
+
+JSONL analysis output is, therefore, a little more sparse than the
+standard JSONID output, an example, at present, looks as follows:
+
+```json
+{
+  "number_of_lines": 4,
+  "fingerprint": {
+    "unf": "UNF:6:iBedoWLhyVzfXOM0OcXWBg==",
+    "cid": "bafkreigjgec7pbdao3ilk2pqe3tp3qg5bu426wyebnrelbm34ebhcbxs6q"
+  },
+  "doctype": "JSONL",
+  "encoding": "UTF-8",
+  "compression": "application/gzip"
 }
 ```
 
