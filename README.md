@@ -19,7 +19,7 @@ from pypi.org.
 
 ## Contents
 
-<!-- via; https://luciopaiva.com/markdown-toc/ -->
+<!-- via: https://luciopaiva.com/markdown-toc/ -->
 
 - [Introduction](#introduction)
 - [Why?](#why)
