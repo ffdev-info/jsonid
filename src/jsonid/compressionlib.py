@@ -3,9 +3,14 @@
 import bz2
 import gzip
 import logging
+import os
 from typing import Any, Final
 
-import magic
+magic = None  # pylint: disable=C0103
+WINDOWS_OS: Final[str] = "nt"
+if os.name != WINDOWS_OS:
+    import magic
+
 
 logger = logging.getLogger(__name__)
 
@@ -63,9 +68,10 @@ async def compress_check(path):
         sys	    1m3.820s
 
     """
+    if os.name == WINDOWS_OS:
+        return False
     mime = magic.Magic(mime=True, uncompress=False)
     mime_type = mime.from_buffer(path)
-    print(mime_type)
     if mime_type not in COMPRESSED:
         return False
     logger.debug("compreessed mime detected: %s", mime_type)

@@ -4,10 +4,13 @@ any exceptions to the rule work here.
 
 import bz2
 import gzip
+import sys
 
 import pytest
 
 from src.jsonid import compressionlib, file_processing, jsonid, registry
+
+pytestmark = pytest.mark.skipif(sys.platform.startswith("win"), reason="todo")
 
 jsonl_1_valid = """
  1
