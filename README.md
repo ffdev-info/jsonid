@@ -302,8 +302,8 @@ The structure should become more concrete as JSONID is formalized.
 
 ## JSONL
 
-[JSONL][jsonl-1] aka JSON Lines is a special format that requires some
-special handling in the code, first to detect whether content is in an
+[JSONL][jsonl-1] aka JSON Lines is a format that requires some special
+handling in the code, first to detect whether content is in an
 "archive format" (archive in computer science terms) or aggregate (in
 PRONOM terms); and then process the content reliably.
 
