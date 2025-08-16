@@ -42,6 +42,9 @@ class NotJSONLError(Exception):
 # value might not be 4 in this script.
 FFB: Final[int] = 42
 
+# Minimum no. lines in a JSONL file.
+JSONL_MIN_LINES = 1
+
 
 @dataclass
 class BaseCharacteristics:
@@ -112,7 +115,7 @@ def _jsonl_processing(content) -> tuple:
     for orjson/orjsonl or one of the other high-performance libraries."""
     try:
         content = content.strip().split("\n")
-        if len(content) <= 1:
+        if len(content) <= JSONL_MIN_LINES:
             raise NotJSONLError("content has only one newline and so is not JSONL")
         # Load each line, one by one, as shown in the orsonjl module.
         data = [json.loads(line) for line in content]
@@ -261,6 +264,37 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, simple: 
         )
 
 
+async def open_and_decode(
+    path: str, strategy: list
+) -> Union[bool, bool, BaseCharacteristics]:
+    """Attempt to open a given file and decode it as JSON."""
+    content = None
+    compression = None
+    result_no_id = BaseCharacteristics(False, None, None, None, None)
+    if not os.path.getsize(path):
+        logger.debug("file is zero bytes: %s", path)
+        return None, None, result_no_id
+    with open(path, "rb") as json_stream:
+        first_chars = json_stream.read(FFB)
+        if not await text_check(first_chars):
+            if registry.DOCTYPE_JSONL not in strategy:
+                return None, None, result_no_id
+            compression = await compressionlib.compress_check(first_chars)
+            if not compression:
+                return None, None, result_no_id
+        if not compression:
+            content = first_chars + json_stream.read()
+        elif compression:
+            content = await compressionlib.decompress_stream(
+                path=path, compression=compression
+            )
+            if not content:
+                return None, None, result_no_id
+        if not await whitespace_check(content):
+            return None, None, result_no_id
+    return content, compression, None
+
+
 @helpers.timeit
 async def identify_plaintext_bytestream(
     path: str, strategy: list, analyse: bool = False
@@ -284,32 +318,14 @@ async def identify_plaintext_bytestream(
         "SHIFT-JIS",
         "BIG5",
     ]
-    copied = None
-    if not os.path.getsize(path):
-        logger.debug("file is zero bytes: %s", path)
-        return BaseCharacteristics(False, None, None, None, None)
-    compression = None
-    with open(path, "rb") as json_stream:
-        first_chars = json_stream.read(FFB)
-        if not await text_check(first_chars):
-            if registry.DOCTYPE_JSONL not in strategy:
-                return BaseCharacteristics(False, None, None, None, None)
-            compression = await compressionlib.compress_check(first_chars)
-            if not compression:
-                return BaseCharacteristics(False, None, None, None, None)
-        if not compression:
-            copied = first_chars + json_stream.read()
-        elif compression:
-            copied = await compressionlib.decompress_stream(
-                path=path, compression=compression
-            )
-            if not copied:
-                return BaseCharacteristics(False, None, None, None, None)
-        if not await whitespace_check(copied):
-            return BaseCharacteristics(False, None, None, None, None)
+    file_contents, compression, base_characteristics = await open_and_decode(
+        path, strategy
+    )
+    if not file_contents:
+        return base_characteristics
     for encoding in supported_encodings:
         try:
-            content = copied.decode(encoding)
+            content = file_contents.decode(encoding)
             valid, data, doctype = decode(content, strategy)
             if valid and analyse:
                 return BaseCharacteristics(
