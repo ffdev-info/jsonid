@@ -33,6 +33,9 @@ jobs:
           - os: macos-latest
             python-version: "3.13"
             experimental: true
+          - os: windows-latest
+            python-version: "3.13"
+            experimental: true
     steps:
       - name: "check out repository"
         uses: "actions/checkout@v4"
@@ -48,11 +51,17 @@ jobs:
           echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
       - name: "show outputs.dir"
         run: echo "${{ steps.pip-cache.outputs.dir }}"
+      - name: "install magic on macos"
+        if: matrix.platform == 'macos-latest'
+        run: |
+            brew install libmagic
+        else:
+        run: echo "$matrix.platform"
       - name: "cache pip packages"
         uses: "actions/cache@v4"
         with:
-          path: "${{ steps.pip-cache.outputs.dir }}"
-          key: "${{ runner.os }}-pip-${{ hashFiles('**/base.txt', '**/local.txt') }}"
+          path: "TEST"
+          key: "TEST"
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: "install tox"

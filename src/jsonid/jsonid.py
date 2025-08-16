@@ -5,6 +5,7 @@
 import argparse
 import asyncio
 import logging
+import signal
 import sys
 import time
 from typing import Final
@@ -26,6 +27,7 @@ logger = None
 
 decode_strategies: Final[list] = [
     registry.DOCTYPE_JSON,
+    registry.DOCTYPE_JSONL,
     registry.DOCTYPE_YAML,
     registry.DOCTYPE_TOML,
 ]
@@ -51,20 +53,33 @@ def _get_strategy(args: argparse.Namespace):
     """Return a set of decode strategies for the code to identify
     formats against.
     """
+
+    # pylint: disable=W0613
+    def signal_handler(*args):
+        logger.info("gracefully exiting...")
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+
     strategy = list(decode_strategies)
     if args.nojson:
         try:
-            strategy.remove("JSON")
+            strategy.remove(registry.DOCTYPE_JSON)
+        except ValueError:
+            pass
+    if args.nojsonl:
+        try:
+            strategy.remove(registry.DOCTYPE_JSONL)
         except ValueError:
             pass
     if args.noyaml:
         try:
-            strategy.remove("YAML")
+            strategy.remove(registry.DOCTYPE_YAML)
         except ValueError:
             pass
     if args.notoml:
         try:
-            strategy.remove("TOML")
+            strategy.remove(registry.DOCTYPE_TOML)
         except ValueError:
             pass
     return strategy
@@ -96,6 +111,12 @@ def main() -> None:
     parser.add_argument(
         "--nojson",
         "-nj",
+        action="store_true",
+        required=False,
+    )
+    parser.add_argument(
+        "--nojsonl",
+        "-njl",
         action="store_true",
         required=False,
     )

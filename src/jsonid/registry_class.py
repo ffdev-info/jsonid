@@ -15,6 +15,7 @@ except ModuleNotFoundError:
 
 
 JSON_ID: Final[int] = "jrid:0000"
+JSONL_ID: Final[int] = "jrid:jsonl:0000"
 YAML_ID: Final[int] = "jrid:yaml:0000"
 TOML_ID: Final[int] = "jrid:toml:0000"
 

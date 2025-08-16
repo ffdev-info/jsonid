@@ -107,6 +107,15 @@ el.replaceWith(d);
         res = await analysis.analyse_input(base_obj.data, base_obj.content)
         res[&#34;doctype&#34;] = base_obj.doctype
         res[&#34;encoding&#34;] = base_obj.encoding
+        if base_obj.doctype == registry.DOCTYPE_JSONL:
+            res[&#34;compression&#34;] = base_obj.compression
+            res.pop(&#34;content_length&#34;)
+            res.pop(&#34;depth&#34;)
+            res.pop(&#34;heterogeneous_list_types&#34;)
+            res.pop(&#34;line_warning&#34;)
+            res.pop(&#34;top_level_types&#34;)
+            res.pop(&#34;top_level_keys&#34;)
+            res.pop(&#34;top_level_keys_count&#34;)
         analysis_res.append(res)
     return analysis_res</code></pre>
 </details>
@@ -133,23 +142,25 @@ el.replaceWith(d);
 <div class="desc"><p>Get a list of paths to process.</p></div>
 </dd>
 <dt id="src.jsonid.file_processing.decode"><code class="name flex">
-<span>def <span class="ident">decode</span></span>(<span>content: str, strategy: list)</span>
+<span>def <span class="ident">decode</span></span>(<span>content: str, strategy: list) ‑> tuple</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def decode(content: str, strategy: list):
+<pre><code class="python">def decode(content: str, strategy: list) -&gt; tuple:
     &#34;&#34;&#34;Decode the given content stream.&#34;&#34;&#34;
     data = &#34;&#34;
-    if &#34;JSON&#34; in strategy:
-        try:
-            data = json.loads(content)
-            return True, data, registry.DOCTYPE_JSON
-        except json.decoder.JSONDecodeError as err:
-            logger.debug(&#34;(decode) can&#39;t process: %s&#34;, err)
-    if &#34;YAML&#34; in strategy:
+    if registry.DOCTYPE_JSON in strategy:
+        valid, content_, type_ = _json_processing(content)
+        if valid:
+            return valid, content_, type_
+    if registry.DOCTYPE_JSONL in strategy:
+        valid, content_, type_ = _jsonl_processing(content)
+        if valid:
+            return valid, content_, type_
+    if registry.DOCTYPE_YAML in strategy:
         try:
             if content.strip()[:3] != &#34;---&#34;:
                 raise TypeError
@@ -166,7 +177,7 @@ el.replaceWith(d);
         except (TypeError, IndexError):
             # Document too short, or YAML without header is not supported.
             pass
-    if &#34;TOML&#34; in strategy:
+    if registry.DOCTYPE_TOML in strategy:
         try:
             data = toml.loads(content)
             return True, data, registry.DOCTYPE_TOML
@@ -224,6 +235,46 @@ el.replaceWith(d);
         )</code></pre>
 </details>
 <div class="desc"><p>Identify objects.</p></div>
+</dd>
+<dt id="src.jsonid.file_processing.open_and_decode"><code class="name flex">
+<span>async def <span class="ident">open_and_decode</span></span>(<span>path: str, strategy: list) ‑> bool | <a title="src.jsonid.file_processing.BaseCharacteristics" href="#src.jsonid.file_processing.BaseCharacteristics">BaseCharacteristics</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def open_and_decode(
+    path: str, strategy: list
+) -&gt; Union[bool, bool, BaseCharacteristics]:
+    &#34;&#34;&#34;Attempt to open a given file and decode it as JSON.&#34;&#34;&#34;
+    content = None
+    compression = None
+    result_no_id = BaseCharacteristics(False, None, None, None, None)
+    if not os.path.getsize(path):
+        logger.debug(&#34;file is zero bytes: %s&#34;, path)
+        return None, None, result_no_id
+    with open(path, &#34;rb&#34;) as json_stream:
+        first_chars = json_stream.read(FFB)
+        if not await text_check(first_chars):
+            if registry.DOCTYPE_JSONL not in strategy:
+                return None, None, result_no_id
+            compression = await compressionlib.compress_check(first_chars)
+            if not compression:
+                return None, None, result_no_id
+        if not compression:
+            content = first_chars + json_stream.read()
+        elif compression:
+            content = await compressionlib.decompress_stream(
+                path=path, compression=compression
+            )
+            if not content:
+                return None, None, result_no_id
+        if not await whitespace_check(content):
+            return None, None, result_no_id
+    return content, compression, None</code></pre>
+</details>
+<div class="desc"><p>Attempt to open a given file and decode it as JSON.</p></div>
 </dd>
 <dt id="src.jsonid.file_processing.output_analysis"><code class="name flex">
 <span>async def <span class="ident">output_analysis</span></span>(<span>res: list) ‑> None</span>
@@ -304,6 +355,8 @@ el.replaceWith(d);
     res = []
     if doctype == registry.DOCTYPE_JSON:
         res = registry.matcher(data, encoding=encoding)
+    if doctype == registry.DOCTYPE_JSONL:
+        res = [registry.JSONL_ONLY]
     if doctype == registry.DOCTYPE_YAML:
         res = [registry.YAML_ONLY]
     if doctype == registry.DOCTYPE_TOML:
@@ -407,7 +460,7 @@ scandate: {get_date_time()}&#34;&#34;&#34;.strip()</code></pre>
 <dl>
 <dt id="src.jsonid.file_processing.BaseCharacteristics"><code class="flex name class">
 <span>class <span class="ident">BaseCharacteristics</span></span>
-<span>(</span><span>valid: bool = False,<br>data: Any | None = None,<br>doctype: str | None = None,<br>encoding: str | None = None,<br>content: str | None = None)</span>
+<span>(</span><span>valid: bool = False,<br>data: Any | None = None,<br>doctype: str | None = None,<br>encoding: str | None = None,<br>content: str | None = None,<br>compression: bool | None = None)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -431,12 +484,19 @@ class BaseCharacteristics:
     encoding: Union[str, None] = None
     # content is the string/byte data that was the original object and
     # is used in the structural analysis of the object.
-    content: Union[str, None] = None</code></pre>
+    content: Union[str, None] = None
+    # compression describes whether or not the object was originally
+    # compressed before identification. (JSONL only)
+    compression: Union[bool, None] = None</code></pre>
 </details>
 <div class="desc"><p>BaseCharacteristics wraps information about the base object
 for ease of moving it through the code to where we need it.</p></div>
 <h3>Instance variables</h3>
 <dl>
+<dt id="src.jsonid.file_processing.BaseCharacteristics.compression"><code class="name">var <span class="ident">compression</span> : bool | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="src.jsonid.file_processing.BaseCharacteristics.content"><code class="name">var <span class="ident">content</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
@@ -459,6 +519,25 @@ for ease of moving it through the code to where we need it.</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="src.jsonid.file_processing.NotJSONLError"><code class="flex name class">
+<span>class <span class="ident">NotJSONLError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NotJSONLError(Exception):
+    &#34;&#34;&#34;Provides an exception to handle when we can&#39;t process jsonl.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Provides an exception to handle when we can't process jsonl.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
 </dl>
 </section>
 </article>
@@ -480,6 +559,7 @@ for ease of moving it through the code to where we need it.</p></div>
 <li><code><a title="src.jsonid.file_processing.decode" href="#src.jsonid.file_processing.decode">decode</a></code></li>
 <li><code><a title="src.jsonid.file_processing.get_date_time" href="#src.jsonid.file_processing.get_date_time">get_date_time</a></code></li>
 <li><code><a title="src.jsonid.file_processing.identify_json" href="#src.jsonid.file_processing.identify_json">identify_json</a></code></li>
+<li><code><a title="src.jsonid.file_processing.open_and_decode" href="#src.jsonid.file_processing.open_and_decode">open_and_decode</a></code></li>
 <li><code><a title="src.jsonid.file_processing.output_analysis" href="#src.jsonid.file_processing.output_analysis">output_analysis</a></code></li>
 <li><code><a title="src.jsonid.file_processing.process_data" href="#src.jsonid.file_processing.process_data">process_data</a></code></li>
 <li><code><a title="src.jsonid.file_processing.process_glob" href="#src.jsonid.file_processing.process_glob">process_glob</a></code></li>
@@ -493,13 +573,17 @@ for ease of moving it through the code to where we need it.</p></div>
 <ul>
 <li>
 <h4><code><a title="src.jsonid.file_processing.BaseCharacteristics" href="#src.jsonid.file_processing.BaseCharacteristics">BaseCharacteristics</a></code></h4>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="src.jsonid.file_processing.BaseCharacteristics.compression" href="#src.jsonid.file_processing.BaseCharacteristics.compression">compression</a></code></li>
 <li><code><a title="src.jsonid.file_processing.BaseCharacteristics.content" href="#src.jsonid.file_processing.BaseCharacteristics.content">content</a></code></li>
 <li><code><a title="src.jsonid.file_processing.BaseCharacteristics.data" href="#src.jsonid.file_processing.BaseCharacteristics.data">data</a></code></li>
 <li><code><a title="src.jsonid.file_processing.BaseCharacteristics.doctype" href="#src.jsonid.file_processing.BaseCharacteristics.doctype">doctype</a></code></li>
 <li><code><a title="src.jsonid.file_processing.BaseCharacteristics.encoding" href="#src.jsonid.file_processing.BaseCharacteristics.encoding">encoding</a></code></li>
 <li><code><a title="src.jsonid.file_processing.BaseCharacteristics.valid" href="#src.jsonid.file_processing.BaseCharacteristics.valid">valid</a></code></li>
 </ul>
+</li>
+<li>
+<h4><code><a title="src.jsonid.file_processing.NotJSONLError" href="#src.jsonid.file_processing.NotJSONLError">NotJSONLError</a></code></h4>
 </li>
 </ul>
 </li>
