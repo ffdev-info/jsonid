@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
-<title>src.jsonid.jsonid API documentation</title>
-<meta name="description" content="jsonid entry-point.">
+<title>src.jsonid.compressionlib API documentation</title>
+<meta name="description" content="Handlers for compression.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -33,10 +33,10 @@ el.replaceWith(d);
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>src.jsonid.jsonid</code></h1>
+<h1 class="title">Module <code>src.jsonid.compressionlib</code></h1>
 </header>
 <section id="section-intro">
-<p>jsonid entry-point.</p>
+<p>Handlers for compression.</p>
 </section>
 <section>
 </section>
@@ -45,195 +45,73 @@ el.replaceWith(d);
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="src.jsonid.jsonid.init_logging"><code class="name flex">
-<span>def <span class="ident">init_logging</span></span>(<span>debug)</span>
+<dt id="src.jsonid.compressionlib.compress_check"><code class="name flex">
+<span>async def <span class="ident">compress_check</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def init_logging(debug):
-    &#34;&#34;&#34;Initialize logging.&#34;&#34;&#34;
-    logging.basicConfig(
-        format=&#34;%(asctime)-15s %(levelname)s :: %(filename)s:%(lineno)s:%(funcName)s() :: %(message)s&#34;,  # noqa: E501
-        datefmt=&#34;%Y-%m-%d %H:%M:%S&#34;,
-        level=logging.DEBUG if debug else logging.INFO,
-        handlers=[
-            logging.StreamHandler(),
-        ],
-    )
-    logging.Formatter.converter = time.gmtime
-    global logger
-    logger = logging.getLogger(__name__)
-    logger.debug(&#34;debug logging is configured&#34;)</code></pre>
+<pre><code class="python">async def compress_check(path):
+    &#34;&#34;&#34;If we&#39;re enabling detection of JSONL we need to be able to
+    detect content in stream compressed files such as gzip or bzip2.
+    python-magic (libmagic) does a good job enabling this for us.
+
+    govdocs without libmagic:
+
+        real    2m23.181s
+        user    1m19.272s
+        sys         0m59.182s
+
+    govdocs with:
+
+        real    2m39.733s
+        user    1m30.068s
+        sys         1m3.820s
+
+    &#34;&#34;&#34;
+    mime = magic.Magic(mime=True, uncompress=False)
+    mime_type = mime.from_buffer(path)
+    print(mime_type)
+    if mime_type not in COMPRESSED:
+        return False
+    logger.debug(&#34;compreessed mime detected: %s&#34;, mime_type)
+    return mime_type</code></pre>
 </details>
-<div class="desc"><p>Initialize logging.</p></div>
+<div class="desc"><p>If we're enabling detection of JSONL we need to be able to
+detect content in stream compressed files such as gzip or bzip2.
+python-magic (libmagic) does a good job enabling this for us.</p>
+<p>govdocs without libmagic:</p>
+<pre><code>real    2m23.181s
+user    1m19.272s
+sys         0m59.182s
+</code></pre>
+<p>govdocs with:</p>
+<pre><code>real    2m39.733s
+user    1m30.068s
+sys         1m3.820s
+</code></pre></div>
 </dd>
-<dt id="src.jsonid.jsonid.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>) ‑> None</span>
+<dt id="src.jsonid.compressionlib.decompress_stream"><code class="name flex">
+<span>async def <span class="ident">decompress_stream</span></span>(<span>path: str, compression: str) ‑> str</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def main() -&gt; None:
-    &#34;&#34;&#34;Primary entry point for this script.&#34;&#34;&#34;
-
-    # pylint: disable=R0912,R0915
-
-    parser = argparse.ArgumentParser(
-        prog=&#34;json-id&#34;,
-        description=&#34;proof-of-concept identifier for JSON objects on disk based on identifying valid objects and their key-values&#34;,
-        epilog=&#34;for more information visit https://github.com/ffdev-info/json-id&#34;,
-    )
-    parser.add_argument(
-        &#34;--debug&#34;,
-        help=&#34;use debug loggng&#34;,
-        required=False,
-        action=&#34;store_true&#34;,
-    )
-    parser.add_argument(
-        &#34;--path&#34;,
-        &#34;--paths&#34;,
-        &#34;-p&#34;,
-        help=&#34;file path to process&#34;,
-        required=False,
-    )
-    parser.add_argument(
-        &#34;--nojson&#34;,
-        &#34;-nj&#34;,
-        action=&#34;store_true&#34;,
-        required=False,
-    )
-    parser.add_argument(
-        &#34;--nojsonl&#34;,
-        &#34;-njl&#34;,
-        action=&#34;store_true&#34;,
-        required=False,
-    )
-    parser.add_argument(
-        &#34;--noyaml&#34;,
-        &#34;-ny&#34;,
-        action=&#34;store_true&#34;,
-        required=False,
-    )
-    parser.add_argument(
-        &#34;--notoml&#34;,
-        &#34;-nt&#34;,
-        action=&#34;store_true&#34;,
-        required=False,
-    )
-    parser.add_argument(
-        &#34;--binary&#34;,
-        help=&#34;report on binary formats as well as plaintext&#34;,
-        required=False,
-        action=&#34;store_true&#34;,
-    )
-    parser.add_argument(
-        &#34;--simple&#34;,
-        help=&#34;provide a simple single-line (JSONL) output&#34;,
-        required=False,
-        action=&#34;store_true&#34;,
-    )
-    parser.add_argument(
-        &#34;--registry&#34;,
-        help=&#34;path to a custom registry to lead into memory replacing the default&#34;,
-        required=False,
-    )
-    parser.add_argument(
-        &#34;--pronom&#34;,
-        help=&#34;return a PRONOM-centric view of the results&#34;,
-        required=False,
-    )
-    parser.add_argument(
-        &#34;--export&#34;,
-        help=&#34;export the embedded registry&#34;,
-        required=False,
-        action=&#34;store_true&#34;,
-    )
-    parser.add_argument(
-        &#34;--check&#34;,
-        help=&#34;check the registry entrues are correct&#34;,
-        required=False,
-        action=&#34;store_true&#34;,
-    )
-    parser.add_argument(
-        &#34;--html&#34;,
-        help=&#34;output the registry as html&#34;,
-        required=False,
-        action=&#34;store_true&#34;,
-    )
-    parser.add_argument(
-        &#34;--language&#34;,
-        help=&#34;return results in different languages&#34;,
-        required=False,
-    )
-    parser.add_argument(
-        &#34;--analyse&#34;,
-        &#34;--analyze&#34;,
-        &#34;-a&#34;,
-        help=&#34;analyse a file in support of ruleset development and data preservation&#34;,
-        required=False,
-        type=str,
-        metavar=&#34;PATH&#34;,
-    )
-    args = parser.parse_args()
-    init_logging(args.debug)
-    # Determine which decode strategy to adopt.
-    strategy = _get_strategy(args)
-    # Primary application functions.
-    if args.registry:
-        raise NotImplementedError(&#34;custom registry is not yet available&#34;)
-    if args.pronom:
-        raise NotImplementedError(&#34;pronom view is not yet implemented&#34;)
-    if args.language:
-        raise NotImplementedError(&#34;multiple languages are not yet implemented&#34;)
-    if args.export:
-        export.exportJSON()
-        sys.exit()
-    if args.check:
-        if not helpers.entry_check():
-            logger.error(&#34;registry entries are not correct&#34;)
-            sys.exit(1)
-        if not helpers.keys_check():
-            logger.error(
-                &#34;invalid keys appear in data (use `--debug` logging for more information)&#34;
-            )
-            sys.exit(1)
-        logger.info(&#34;ok&#34;)
-        sys.exit()
-    if args.html:
-        helpers.html()
-        sys.exit()
-    if not strategy:
-        logger.error(
-            &#34;please ensure there is one remaining decode strategy, e.g. %s&#34;,
-            &#34;,&#34;.join(decode_strategies),
-        )
-        sys.exit(1)
-    if args.analyse:
-        asyncio.run(
-            file_processing.analyse_data(
-                path=args.analyse,
-                strategy=strategy,
-            )
-        )
-        sys.exit()
-    if not args.path:
-        parser.print_help(sys.stderr)
-        sys.exit()
-    asyncio.run(
-        file_processing.process_data(
-            path=args.path,
-            strategy=strategy,
-            binary=args.binary,
-            simple=args.simple,
-        )
-    )</code></pre>
+<pre><code class="python">async def decompress_stream(path: str, compression: str) -&gt; str:
+    &#34;&#34;&#34;Decomprerss our stream object and return the data.&#34;&#34;&#34;
+    if compression not in COMPRESSED:
+        logger.error(&#34;invalid compression as input: %s&#34;, compression)
+        return
+    if compression == COMPRESSED_BZIP2:
+        return _unpack_bz(path)
+    if compression == COMPRESSED_GZIP:
+        return _unpack_gzip(path)</code></pre>
 </details>
-<div class="desc"><p>Primary entry point for this script.</p></div>
+<div class="desc"><p>Decomprerss our stream object and return the data.</p></div>
 </dd>
 </dl>
 </section>
@@ -252,8 +130,8 @@ el.replaceWith(d);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="src.jsonid.jsonid.init_logging" href="#src.jsonid.jsonid.init_logging">init_logging</a></code></li>
-<li><code><a title="src.jsonid.jsonid.main" href="#src.jsonid.jsonid.main">main</a></code></li>
+<li><code><a title="src.jsonid.compressionlib.compress_check" href="#src.jsonid.compressionlib.compress_check">compress_check</a></code></li>
+<li><code><a title="src.jsonid.compressionlib.decompress_stream" href="#src.jsonid.compressionlib.decompress_stream">decompress_stream</a></code></li>
 </ul>
 </li>
 </ul>
