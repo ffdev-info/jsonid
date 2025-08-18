@@ -21,7 +21,11 @@ from pypi.org.
 
 <!-- via: https://luciopaiva.com/markdown-toc/ -->
 
-- [Introduction](#introduction)
+- [Before you begin...](#before-you-begin)
+  - [MacOS](#macos)
+  - [Windows](#windows)
+  - [Linux](#linux)
+- [Introduction to JSONID](#introduction-to-jsonid)
 - [Why?](#why)
 - [What does JSONID get you?](#what-does-jsonid-get-you)
 - [Ruleset](#ruleset)
@@ -52,7 +56,29 @@ from pypi.org.
   - [Local packaging](#local-packaging)
   - [Publishing](#publishing)
 
-## Introduction
+## Before you begin
+
+JSONID should run out of the box but it can be difficult to get everything
+running correctly across all platforms without some effort. Additional
+install instructions are listed below before you dig into everything in
+more detail.
+
+### MacOS
+
+* MacOS users may need to run `brew install libmagic` to install libmagic
+dependencies associated with compressed JSONL.
+
+### Windows
+
+* There are no known exceptions for Windows at present, that being said
+an absence of libmagic on Windows means compressed JSONL cannot be
+identified just yet.
+
+### Linux
+
+* There are no known exceptions for Linux users.
+
+## Introduction to JSONID
 
 JSONID borrows from the Python approach to ask forgiveness rather than
 permission (EAFP) to attempt to open every object it scans and see if it
