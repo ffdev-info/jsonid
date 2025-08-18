@@ -33,7 +33,7 @@ json_patch = """
 
 
 specific_tests = [
-    (specific_registry, json_patch, "id0019"),
+    (specific_registry, json_patch, "id0019:json"),
 ]
 
 
@@ -45,7 +45,7 @@ def test_specific(mocker, test_registry, test_data, expected_id):
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
-    res = registry.matcher(json_loaded)
+    res = registry.matcher(json_loaded, "", "json")
     assert res[0].identifier == expected_id
 
 

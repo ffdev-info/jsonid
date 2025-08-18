@@ -1,5 +1,6 @@
 """JSON registry processor. """
 
+import copy
 import json
 import logging
 from typing import Final, Union
@@ -221,6 +222,20 @@ def process_markers(registry_entry: registry_class.RegistryEntry, data: dict) ->
     return True
 
 
+def build_identifier(
+    registry_entry: registry_class.RegistryEntry, encoding: str, doctype: str
+) -> registry_class.RegistryEntry:
+    """Create a match object to return to the caller. For the
+    identifier and borrowing from MIMETypes buuld a hierarchical
+    identifier using the registry identifier and the doctype,
+    e.g. yaml, json, etc.
+    """
+    match_obj = copy.deepcopy(registry_entry)
+    match_obj.identifier = f"{match_obj.identifier}:{doctype.lower()}"
+    match_obj.encoding = encoding
+    return match_obj
+
+
 def matcher(data: dict, encoding: str = "", doctype: str = "") -> list:
     """Matcher for registry objects"""
     logger.debug("type: '%s'", type(data))
@@ -240,8 +255,8 @@ def matcher(data: dict, encoding: str = "", doctype: str = "") -> list:
                 continue
             if registry_entry in matches:
                 continue
-            registry_entry.encoding = encoding
-            matches.append(registry_entry)
+            match_obj = build_identifier(registry_entry, encoding, doctype)
+            matches.append(match_obj)
         except TypeError as err:
             logger.debug("%s", err)
             continue

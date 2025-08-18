@@ -14,10 +14,10 @@ except ModuleNotFoundError:
         from jsonid import helpers
 
 
-JSON_ID: Final[int] = "jrid:0000"
-JSONL_ID: Final[int] = "jrid:jsonl:0000"
-YAML_ID: Final[int] = "jrid:yaml:0000"
-TOML_ID: Final[int] = "jrid:toml:0000"
+JSON_ID: Final[int] = "jrid:0000:json"
+JSONL_ID: Final[int] = "jrid:0000:jsonl"
+YAML_ID: Final[int] = "jrid:0000:yaml"
+TOML_ID: Final[int] = "jrid:0000:toml"
 
 
 @dataclass
@@ -48,7 +48,7 @@ class RegistryEntry:  # pylint: disable=R0902
 
     def __str__(self):
         """Return summary string."""
-        if self.identifier == JSON_ID:
+        if self.identifier in (JSON_ID, JSONL_ID, YAML_ID, TOML_ID):
             data = {
                 "identifiers": [
                     {"rfc": self.rfc},

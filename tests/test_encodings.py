@@ -66,5 +66,5 @@ async def test_encodings(tmp_path, encoding, data_to_write):
         )
         assert len(id_) > 0, f"{json_file} results list is incorrect: {len(id_)}"
         assert (
-            id_[0].identifier == "jrid:0000"
+            id_[0].identifier == "jrid:0000:json"
         ), f"{json_file} couldn't be identified as JSON"

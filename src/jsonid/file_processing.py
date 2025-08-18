@@ -234,6 +234,7 @@ async def process_result(
                 json.dumps(
                     {
                         "identifier": item.identifier,
+                        "format name": item.name[0]["@en"],
                         "filename": os.path.basename(path),
                         "encoding": item.encoding,
                     }

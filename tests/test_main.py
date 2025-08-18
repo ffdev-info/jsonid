@@ -66,9 +66,9 @@ test_data_3: Final[
     """
 
 fundamental_tests = [
-    (fundamentals_registry, test_data_1, "test_id1"),
-    (fundamentals_registry, test_data_2, "test_id2"),
-    (fundamentals_registry, test_data_3, "test_id3"),
+    (fundamentals_registry, test_data_1, "test_id1:doctype_json"),
+    (fundamentals_registry, test_data_2, "test_id2:doctype_json"),
+    (fundamentals_registry, test_data_3, "test_id3:doctype_json"),
 ]
 
 
@@ -80,7 +80,7 @@ def test_fundamentals(mocker, test_registry, test_data, expected_id):
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
-    res = registry.matcher(json_loaded)
+    res = registry.matcher(json_loaded, "", "doctype_json")
     assert len(res) == 1, "results for these tests should have one value only"
     assert res[0].identifier == expected_id
 

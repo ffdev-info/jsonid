@@ -169,28 +169,27 @@ istype_1: Final[
 """
 
 spec_tests = [
-    (spec_registry, contains_1, "contains1"),
-    (spec_registry, startswith_1, "startswith1"),
-    (spec_registry, endswith_1, "endswith1"),
-    (spec_registry, is_1, "is1"),
-    (spec_registry, regex_1, "regex1"),
-    (spec_registry, exists_1, "exists1"),
-    (spec_registry, index_1, "index1"),
-    (spec_registry, goto_1, "goto1"),
-    (spec_registry, istype_1, "istype1"),
+    (spec_registry, contains_1, "contains1:json"),
+    (spec_registry, startswith_1, "startswith1:json"),
+    (spec_registry, endswith_1, "endswith1:json"),
+    (spec_registry, is_1, "is1:json"),
+    (spec_registry, regex_1, "regex1:json"),
+    (spec_registry, exists_1, "exists1:json"),
+    (spec_registry, index_1, "index1:json"),
+    (spec_registry, goto_1, "goto1:json"),
+    (spec_registry, istype_1, "istype1:json"),
 ]
 
 
 @pytest.mark.parametrize("registry, test_data, expected_id", spec_tests)
 def test_spec(mocker, registry, test_data, expected_id):
     """Test all keywords."""
-    print("test:", expected_id)
     mocker.patch("src.jsonid.registry_data.registry", return_value=registry)
     try:
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
-    res = matcher(json_loaded)
+    res = matcher(json_loaded, "", "json")
     assert (
         len(res) == 1
     ), f"results for these tests should have one value only, got: {len(res)}"
@@ -225,13 +224,12 @@ no_exist_registry = [
 @pytest.mark.parametrize("registry, test_data, expected_id", spec_tests)
 def test_noexist_spec(mocker, registry, test_data, expected_id):
     """Test the no-exist keyword."""
-    print("test:", expected_id)
     mocker.patch("src.jsonid.registry_data.registry", return_value=registry)
     try:
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
-    res = matcher(json_loaded)
+    res = matcher(json_loaded, "", "json")
     assert (
         len(res) == 1
     ), f"results for these tests should have one value only, got: {len(res)}"
