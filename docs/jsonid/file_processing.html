@@ -375,6 +375,7 @@ el.replaceWith(d);
                 json.dumps(
                     {
                         &#34;identifier&#34;: item.identifier,
+                        &#34;format name&#34;: item.name[0][&#34;@en&#34;],
                         &#34;filename&#34;: os.path.basename(path),
                         &#34;encoding&#34;: item.encoding,
                     }

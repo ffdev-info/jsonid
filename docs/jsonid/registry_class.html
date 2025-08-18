@@ -84,7 +84,7 @@ class RegistryEntry:  # pylint: disable=R0902
 
     def __str__(self):
         &#34;&#34;&#34;Return summary string.&#34;&#34;&#34;
-        if self.identifier == JSON_ID:
+        if self.identifier in (JSON_ID, JSONL_ID, YAML_ID, TOML_ID):
             data = {
                 &#34;identifiers&#34;: [
                     {&#34;rfc&#34;: self.rfc},
