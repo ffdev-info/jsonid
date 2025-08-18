@@ -71,9 +71,10 @@ el.replaceWith(d);
         sys         1m3.820s
 
     &#34;&#34;&#34;
+    if os.name == WINDOWS_OS:
+        return False
     mime = magic.Magic(mime=True, uncompress=False)
     mime_type = mime.from_buffer(path)
-    print(mime_type)
     if mime_type not in COMPRESSED:
         return False
     logger.debug(&#34;compreessed mime detected: %s&#34;, mime_type)

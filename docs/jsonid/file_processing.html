@@ -353,14 +353,18 @@ el.replaceWith(d);
 ):
     &#34;&#34;&#34;Process something JSON/YAML/TOML&#34;&#34;&#34;
     res = []
+    # NB. these switch-like ifs might not be needed in the fullness
+    # of time. It depends if we need to do any custom processing of
+    # any of the formats registered. We may want to consider removing
+    # these before releasing v1.0.0.
     if doctype == registry.DOCTYPE_JSON:
-        res = registry.matcher(data, encoding=encoding)
+        res = registry.matcher(data, encoding=encoding, doctype=doctype)
     if doctype == registry.DOCTYPE_JSONL:
-        res = [registry.JSONL_ONLY]
+        res = registry.matcher(data, encoding=encoding, doctype=doctype)
     if doctype == registry.DOCTYPE_YAML:
-        res = [registry.YAML_ONLY]
+        res = registry.matcher(data, encoding=encoding, doctype=doctype)
     if doctype == registry.DOCTYPE_TOML:
-        res = [registry.TOML_ONLY]
+        res = registry.matcher(data, encoding=encoding, doctype=doctype)
     if simple:
         for item in res:
             name_ = item.name[0][&#34;@en&#34;]

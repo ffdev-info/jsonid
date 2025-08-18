@@ -84,14 +84,14 @@ el.replaceWith(d);
 we encountered.</p></div>
 </dd>
 <dt id="src.jsonid.registry.matcher"><code class="name flex">
-<span>def <span class="ident">matcher</span></span>(<span>data: dict, encoding: str = '') ‑> list</span>
+<span>def <span class="ident">matcher</span></span>(<span>data: dict, encoding: str = '', doctype: str = '') ‑> list</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def matcher(data: dict, encoding: str = &#34;&#34;) -&gt; list:
+<pre><code class="python">def matcher(data: dict, encoding: str = &#34;&#34;, doctype: str = &#34;&#34;) -&gt; list:
     &#34;&#34;&#34;Matcher for registry objects&#34;&#34;&#34;
     logger.debug(&#34;type: &#39;%s&#39;&#34;, type(data))
     if isinstance(data, str):
@@ -117,11 +117,24 @@ we encountered.</p></div>
             continue
     if len(matches) == 0 or matches[0] == NIL_ENTRY:
         additional = get_additional(data)
-        json_only = JSON_ONLY
-        json_only.depth = analysis.analyse_depth(data)
-        json_only.additional = additional
-        json_only.encoding = encoding
-        return [json_only]
+        res_obj = registry_class.RegistryEntry()
+        if doctype == DOCTYPE_JSON:
+            res_obj = JSON_ONLY
+            res_obj.depth = analysis.analyse_depth(data)
+        elif doctype == DOCTYPE_JSONL:
+            # NB. JSONL does not have a depth calculation we can
+            # use at this point in the analysis. This can only be
+            # output via the analysis switch.
+            res_obj = JSONL_ONLY
+        elif doctype == DOCTYPE_YAML:
+            res_obj = YAML_ONLY
+            res_obj.depth = analysis.analyse_depth(data)
+        elif doctype == DOCTYPE_TOML:
+            res_obj = TOML_ONLY
+            res_obj.depth = analysis.analyse_depth(data)
+        res_obj.additional = additional
+        res_obj.encoding = encoding
+        return [res_obj]
     logger.debug(matches)
     return matches</code></pre>
 </details>
