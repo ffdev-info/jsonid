@@ -61,7 +61,9 @@ async def test_encodings(tmp_path, encoding, data_to_write):
         )
         assert base_obj.valid is True, f"{json_file} couldn't be opened with encoding"
 
-        id_ = registry.matcher(base_obj.data, encoding=encoding)
+        id_ = registry.matcher(
+            base_obj.data, encoding=encoding, doctype=registry.DOCTYPE_JSON
+        )
         assert len(id_) > 0, f"{json_file} results list is incorrect: {len(id_)}"
         assert (
             id_[0].identifier == "jrid:0000"

@@ -221,7 +221,7 @@ def process_markers(registry_entry: registry_class.RegistryEntry, data: dict) ->
     return True
 
 
-def matcher(data: dict, encoding: str = "") -> list:
+def matcher(data: dict, encoding: str = "", doctype: str = "") -> list:
     """Matcher for registry objects"""
     logger.debug("type: '%s'", type(data))
     if isinstance(data, str):
@@ -247,10 +247,23 @@ def matcher(data: dict, encoding: str = "") -> list:
             continue
     if len(matches) == 0 or matches[0] == NIL_ENTRY:
         additional = get_additional(data)
-        json_only = JSON_ONLY
-        json_only.depth = analysis.analyse_depth(data)
-        json_only.additional = additional
-        json_only.encoding = encoding
-        return [json_only]
+        res_obj = registry_class.RegistryEntry()
+        if doctype == DOCTYPE_JSON:
+            res_obj = JSON_ONLY
+            res_obj.depth = analysis.analyse_depth(data)
+        elif doctype == DOCTYPE_JSONL:
+            # NB. JSONL does not have a depth calculation we can
+            # use at this point in the analysis. This can only be
+            # output via the analysis switch.
+            res_obj = JSONL_ONLY
+        elif doctype == DOCTYPE_YAML:
+            res_obj = YAML_ONLY
+            res_obj.depth = analysis.analyse_depth(data)
+        elif doctype == DOCTYPE_TOML:
+            res_obj = TOML_ONLY
+            res_obj.depth = analysis.analyse_depth(data)
+        res_obj.additional = additional
+        res_obj.encoding = encoding
+        return [res_obj]
     logger.debug(matches)
     return matches
