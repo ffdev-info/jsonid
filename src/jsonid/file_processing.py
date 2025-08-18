@@ -206,7 +206,7 @@ async def analyse_json(paths: list[str], strategy: list):
     return analysis_res
 
 
-# pylint: disable=R0913
+# pylint: disable=R0913,R0917
 async def process_result(
     idx: int, path: str, data: Any, doctype: str, encoding: str, simple: bool
 ):
