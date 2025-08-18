@@ -819,11 +819,11 @@ _registry = [
             {"KEY": "version", "ISTYPE": int},
         ],
     ),
-    # website describes existence of all attributes:
-    # https://docs.asciinema.org/manual/asciicast/v1/
+    # Asciicast / Ascinnema V1: JSON
+    # ref: https://docs.asciinema.org/manual/asciicast/v1/
     registry_class.RegistryEntry(
         identifier="jrid:0072",
-        name=[{"@en": "asciicast v1"}],
+        name=[{"@en": "asciicast (asciinema.org) v1"}],
         markers=[
             {"KEY": "version", "ISTYPE": int},
             {"KEY": "width", "ISTYPE": int},
@@ -919,6 +919,27 @@ _registry = [
             {"KEY": "results", "EXISTS": None},
             {"KEY": "endpoint", "IS": "https://query.wikidata.org/sparql"},
             {"KEY": "provenance", "EXISTS": None},
+        ],
+    ),
+    # Asciicast / Asciinema V2: JSONL
+    # Ref: https://docs.asciinema.org/manual/asciicast/v2/
+    registry_class.RegistryEntry(
+        identifier="jrid:0079",
+        name=[{"@en": "asciicast (asciinema.org) v2"}],
+        markers=[
+            {"KEY": "version", "ISTYPE": int},
+            {"KEY": "width", "ISTYPE": int},
+            {"KEY": "height", "ISTYPE": int},
+        ],
+    ),
+    # Asciicast / Asciinema V3: JSONL
+    # Ref: https://docs.asciinema.org/manual/asciicast/v3/
+    registry_class.RegistryEntry(
+        identifier="jrid:0080",
+        name=[{"@en": "asciicast (asciinema.org) v3"}],
+        markers=[
+            {"KEY": "version", "ISTYPE": int},
+            {"KEY": "term", "ISTYPE": dict},
         ],
     ),
 ]
