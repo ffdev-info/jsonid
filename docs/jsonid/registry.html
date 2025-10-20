@@ -46,7 +46,7 @@ el.replaceWith(d);
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="src.jsonid.registry.build_identifier"><code class="name flex">
-<span>def <span class="ident">build_identifier</span></span>(<span>registry_entry: <a title="src.jsonid.registry_class.RegistryEntry" href="registry_class.html#src.jsonid.registry_class.RegistryEntry">RegistryEntry</a>,<br>encoding: str,<br>doctype: str) ‑> <a title="src.jsonid.registry_class.RegistryEntry" href="registry_class.html#src.jsonid.registry_class.RegistryEntry">RegistryEntry</a></span>
+<span>def <span class="ident">build_identifier</span></span>(<span>registry_entry: <a title="src.jsonid.registry_class.RegistryEntry" href="registry_class.html#src.jsonid.registry_class.RegistryEntry">RegistryEntry</a>,<br>base_obj: <a title="src.jsonid.registry.BaseCharacteristics" href="#src.jsonid.registry.BaseCharacteristics">BaseCharacteristics</a>) ‑> <a title="src.jsonid.registry_class.RegistryEntry" href="registry_class.html#src.jsonid.registry_class.RegistryEntry">RegistryEntry</a></span>
 </code></dt>
 <dd>
 <details class="source">
@@ -54,7 +54,8 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def build_identifier(
-    registry_entry: registry_class.RegistryEntry, encoding: str, doctype: str
+    registry_entry: registry_class.RegistryEntry,
+    base_obj: BaseCharacteristics,
 ) -&gt; registry_class.RegistryEntry:
     &#34;&#34;&#34;Create a match object to return to the caller. For the
     identifier and borrowing from MIMETypes buuld a hierarchical
@@ -62,8 +63,17 @@ el.replaceWith(d);
     e.g. yaml, json, etc.
     &#34;&#34;&#34;
     match_obj = copy.deepcopy(registry_entry)
-    match_obj.identifier = f&#34;{match_obj.identifier}:{doctype.lower()}&#34;
-    match_obj.encoding = encoding
+    match_obj.encoding = base_obj.encoding
+    core = _get_core(base_obj.doctype)
+    match_obj.mime = core.mime
+    if base_obj.compression:
+        match_obj.mime = base_obj.compression
+    if base_obj.doctype == DOCTYPE_JSONL:
+        try:
+            suffix = base_obj.compression.split(&#34;/&#34;)[1]
+            match_obj.mime = [f&#34;{mime}+{suffix}&#34; for mime in core.mime]
+        except AttributeError:
+            pass
     return match_obj</code></pre>
 </details>
 <div class="desc"><p>Create a match object to return to the caller. For the
@@ -110,19 +120,19 @@ e.g. yaml, json, etc.</p></div>
 we encountered.</p></div>
 </dd>
 <dt id="src.jsonid.registry.matcher"><code class="name flex">
-<span>def <span class="ident">matcher</span></span>(<span>data: dict, encoding: str = '', doctype: str = '') ‑> list</span>
+<span>def <span class="ident">matcher</span></span>(<span>base_obj: <a title="src.jsonid.registry.BaseCharacteristics" href="#src.jsonid.registry.BaseCharacteristics">BaseCharacteristics</a>) ‑> list</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def matcher(data: dict, encoding: str = &#34;&#34;, doctype: str = &#34;&#34;) -&gt; list:
-    &#34;&#34;&#34;Matcher for registry objects&#34;&#34;&#34;
-    logger.debug(&#34;type: &#39;%s&#39;&#34;, type(data))
-    if isinstance(data, str):
+<pre><code class="python">def matcher(base_obj: BaseCharacteristics) -&gt; list:
+    &#34;&#34;&#34;Matcher for registry objects.&#34;&#34;&#34;
+    logger.debug(&#34;type: &#39;%s&#39;&#34;, type(base_obj.data))
+    if isinstance(base_obj.data, str):
         try:
-            data = json.loads(data)
+            base_obj.data = json.loads(base_obj.data)
         except json.decoder.JSONDecodeError as err:
             logger.error(&#34;unprocessable data: %s&#34;, err)
             return []
@@ -131,40 +141,41 @@ we encountered.</p></div>
     for idx, registry_entry in enumerate(reg):
         try:
             logger.debug(&#34;processing registry entry: %s&#34;, idx)
-            match = process_markers(registry_entry, data)
+            match = process_markers(registry_entry, base_obj.data)
             if not match:
                 continue
             if registry_entry in matches:
                 continue
-            match_obj = build_identifier(registry_entry, encoding, doctype)
+            match_obj = build_identifier(registry_entry, base_obj)
             matches.append(match_obj)
         except TypeError as err:
             logger.debug(&#34;%s&#34;, err)
             continue
     if len(matches) == 0 or matches[0] == NIL_ENTRY:
-        additional = get_additional(data)
+        additional = get_additional(base_obj.data)
         res_obj = registry_class.RegistryEntry()
-        if doctype == DOCTYPE_JSON:
+        if base_obj.doctype == DOCTYPE_JSON:
             res_obj = JSON_ONLY
-            res_obj.depth = analysis.analyse_depth(data)
-        elif doctype == DOCTYPE_JSONL:
+            res_obj.depth = analysis.analyse_depth(base_obj.data)
+        elif base_obj.doctype == DOCTYPE_JSONL:
             # NB. JSONL does not have a depth calculation we can
             # use at this point in the analysis. This can only be
             # output via the analysis switch.
             res_obj = JSONL_ONLY
-        elif doctype == DOCTYPE_YAML:
+        elif base_obj.doctype == DOCTYPE_YAML:
             res_obj = YAML_ONLY
-            res_obj.depth = analysis.analyse_depth(data)
-        elif doctype == DOCTYPE_TOML:
+            res_obj.depth = analysis.analyse_depth(base_obj.data)
+        elif base_obj.doctype == DOCTYPE_TOML:
             res_obj = TOML_ONLY
-            res_obj.depth = analysis.analyse_depth(data)
+            res_obj.depth = analysis.analyse_depth(base_obj.data)
         res_obj.additional = additional
-        res_obj.encoding = encoding
+        res_obj.encoding = base_obj.encoding
+        res_obj = build_identifier(res_obj, base_obj)
         return [res_obj]
     logger.debug(matches)
     return matches</code></pre>
 </details>
-<div class="desc"><p>Matcher for registry objects</p></div>
+<div class="desc"><p>Matcher for registry objects.</p></div>
 </dd>
 <dt id="src.jsonid.registry.process_markers"><code class="name flex">
 <span>def <span class="ident">process_markers</span></span>(<span>registry_entry: <a title="src.jsonid.registry_class.RegistryEntry" href="registry_class.html#src.jsonid.registry_class.RegistryEntry">RegistryEntry</a>,<br>data: dict) ‑> bool</span>
@@ -263,6 +274,108 @@ Attempt to exit early if there isn't a match.</p></div>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="src.jsonid.registry.BaseCharacteristics"><code class="flex name class">
+<span>class <span class="ident">BaseCharacteristics</span></span>
+<span>(</span><span>valid: bool = False,<br>data: Any | None = None,<br>doctype: str | None = None,<br>encoding: str | None = None,<br>content_for_analysis: str | None = None,<br>compression: str | None = None,<br>binary: bool = False,<br>text: bool = False,<br>empty: bool = False,<br>only_whitespace: bool = False)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class BaseCharacteristics:
+    &#34;&#34;&#34;BaseCharacteristics wraps information about the base object
+    for ease of moving it through the code to where we need it.
+
+    NB. one consideration is what to do with the term `valid` here. It
+    is doing more work than necessary. It is both, not valid text, and
+    not valid object type, i.e. JSON,YAML,TOML etc. It&#39;s probably
+    too broad and might cause inconsistent results. We should observe
+    `binary` output and make sure it works as expected.
+    &#34;&#34;&#34;
+
+    # Too many instance attributes.
+    # pylint: disable=R0902
+
+    # valid describes whether or not the object has been parsed
+    # correctly.
+    valid: bool = False
+    # data represents the Data as parsed by the utility.
+    data: Union[Any, None] = None
+    # doctype describes the object type we have identified.
+    doctype: Union[str, None] = None
+    # encoding describes the character encoding of the object.
+    encoding: Union[str, None] = None
+    # content_for_analysis is the string/byte data that was the
+    # original object and is used in the structural analysis of
+    # the object.
+    content_for_analysis: Union[str, None] = None
+    # compression describes whether or not the object was originally
+    # compressed before identification. (JSONL only)
+    compression: Union[str, None] = None
+    # content is binary content.
+    binary: bool = False
+    # content is text. NB. This may be redundant in the fullness of
+    # time, but to begin with we will try to be as explicit as
+    # possible to ensure the accuracy of the output.
+    text: bool = False
+    # file is empty.
+    empty: bool = False
+    # file only contains whitespace.
+    only_whitespace: bool = False</code></pre>
+</details>
+<div class="desc"><p>BaseCharacteristics wraps information about the base object
+for ease of moving it through the code to where we need it.</p>
+<p>NB. one consideration is what to do with the term <code>valid</code> here. It
+is doing more work than necessary. It is both, not valid text, and
+not valid object type, i.e. JSON,YAML,TOML etc. It's probably
+too broad and might cause inconsistent results. We should observe
+<code>binary</code> output and make sure it works as expected.</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="src.jsonid.registry.BaseCharacteristics.binary"><code class="name">var <span class="ident">binary</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.registry.BaseCharacteristics.compression"><code class="name">var <span class="ident">compression</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.registry.BaseCharacteristics.content_for_analysis"><code class="name">var <span class="ident">content_for_analysis</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.registry.BaseCharacteristics.data"><code class="name">var <span class="ident">data</span> : Any | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.registry.BaseCharacteristics.doctype"><code class="name">var <span class="ident">doctype</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.registry.BaseCharacteristics.empty"><code class="name">var <span class="ident">empty</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.registry.BaseCharacteristics.encoding"><code class="name">var <span class="ident">encoding</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.registry.BaseCharacteristics.only_whitespace"><code class="name">var <span class="ident">only_whitespace</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.registry.BaseCharacteristics.text"><code class="name">var <span class="ident">text</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.registry.BaseCharacteristics.valid"><code class="name">var <span class="ident">valid</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="src.jsonid.registry.IdentificationFailure"><code class="flex name class">
 <span>class <span class="ident">IdentificationFailure</span></span>
 <span>(</span><span>*args, **kwargs)</span>
@@ -305,6 +418,21 @@ Attempt to exit early if there isn't a match.</p></div>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="src.jsonid.registry.BaseCharacteristics" href="#src.jsonid.registry.BaseCharacteristics">BaseCharacteristics</a></code></h4>
+<ul class="">
+<li><code><a title="src.jsonid.registry.BaseCharacteristics.binary" href="#src.jsonid.registry.BaseCharacteristics.binary">binary</a></code></li>
+<li><code><a title="src.jsonid.registry.BaseCharacteristics.compression" href="#src.jsonid.registry.BaseCharacteristics.compression">compression</a></code></li>
+<li><code><a title="src.jsonid.registry.BaseCharacteristics.content_for_analysis" href="#src.jsonid.registry.BaseCharacteristics.content_for_analysis">content_for_analysis</a></code></li>
+<li><code><a title="src.jsonid.registry.BaseCharacteristics.data" href="#src.jsonid.registry.BaseCharacteristics.data">data</a></code></li>
+<li><code><a title="src.jsonid.registry.BaseCharacteristics.doctype" href="#src.jsonid.registry.BaseCharacteristics.doctype">doctype</a></code></li>
+<li><code><a title="src.jsonid.registry.BaseCharacteristics.empty" href="#src.jsonid.registry.BaseCharacteristics.empty">empty</a></code></li>
+<li><code><a title="src.jsonid.registry.BaseCharacteristics.encoding" href="#src.jsonid.registry.BaseCharacteristics.encoding">encoding</a></code></li>
+<li><code><a title="src.jsonid.registry.BaseCharacteristics.only_whitespace" href="#src.jsonid.registry.BaseCharacteristics.only_whitespace">only_whitespace</a></code></li>
+<li><code><a title="src.jsonid.registry.BaseCharacteristics.text" href="#src.jsonid.registry.BaseCharacteristics.text">text</a></code></li>
+<li><code><a title="src.jsonid.registry.BaseCharacteristics.valid" href="#src.jsonid.registry.BaseCharacteristics.valid">valid</a></code></li>
+</ul>
+</li>
 <li>
 <h4><code><a title="src.jsonid.registry.IdentificationFailure" href="#src.jsonid.registry.IdentificationFailure">IdentificationFailure</a></code></h4>
 </li>

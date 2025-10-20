@@ -84,41 +84,38 @@ class RegistryEntry:  # pylint: disable=R0902
 
     def __str__(self):
         &#34;&#34;&#34;Return summary string.&#34;&#34;&#34;
-        if self.identifier in (JSON_ID, JSONL_ID, YAML_ID, TOML_ID):
+        if self.identifier in BASELINE_IDENTIFIERS:
             data = {
+                &#34;name&#34;: self.name,
+                &#34;mime&#34;: self.mime,
+                &#34;documentation&#34;: [
+                    {&#34;archive_team&#34;: self.archive_team},
+                ],
                 &#34;identifiers&#34;: [
                     {&#34;rfc&#34;: self.rfc},
                     {&#34;pronom&#34;: self.pronom},
                     {&#34;loc&#34;: self.loc},
                     {&#34;wikidata&#34;: self.wikidata},
                 ],
-                &#34;documentation&#34;: [
-                    {&#34;archive_team&#34;: self.archive_team},
-                ],
-                &#34;mime&#34;: self.mime,
-                &#34;name&#34;: self.name,
-                &#34;depth&#34;: self.depth,
-                &#34;additional&#34;: self.additional,
-                &#34;encoding&#34;: self.encoding,
             }
-            return yaml.dump(data, indent=2, allow_unicode=True).strip()
+            return yaml.dump(
+                data, indent=2, allow_unicode=True, sort_keys=False
+            ).strip()
         data = {
+            &#34;name&#34;: self.name,
+            &#34;mime&#34;: self.mime,
+            &#34;description&#34;: self.description,
+            &#34;documentation&#34;: [
+                {&#34;archive_team&#34;: self.archive_team},
+            ],
             &#34;identifiers&#34;: [
                 {&#34;rfc&#34;: self.rfc},
                 {&#34;pronom&#34;: self.pronom},
                 {&#34;loc&#34;: self.loc},
                 {&#34;wikidata&#34;: self.wikidata},
             ],
-            &#34;documentation&#34;: [
-                {&#34;archive_team&#34;: self.archive_team},
-            ],
-            &#34;mime&#34;: self.mime,
-            &#34;name&#34;: self.name,
-            &#34;additional&#34;: self.additional,
-            &#34;encoding&#34;: self.encoding,
-            &#34;description&#34;: self.description,
         }
-        return yaml.dump(data, indent=2, allow_unicode=True).strip()
+        return yaml.dump(data, indent=2, allow_unicode=True, sort_keys=False).strip()
 
     def json(self):
         &#34;&#34;&#34;Override default __dict__ behavior.&#34;&#34;&#34;

@@ -46,14 +46,14 @@ el.replaceWith(d);
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="src.jsonid.jsonid.init_logging"><code class="name flex">
-<span>def <span class="ident">init_logging</span></span>(<span>debug)</span>
+<span>def <span class="ident">init_logging</span></span>(<span>debug: bool)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def init_logging(debug):
+<pre><code class="python">def init_logging(debug: bool):
     &#34;&#34;&#34;Initialize logging.&#34;&#34;&#34;
     logging.basicConfig(
         format=&#34;%(asctime)-15s %(levelname)s :: %(filename)s:%(lineno)s:%(funcName)s() :: %(message)s&#34;,  # noqa: E501
@@ -127,13 +127,13 @@ el.replaceWith(d);
     )
     parser.add_argument(
         &#34;--binary&#34;,
-        help=&#34;report on binary formats as well as plaintext&#34;,
+        help=&#34;report on binary formats as well as plaintext (BETA: for preliminary identification only)&#34;,
         required=False,
         action=&#34;store_true&#34;,
     )
     parser.add_argument(
-        &#34;--simple&#34;,
-        help=&#34;provide a simple single-line (JSONL) output&#34;,
+        &#34;--agentout&#34;,
+        help=&#34;output results suitable for mapping to a digital preservation system&#34;,
         required=False,
         action=&#34;store_true&#34;,
     )
@@ -179,10 +179,29 @@ el.replaceWith(d);
         type=str,
         metavar=&#34;PATH&#34;,
     )
+    subparsers = parser.add_subparsers(help=&#34;registry lookup functions&#34;)
+    parser_core = subparsers.add_parser(
+        &#34;core&#34;, help=f&#34;display information about core formats: {registry.REGISTERED}&#34;
+    )
+    parser_core.add_argument(
+        &#34;core&#34;, choices=registry.REGISTERED, help=&#34;lookup one of the core entries&#34;
+    )
+    parser_lookup = subparsers.add_parser(&#34;lookup&#34;, help=&#34;lookup all other identifiers&#34;)
+    parser_lookup.add_argument(
+        &#34;lookup&#34;, type=str, help=&#34;lookup all non-core registry entries&#34;
+    )
     args = parser.parse_args()
+
+    # Initialize logging.
     init_logging(args.debug)
+
+    # Attempt lookup in the registry. This should come first as it
+    # doesn&#39;t involve reading files.
+    _attempt_lookup(args)
+
     # Determine which decode strategy to adopt.
     strategy = _get_strategy(args)
+
     # Primary application functions.
     if args.registry:
         raise NotImplementedError(&#34;custom registry is not yet available&#34;)
@@ -224,12 +243,20 @@ el.replaceWith(d);
     if not args.path:
         parser.print_help(sys.stderr)
         sys.exit()
+
+    # Enable graceful exit via signal handler...
+    def signal_handler(*args):  # pylint: disable=W0613
+        logger.info(&#34;exiting...&#34;)
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+    # Run JSONID.
     asyncio.run(
         file_processing.process_data(
             path=args.path,
             strategy=strategy,
             binary=args.binary,
-            simple=args.simple,
+            agentout=args.agentout,
         )
     )</code></pre>
 </details>

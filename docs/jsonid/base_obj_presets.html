@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
-<title>src.jsonid API documentation</title>
-<meta name="description" content="">
+<title>src.jsonid.base_obj_presets API documentation</title>
+<meta name="description" content="Standard objects to be returned by JSONID for consistency …">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -33,78 +33,121 @@ el.replaceWith(d);
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>src.jsonid</code></h1>
+<h1 class="title">Module <code>src.jsonid.base_obj_presets</code></h1>
 </header>
 <section id="section-intro">
+<p>Standard objects to be returned by JSONID for consistency.</p>
+<p>For the future, map these correctly to the MIMETypes that they are
+expected to return as when output to the CLI.</p>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt><code class="name"><a title="src.jsonid.analysis" href="analysis.html">src.jsonid.analysis</a></code></dt>
+<dt id="src.jsonid.base_obj_presets.no_id_binary"><code class="name flex">
+<span>def <span class="ident">no_id_binary</span></span>(<span>) ‑> <a title="src.jsonid.registry.BaseCharacteristics" href="registry.html#src.jsonid.registry.BaseCharacteristics">BaseCharacteristics</a></span>
+</code></dt>
 <dd>
-<div class="desc"><p>Simple module to analys JSON for technical metadata.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def no_id_binary() -&gt; registry.BaseCharacteristics:
+    &#34;&#34;&#34;Base object for a binary object we can&#39;t identify.&#34;&#34;&#34;
+    return registry.BaseCharacteristics(
+        binary=True,
+    )</code></pre>
+</details>
+<div class="desc"><p>Base object for a binary object we can't identify.</p></div>
 </dd>
-<dt><code class="name"><a title="src.jsonid.base_obj_presets" href="base_obj_presets.html">src.jsonid.base_obj_presets</a></code></dt>
+<dt id="src.jsonid.base_obj_presets.no_id_compression"><code class="name flex">
+<span>def <span class="ident">no_id_compression</span></span>(<span>compression: str) ‑> <a title="src.jsonid.registry.BaseCharacteristics" href="registry.html#src.jsonid.registry.BaseCharacteristics">BaseCharacteristics</a></span>
+</code></dt>
 <dd>
-<div class="desc"><p>Standard objects to be returned by JSONID for consistency …</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def no_id_compression(compression: str) -&gt; registry.BaseCharacteristics:
+    &#34;&#34;&#34;Base object for a compressed file that we can&#39;t identify.&#34;&#34;&#34;
+    return registry.BaseCharacteristics(
+        binary=True,
+        compression=compression,
+    )</code></pre>
+</details>
+<div class="desc"><p>Base object for a compressed file that we can't identify.</p></div>
 </dd>
-<dt><code class="name"><a title="src.jsonid.compressionlib" href="compressionlib.html">src.jsonid.compressionlib</a></code></dt>
+<dt id="src.jsonid.base_obj_presets.no_id_empty"><code class="name flex">
+<span>def <span class="ident">no_id_empty</span></span>(<span>) ‑> <a title="src.jsonid.registry.BaseCharacteristics" href="registry.html#src.jsonid.registry.BaseCharacteristics">BaseCharacteristics</a></span>
+</code></dt>
 <dd>
-<div class="desc"><p>Handlers for compression.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def no_id_empty() -&gt; registry.BaseCharacteristics:
+    &#34;&#34;&#34;Base object for an empty file.&#34;&#34;&#34;
+    return registry.BaseCharacteristics(
+        empty=True,
+    )</code></pre>
+</details>
+<div class="desc"><p>Base object for an empty file.</p></div>
 </dd>
-<dt><code class="name"><a title="src.jsonid.export" href="export.html">src.jsonid.export</a></code></dt>
+<dt id="src.jsonid.base_obj_presets.no_id_text"><code class="name flex">
+<span>def <span class="ident">no_id_text</span></span>(<span>) ‑> <a title="src.jsonid.registry.BaseCharacteristics" href="registry.html#src.jsonid.registry.BaseCharacteristics">BaseCharacteristics</a></span>
+</code></dt>
 <dd>
-<div class="desc"><p>Functions to support export.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def no_id_text() -&gt; registry.BaseCharacteristics:
+    &#34;&#34;&#34;Base object for a text file we can&#39;t identify.&#34;&#34;&#34;
+    return registry.BaseCharacteristics(
+        text=True,
+    )</code></pre>
+</details>
+<div class="desc"><p>Base object for a text file we can't identify.</p></div>
 </dd>
-<dt><code class="name"><a title="src.jsonid.file_processing" href="file_processing.html">src.jsonid.file_processing</a></code></dt>
+<dt id="src.jsonid.base_obj_presets.no_id_whitespace"><code class="name flex">
+<span>def <span class="ident">no_id_whitespace</span></span>(<span>) ‑> <a title="src.jsonid.registry.BaseCharacteristics" href="registry.html#src.jsonid.registry.BaseCharacteristics">BaseCharacteristics</a></span>
+</code></dt>
 <dd>
-<div class="desc"><p>File processing functions.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def no_id_whitespace() -&gt; registry.BaseCharacteristics:
+    &#34;&#34;&#34;Base object when we just have whitespace.&#34;&#34;&#34;
+    return registry.BaseCharacteristics(
+        text=True,
+        only_whitespace=True,
+    )</code></pre>
+</details>
+<div class="desc"><p>Base object when we just have whitespace.</p></div>
 </dd>
-<dt><code class="name"><a title="src.jsonid.helpers" href="helpers.html">src.jsonid.helpers</a></code></dt>
+<dt id="src.jsonid.base_obj_presets.possible_id"><code class="name flex">
+<span>def <span class="ident">possible_id</span></span>(<span>content: bytes, compression: str) ‑> <a title="src.jsonid.registry.BaseCharacteristics" href="registry.html#src.jsonid.registry.BaseCharacteristics">BaseCharacteristics</a></span>
+</code></dt>
 <dd>
-<div class="desc"><p>Code helperrs.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.htm_template" href="htm_template.html">src.jsonid.htm_template</a></code></dt>
-<dd>
-<div class="desc"><p>HTML template for output of the registry data.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.jsonid" href="jsonid.html">src.jsonid.jsonid</a></code></dt>
-<dd>
-<div class="desc"><p>jsonid entry-point.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.lookup" href="lookup.html">src.jsonid.lookup</a></code></dt>
-<dd>
-<div class="desc"><p>Provide lookup functions for the registry.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.output" href="output.html">src.jsonid.output</a></code></dt>
-<dd>
-<div class="desc"><p>Functions for output of results.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry" href="registry.html">src.jsonid.registry</a></code></dt>
-<dd>
-<div class="desc"><p>JSON registry processor.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry_class" href="registry_class.html">src.jsonid.registry_class</a></code></dt>
-<dd>
-<div class="desc"><p>Dataclasses for the registry objects.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry_data" href="registry_data.html">src.jsonid.registry_data</a></code></dt>
-<dd>
-<div class="desc"><p>JSON registry data.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry_matchers" href="registry_matchers.html">src.jsonid.registry_matchers</a></code></dt>
-<dd>
-<div class="desc"><p>Functions to support processing of the registry.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.version" href="version.html">src.jsonid.version</a></code></dt>
-<dd>
-<div class="desc"><p>jsonid version information.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def possible_id(content: bytes, compression: str) -&gt; registry.BaseCharacteristics:
+    &#34;&#34;&#34;Base object when we have a possible identification.&#34;&#34;&#34;
+    return registry.BaseCharacteristics(
+        data=content,
+        compression=compression,
+        text=True,
+    )</code></pre>
+</details>
+<div class="desc"><p>Base object when we have a possible identification.</p></div>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
 </section>
 <section>
 </section>
@@ -116,26 +159,17 @@ el.replaceWith(d);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="src" href="../index.html">src</a></code></li>
+<li><code><a title="src.jsonid" href="index.html">src.jsonid</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
-<ul>
-<li><code><a title="src.jsonid.analysis" href="analysis.html">src.jsonid.analysis</a></code></li>
-<li><code><a title="src.jsonid.base_obj_presets" href="base_obj_presets.html">src.jsonid.base_obj_presets</a></code></li>
-<li><code><a title="src.jsonid.compressionlib" href="compressionlib.html">src.jsonid.compressionlib</a></code></li>
-<li><code><a title="src.jsonid.export" href="export.html">src.jsonid.export</a></code></li>
-<li><code><a title="src.jsonid.file_processing" href="file_processing.html">src.jsonid.file_processing</a></code></li>
-<li><code><a title="src.jsonid.helpers" href="helpers.html">src.jsonid.helpers</a></code></li>
-<li><code><a title="src.jsonid.htm_template" href="htm_template.html">src.jsonid.htm_template</a></code></li>
-<li><code><a title="src.jsonid.jsonid" href="jsonid.html">src.jsonid.jsonid</a></code></li>
-<li><code><a title="src.jsonid.lookup" href="lookup.html">src.jsonid.lookup</a></code></li>
-<li><code><a title="src.jsonid.output" href="output.html">src.jsonid.output</a></code></li>
-<li><code><a title="src.jsonid.registry" href="registry.html">src.jsonid.registry</a></code></li>
-<li><code><a title="src.jsonid.registry_class" href="registry_class.html">src.jsonid.registry_class</a></code></li>
-<li><code><a title="src.jsonid.registry_data" href="registry_data.html">src.jsonid.registry_data</a></code></li>
-<li><code><a title="src.jsonid.registry_matchers" href="registry_matchers.html">src.jsonid.registry_matchers</a></code></li>
-<li><code><a title="src.jsonid.version" href="version.html">src.jsonid.version</a></code></li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="src.jsonid.base_obj_presets.no_id_binary" href="#src.jsonid.base_obj_presets.no_id_binary">no_id_binary</a></code></li>
+<li><code><a title="src.jsonid.base_obj_presets.no_id_compression" href="#src.jsonid.base_obj_presets.no_id_compression">no_id_compression</a></code></li>
+<li><code><a title="src.jsonid.base_obj_presets.no_id_empty" href="#src.jsonid.base_obj_presets.no_id_empty">no_id_empty</a></code></li>
+<li><code><a title="src.jsonid.base_obj_presets.no_id_text" href="#src.jsonid.base_obj_presets.no_id_text">no_id_text</a></code></li>
+<li><code><a title="src.jsonid.base_obj_presets.no_id_whitespace" href="#src.jsonid.base_obj_presets.no_id_whitespace">no_id_whitespace</a></code></li>
+<li><code><a title="src.jsonid.base_obj_presets.possible_id" href="#src.jsonid.base_obj_presets.possible_id">possible_id</a></code></li>
 </ul>
 </li>
 </ul>

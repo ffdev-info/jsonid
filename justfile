@@ -78,3 +78,11 @@ check:
 # Check the registry entries are correct (DEBUG).
 check-debug:
    python jsonid.py --check --debug
+
+# Hexdump a file in Python hex format
+@hexdump file:
+   hexdump -v -e '"\\\x" 1/1 "%02x"' {{file}}
+
+# code coverage
+coverage:
+ python -m tox -e coverage

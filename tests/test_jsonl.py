@@ -51,6 +51,7 @@ bz_tests = [
     (jsonl_2_valid, registry.DOCTYPE_JSONL, compressionlib.COMPRESSED_BZIP2),
     (jsonl_3_valid, registry.DOCTYPE_JSONL, compressionlib.COMPRESSED_BZIP2),
     (jsonl_4_invalid, None, None),
+    (jsonl_5_single_line, registry.DOCTYPE_JSON, compressionlib.COMPRESSED_BZIP2),
 ]
 
 
@@ -77,6 +78,7 @@ gz_tests = [
     (jsonl_2_valid, registry.DOCTYPE_JSONL, compressionlib.COMPRESSED_GZIP),
     (jsonl_3_valid, registry.DOCTYPE_JSONL, compressionlib.COMPRESSED_GZIP),
     (jsonl_4_invalid, None, None),
+    (jsonl_5_single_line, registry.DOCTYPE_JSON, compressionlib.COMPRESSED_GZIP),
 ]
 
 

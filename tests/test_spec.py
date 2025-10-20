@@ -3,12 +3,24 @@
 # pylint: disable=C0103,R0801
 
 import json
+from dataclasses import dataclass
 from typing import Final
 
 import pytest
 
 from src.jsonid.registry import matcher
 from src.jsonid.registry_class import RegistryEntry
+
+
+@dataclass
+class base_obj_mock:
+    """Mock base_obj object to enable testing."""
+
+    data: str
+    encoding: str
+    doctype: str
+    compression: str
+
 
 spec_registry = [
     RegistryEntry(
@@ -169,15 +181,15 @@ istype_1: Final[
 """
 
 spec_tests = [
-    (spec_registry, contains_1, "contains1:json"),
-    (spec_registry, startswith_1, "startswith1:json"),
-    (spec_registry, endswith_1, "endswith1:json"),
-    (spec_registry, is_1, "is1:json"),
-    (spec_registry, regex_1, "regex1:json"),
-    (spec_registry, exists_1, "exists1:json"),
-    (spec_registry, index_1, "index1:json"),
-    (spec_registry, goto_1, "goto1:json"),
-    (spec_registry, istype_1, "istype1:json"),
+    (spec_registry, contains_1, "contains1"),
+    (spec_registry, startswith_1, "startswith1"),
+    (spec_registry, endswith_1, "endswith1"),
+    (spec_registry, is_1, "is1"),
+    (spec_registry, regex_1, "regex1"),
+    (spec_registry, exists_1, "exists1"),
+    (spec_registry, index_1, "index1"),
+    (spec_registry, goto_1, "goto1"),
+    (spec_registry, istype_1, "istype1"),
 ]
 
 
@@ -189,7 +201,13 @@ def test_spec(mocker, registry, test_data, expected_id):
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
-    res = matcher(json_loaded, "", "json")
+    base_obj = base_obj_mock(
+        data=json_loaded,
+        encoding="",
+        doctype="json",
+        compression=None,
+    )
+    res = matcher(base_obj=base_obj)
     assert (
         len(res) == 1
     ), f"results for these tests should have one value only, got: {len(res)}"
@@ -229,7 +247,13 @@ def test_noexist_spec(mocker, registry, test_data, expected_id):
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
-    res = matcher(json_loaded, "", "json")
+    base_obj = base_obj_mock(
+        data=json_loaded,
+        encoding="",
+        doctype="json",
+        compression=None,
+    )
+    res = matcher(base_obj)
     assert (
         len(res) == 1
     ), f"results for these tests should have one value only, got: {len(res)}"

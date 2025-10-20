@@ -20,3 +20,11 @@ def get_version():
         # package is not installed
         pass
     return __version__
+
+
+def get_agent():
+    """Return an agent string for tooling that benefits from having
+    a user-agent output.
+    """
+    jsonid_version = get_version()
+    return f"jsonid/{jsonid_version} (ffdev-info)"

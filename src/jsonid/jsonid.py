@@ -14,12 +14,13 @@ try:
     import export
     import file_processing
     import helpers
+    import lookup
     import registry
 except ModuleNotFoundError:
     try:
-        from src.jsonid import export, file_processing, helpers, registry
+        from src.jsonid import export, file_processing, helpers, lookup, registry
     except ModuleNotFoundError:
-        from jsonid import export, file_processing, helpers, registry
+        from jsonid import export, file_processing, helpers, lookup, registry
 
 
 logger = None
@@ -33,7 +34,7 @@ decode_strategies: Final[list] = [
 ]
 
 
-def init_logging(debug):
+def init_logging(debug: bool):
     """Initialize logging."""
     logging.basicConfig(
         format="%(asctime)-15s %(levelname)s :: %(filename)s:%(lineno)s:%(funcName)s() :: %(message)s",  # noqa: E501
@@ -49,18 +50,24 @@ def init_logging(debug):
     logger.debug("debug logging is configured")
 
 
+def _attempt_lookup(args: argparse.Namespace):
+    """Attempt to lookup a registry entry in the database."""
+    try:
+        lookup.lookup_entry(args.lookup)
+        sys.exit()
+    except AttributeError:
+        pass
+    try:
+        lookup.lookup_entry(args.core)
+        sys.exit()
+    except AttributeError:
+        pass
+
+
 def _get_strategy(args: argparse.Namespace):
     """Return a set of decode strategies for the code to identify
     formats against.
     """
-
-    # pylint: disable=W0613
-    def signal_handler(*args):
-        logger.info("gracefully exiting...")
-        sys.exit(0)
-
-    signal.signal(signal.SIGINT, signal_handler)
-
     strategy = list(decode_strategies)
     if args.nojson:
         try:
@@ -134,13 +141,13 @@ def main() -> None:
     )
     parser.add_argument(
         "--binary",
-        help="report on binary formats as well as plaintext",
+        help="report on binary formats as well as plaintext (BETA: for preliminary identification only)",
         required=False,
         action="store_true",
     )
     parser.add_argument(
-        "--simple",
-        help="provide a simple single-line (JSONL) output",
+        "--agentout",
+        help="output results suitable for mapping to a digital preservation system",
         required=False,
         action="store_true",
     )
@@ -186,10 +193,29 @@ def main() -> None:
         type=str,
         metavar="PATH",
     )
+    subparsers = parser.add_subparsers(help="registry lookup functions")
+    parser_core = subparsers.add_parser(
+        "core", help=f"display information about core formats: {registry.REGISTERED}"
+    )
+    parser_core.add_argument(
+        "core", choices=registry.REGISTERED, help="lookup one of the core entries"
+    )
+    parser_lookup = subparsers.add_parser("lookup", help="lookup all other identifiers")
+    parser_lookup.add_argument(
+        "lookup", type=str, help="lookup all non-core registry entries"
+    )
     args = parser.parse_args()
+
+    # Initialize logging.
     init_logging(args.debug)
+
+    # Attempt lookup in the registry. This should come first as it
+    # doesn't involve reading files.
+    _attempt_lookup(args)
+
     # Determine which decode strategy to adopt.
     strategy = _get_strategy(args)
+
     # Primary application functions.
     if args.registry:
         raise NotImplementedError("custom registry is not yet available")
@@ -231,12 +257,20 @@ def main() -> None:
     if not args.path:
         parser.print_help(sys.stderr)
         sys.exit()
+
+    # Enable graceful exit via signal handler...
+    def signal_handler(*args):  # pylint: disable=W0613
+        logger.info("exiting...")
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+    # Run JSONID.
     asyncio.run(
         file_processing.process_data(
             path=args.path,
             strategy=strategy,
             binary=args.binary,
-            simple=args.simple,
+            agentout=args.agentout,
         )
     )
 

@@ -92,7 +92,7 @@ el.replaceWith(d);
     analysis_res = []
     for path in paths:
         if os.path.getsize(path) == 0:
-            logger.debug(&#34;&#39;%s&#39; is an empty file&#34;)
+            logger.debug(&#34;%s is an empty file&#34;, path)
             continue
         base_obj = await identify_plaintext_bytestream(
             path=path,
@@ -104,7 +104,7 @@ el.replaceWith(d);
             continue
         if base_obj.data == &#34;&#34; or base_obj.data is None:
             continue
-        res = await analysis.analyse_input(base_obj.data, base_obj.content)
+        res = await analysis.analyse_input(base_obj.data, base_obj.content_for_analysis)
         res[&#34;doctype&#34;] = base_obj.doctype
         res[&#34;encoding&#34;] = base_obj.encoding
         if base_obj.doctype == registry.DOCTYPE_JSONL:
@@ -202,20 +202,27 @@ el.replaceWith(d);
 <div class="desc"><p>Return a datetime string for now(),</p></div>
 </dd>
 <dt id="src.jsonid.file_processing.identify_json"><code class="name flex">
-<span>async def <span class="ident">identify_json</span></span>(<span>paths: list[str], strategy: list, binary: bool, simple: bool)</span>
+<span>async def <span class="ident">identify_json</span></span>(<span>paths: list[str], strategy: list, binary: bool, agentout: bool)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def identify_json(paths: list[str], strategy: list, binary: bool, simple: bool):
+<pre><code class="python">async def identify_json(paths: list[str], strategy: list, binary: bool, agentout: bool):
     &#34;&#34;&#34;Identify objects.&#34;&#34;&#34;
-    for idx, path in enumerate(paths):
+    padding = _get_padding(paths=paths)
+    for _, path in enumerate(paths):
         if os.path.getsize(path) == 0:
-            logger.debug(&#34;&#39;%s&#39; is an empty file&#34;)
+            logger.debug(&#34;%s is an empty file&#34;, path)
+            base_obj = registry.BaseCharacteristics(empty=True)
             if binary:
-                logger.warning(&#34;report on binary object...&#34;)
+                await process_result(
+                    path=path,
+                    base_obj=base_obj,
+                    padding=padding,
+                    agentout=agentout,
+                )
             continue
         base_obj = await identify_plaintext_bytestream(
             path=path,
@@ -225,43 +232,49 @@ el.replaceWith(d);
         if not base_obj.valid:
             logger.debug(&#34;%s: is not plaintext&#34;, path)
             if binary:
-                logger.warning(&#34;report on binary object...&#34;)
-            continue
-        if base_obj.data == &#34;&#34; or base_obj.data is None:
+                await process_result(
+                    path=path,
+                    base_obj=base_obj,
+                    padding=padding,
+                    agentout=agentout,
+                )
             continue
         logger.debug(&#34;processing: %s (%s)&#34;, path, base_obj.doctype)
         await process_result(
-            idx, path, base_obj.data, base_obj.doctype, base_obj.encoding, simple
+            path=path,
+            base_obj=base_obj,
+            padding=padding,
+            agentout=agentout,
         )</code></pre>
 </details>
 <div class="desc"><p>Identify objects.</p></div>
 </dd>
 <dt id="src.jsonid.file_processing.open_and_decode"><code class="name flex">
-<span>async def <span class="ident">open_and_decode</span></span>(<span>path: str, strategy: list) ‑> bool | <a title="src.jsonid.file_processing.BaseCharacteristics" href="#src.jsonid.file_processing.BaseCharacteristics">BaseCharacteristics</a></span>
+<span>async def <span class="ident">open_and_decode</span></span>(<span>path: str, strategy: list) ‑> <a title="src.jsonid.registry.BaseCharacteristics" href="registry.html#src.jsonid.registry.BaseCharacteristics">BaseCharacteristics</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def open_and_decode(
-    path: str, strategy: list
-) -&gt; Union[bool, bool, BaseCharacteristics]:
+<pre><code class="python">async def open_and_decode(path: str, strategy: list) -&gt; registry.BaseCharacteristics:
     &#34;&#34;&#34;Attempt to open a given file and decode it as JSON.&#34;&#34;&#34;
     content = None
     compression = None
-    result_no_id = BaseCharacteristics(False, None, None, None, None)
     if not os.path.getsize(path):
         logger.debug(&#34;file is zero bytes: %s&#34;, path)
-        return None, None, result_no_id
+        return presets.no_id_empty()
     with open(path, &#34;rb&#34;) as json_stream:
         first_chars = json_stream.read(FFB)
         if not await text_check(first_chars):
             if registry.DOCTYPE_JSONL not in strategy:
-                return None, None, result_no_id
+                return presets.no_id_binary()
+            # If not text, check at least for compression. We might
+            # have a compressed JSONL file.
             compression = await compressionlib.compress_check(first_chars)
             if not compression:
-                return None, None, result_no_id
+                return presets.no_id_binary()
+        # Read the content whether we have compression or not.
         if not compression:
             content = first_chars + json_stream.read()
         elif compression:
@@ -269,10 +282,15 @@ el.replaceWith(d);
                 path=path, compression=compression
             )
             if not content:
-                return None, None, result_no_id
+                return presets.no_id_compression(compression=compression)
+        # We have content, but it might only be whitespace.
         if not await whitespace_check(content):
-            return None, None, result_no_id
-    return content, compression, None</code></pre>
+            return presets.no_id_whitespace()
+        # We have something we can try to identify.
+        return presets.possible_id(
+            content=content,
+            compression=compression,
+        )</code></pre>
 </details>
 <div class="desc"><p>Attempt to open a given file and decode it as JSON.</p></div>
 </dd>
@@ -292,31 +310,46 @@ el.replaceWith(d);
 <div class="desc"><p>Format the output of the analysis.</p></div>
 </dd>
 <dt id="src.jsonid.file_processing.process_data"><code class="name flex">
-<span>async def <span class="ident">process_data</span></span>(<span>path: str, strategy: list, binary: bool, simple: bool)</span>
+<span>async def <span class="ident">process_data</span></span>(<span>path: str, strategy: list, binary: bool, agentout: bool)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def process_data(path: str, strategy: list, binary: bool, simple: bool):
+<pre><code class="python">async def process_data(path: str, strategy: list, binary: bool, agentout: bool):
     &#34;&#34;&#34;Process all objects at a given path.&#34;&#34;&#34;
     logger.debug(&#34;processing: %s&#34;, path)
     if &#34;*&#34; in path:
         paths = await process_glob(path)
-        await identify_json(paths, strategy, binary, simple)
+        await identify_json(
+            paths=paths,
+            strategy=strategy,
+            binary=binary,
+            agentout=agentout,
+        )
         sys.exit(0)
     if not os.path.exists(path):
         logger.error(&#34;path: &#39;%s&#39; does not exist&#34;, path)
         sys.exit(1)
     if os.path.isfile(path):
-        await identify_json([path], strategy, binary, simple)
+        await identify_json(
+            paths=[path],
+            strategy=strategy,
+            binary=binary,
+            agentout=agentout,
+        )
         sys.exit(0)
     paths = await create_manifest(path)
     if not paths:
         logger.info(&#34;no files in directory: %s&#34;, path)
         sys.exit(1)
-    await identify_json(paths, strategy, binary, simple)</code></pre>
+    await identify_json(
+        paths=paths,
+        strategy=strategy,
+        binary=binary,
+        agentout=agentout,
+    )</code></pre>
 </details>
 <div class="desc"><p>Process all objects at a given path.</p></div>
 </dd>
@@ -341,7 +374,7 @@ el.replaceWith(d);
 <div class="desc"><p>Process glob patterns provided by the user.</p></div>
 </dd>
 <dt id="src.jsonid.file_processing.process_result"><code class="name flex">
-<span>async def <span class="ident">process_result</span></span>(<span>idx: int, path: str, data: Any, doctype: str, encoding: str, simple: bool)</span>
+<span>async def <span class="ident">process_result</span></span>(<span>path: str,<br>base_obj: <a title="src.jsonid.registry.BaseCharacteristics" href="registry.html#src.jsonid.registry.BaseCharacteristics">BaseCharacteristics</a>,<br>padding: int,<br>agentout: bool)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -349,47 +382,49 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def process_result(
-    idx: int, path: str, data: Any, doctype: str, encoding: str, simple: bool
+    path: str,
+    base_obj: registry.BaseCharacteristics,
+    padding: int,
+    agentout: bool,
 ):
     &#34;&#34;&#34;Process something JSON/YAML/TOML&#34;&#34;&#34;
-    res = []
+    results = []
     # NB. these switch-like ifs might not be needed in the fullness
     # of time. It depends if we need to do any custom processing of
     # any of the formats registered. We may want to consider removing
     # these before releasing v1.0.0.
-    if doctype == registry.DOCTYPE_JSON:
-        res = registry.matcher(data, encoding=encoding, doctype=doctype)
-    if doctype == registry.DOCTYPE_JSONL:
-        res = registry.matcher(data, encoding=encoding, doctype=doctype)
-    if doctype == registry.DOCTYPE_YAML:
-        res = registry.matcher(data, encoding=encoding, doctype=doctype)
-    if doctype == registry.DOCTYPE_TOML:
-        res = registry.matcher(data, encoding=encoding, doctype=doctype)
-    if simple:
-        for item in res:
-            name_ = item.name[0][&#34;@en&#34;]
-            version_ = item.version
-            if version_ is not None:
-                name_ = f&#34;{name_}: {version_}&#34;
-            print(
-                json.dumps(
-                    {
-                        &#34;identifier&#34;: item.identifier,
-                        &#34;format name&#34;: item.name[0][&#34;@en&#34;],
-                        &#34;filename&#34;: os.path.basename(path),
-                        &#34;encoding&#34;: item.encoding,
-                    }
-                )
-            )
+    if base_obj.empty or base_obj.binary:
+        output.output_results(
+            path=path,
+            results=[base_obj],
+            padding=padding,
+            agentout=agentout,
+        )
         return
-    if idx == 0:
-        print(&#34;---&#34;)
-        print(version_header())
-        print(&#34;---&#34;)
-    print(f&#34;file: {path}&#34;)
-    for item in res:
-        print(item)
-    print(&#34;---&#34;)
+    if not base_obj.valid:
+        output.output_results(
+            path=path,
+            results=[base_obj],
+            padding=padding,
+            agentout=agentout,
+        )
+        return
+    # If we don&#39;t exit early and we try and identify the file... we then
+    # create a new class object with an identification...
+    if base_obj.doctype == registry.DOCTYPE_JSON:
+        results = registry.matcher(base_obj)
+    if base_obj.doctype == registry.DOCTYPE_JSONL:
+        results = registry.matcher(base_obj)
+    if base_obj.doctype == registry.DOCTYPE_YAML:
+        results = registry.matcher(base_obj)
+    if base_obj.doctype == registry.DOCTYPE_TOML:
+        results = registry.matcher(base_obj)
+    output.output_results(
+        path=path,
+        results=results,
+        padding=padding,
+        agentout=agentout,
+    )
     return</code></pre>
 </details>
 <div class="desc"><p>Process something JSON/YAML/TOML</p></div>
@@ -413,8 +448,8 @@ el.replaceWith(d);
         {0, 7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F}
     )
     for char in chars:
-        is_binary = bool(chr(char).encode().translate(None, text_chars))
-        if is_binary is True:
+        binary = bool(chr(char).encode().translate(None, text_chars))
+        if binary is True:
             return False
     return True</code></pre>
 </details>
@@ -463,67 +498,6 @@ scandate: {get_date_time()}&#34;&#34;&#34;.strip()</code></pre>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="src.jsonid.file_processing.BaseCharacteristics"><code class="flex name class">
-<span>class <span class="ident">BaseCharacteristics</span></span>
-<span>(</span><span>valid: bool = False,<br>data: Any | None = None,<br>doctype: str | None = None,<br>encoding: str | None = None,<br>content: str | None = None,<br>compression: bool | None = None)</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@dataclass
-class BaseCharacteristics:
-    &#34;&#34;&#34;BaseCharacteristics wraps information about the base object
-    for ease of moving it through the code to where we need it.
-    &#34;&#34;&#34;
-
-    # valid describes whether or not the object has been parsed
-    # correctly.
-    valid: bool = False
-    # data represents the Data as parsed by the utility.
-    data: Union[Any, None] = None
-    # doctype describes the object type we have identified.
-    doctype: Union[str, None] = None
-    # encoding describes the character encoding of the object.
-    encoding: Union[str, None] = None
-    # content is the string/byte data that was the original object and
-    # is used in the structural analysis of the object.
-    content: Union[str, None] = None
-    # compression describes whether or not the object was originally
-    # compressed before identification. (JSONL only)
-    compression: Union[bool, None] = None</code></pre>
-</details>
-<div class="desc"><p>BaseCharacteristics wraps information about the base object
-for ease of moving it through the code to where we need it.</p></div>
-<h3>Instance variables</h3>
-<dl>
-<dt id="src.jsonid.file_processing.BaseCharacteristics.compression"><code class="name">var <span class="ident">compression</span> : bool | None</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.file_processing.BaseCharacteristics.content"><code class="name">var <span class="ident">content</span> : str | None</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.file_processing.BaseCharacteristics.data"><code class="name">var <span class="ident">data</span> : Any | None</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.file_processing.BaseCharacteristics.doctype"><code class="name">var <span class="ident">doctype</span> : str | None</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.file_processing.BaseCharacteristics.encoding"><code class="name">var <span class="ident">encoding</span> : str | None</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="src.jsonid.file_processing.BaseCharacteristics.valid"><code class="name">var <span class="ident">valid</span> : bool</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-</dl>
-</dd>
 <dt id="src.jsonid.file_processing.NotJSONLError"><code class="flex name class">
 <span>class <span class="ident">NotJSONLError</span></span>
 <span>(</span><span>*args, **kwargs)</span>
@@ -576,17 +550,6 @@ for ease of moving it through the code to where we need it.</p></div>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
-<li>
-<h4><code><a title="src.jsonid.file_processing.BaseCharacteristics" href="#src.jsonid.file_processing.BaseCharacteristics">BaseCharacteristics</a></code></h4>
-<ul class="two-column">
-<li><code><a title="src.jsonid.file_processing.BaseCharacteristics.compression" href="#src.jsonid.file_processing.BaseCharacteristics.compression">compression</a></code></li>
-<li><code><a title="src.jsonid.file_processing.BaseCharacteristics.content" href="#src.jsonid.file_processing.BaseCharacteristics.content">content</a></code></li>
-<li><code><a title="src.jsonid.file_processing.BaseCharacteristics.data" href="#src.jsonid.file_processing.BaseCharacteristics.data">data</a></code></li>
-<li><code><a title="src.jsonid.file_processing.BaseCharacteristics.doctype" href="#src.jsonid.file_processing.BaseCharacteristics.doctype">doctype</a></code></li>
-<li><code><a title="src.jsonid.file_processing.BaseCharacteristics.encoding" href="#src.jsonid.file_processing.BaseCharacteristics.encoding">encoding</a></code></li>
-<li><code><a title="src.jsonid.file_processing.BaseCharacteristics.valid" href="#src.jsonid.file_processing.BaseCharacteristics.valid">valid</a></code></li>
-</ul>
-</li>
 <li>
 <h4><code><a title="src.jsonid.file_processing.NotJSONLError" href="#src.jsonid.file_processing.NotJSONLError">NotJSONLError</a></code></h4>
 </li>

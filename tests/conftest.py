@@ -1,5 +1,9 @@
 """Configure testing."""
 
+from typing import Final
+
 from src.jsonid import jsonid
 
-jsonid.init_logging(True)
+DEBUG: Final[bool] = False
+
+jsonid.init_logging(DEBUG)

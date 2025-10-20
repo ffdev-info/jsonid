@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
-<title>src.jsonid.version API documentation</title>
-<meta name="description" content="jsonid version information.">
+<title>src.jsonid.output API documentation</title>
+<meta name="description" content="Functions for output of results.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -33,10 +33,10 @@ el.replaceWith(d);
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>src.jsonid.version</code></h1>
+<h1 class="title">Module <code>src.jsonid.output</code></h1>
 </header>
 <section id="section-intro">
-<p>jsonid version information.</p>
+<p>Functions for output of results.</p>
 </section>
 <section>
 </section>
@@ -45,50 +45,154 @@ el.replaceWith(d);
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="src.jsonid.version.get_agent"><code class="name flex">
-<span>def <span class="ident">get_agent</span></span>(<span>)</span>
+<dt id="src.jsonid.output.format_results_for_agentout"><code class="name flex">
+<span>def <span class="ident">format_results_for_agentout</span></span>(<span>path: str, res: list)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_agent():
-    &#34;&#34;&#34;Return an agent string for tooling that benefits from having
-    a user-agent output.
+<pre><code class="python">def format_results_for_agentout(path: str, res: list):
+    &#34;&#34;&#34;Return a result set that provides more provenance information
+    if required, e.g. by a digital preservation system.
+
+    We have elected to output JSON here as it is one of the easier
+    formats to map into other formats. It is also easy to work with
+    on the command line, e.g. using JQ.
     &#34;&#34;&#34;
-    jsonid_version = get_version()
-    return f&#34;jsonid/{jsonid_version} (ffdev-info)&#34;</code></pre>
+    res = {
+        &#34;path&#34;: path,
+        &#34;results&#34;: res,
+        &#34;count&#34;: len(res),
+        &#34;agent&#34;: version.get_agent(),
+    }
+    return json.dumps(res, indent=2)</code></pre>
 </details>
-<div class="desc"><p>Return an agent string for tooling that benefits from having
-a user-agent output.</p></div>
+<div class="desc"><p>Return a result set that provides more provenance information
+if required, e.g. by a digital preservation system.</p>
+<p>We have elected to output JSON here as it is one of the easier
+formats to map into other formats. It is also easy to work with
+on the command line, e.g. using JQ.</p></div>
 </dd>
-<dt id="src.jsonid.version.get_version"><code class="name flex">
-<span>def <span class="ident">get_version</span></span>(<span>)</span>
+<dt id="src.jsonid.output.format_results_for_cli"><code class="name flex">
+<span>def <span class="ident">format_results_for_cli</span></span>(<span>path: str, padding: int, res: list)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_version():
-    &#34;&#34;&#34;Return information about the version of this application. If
-    it returns 0.0.0 then the user is to assume this is a development
-    version. Otherwise the version must be driven by the source
-    control management through appropriate tagging.
+<pre><code class="python">def format_results_for_cli(path: str, padding: int, res: list):
+    &#34;&#34;&#34;Format the results for the CLI.
+
+    Returns a single line per path.
     &#34;&#34;&#34;
-    __version__ = &#34;0.0.0&#34;
-    try:
-        __version__ = version(&#34;jsonid&#34;)
-    except PackageNotFoundError:
-        # package is not installed
-        pass
-    return __version__</code></pre>
+    path_formatted = _format_path(path)
+    res_formatted = f&#39;{path_formatted:{padding}}\t[{len(res)}]\t{&#34; | &#34;.join(res)}&#39;
+    return res_formatted</code></pre>
 </details>
-<div class="desc"><p>Return information about the version of this application. If
-it returns 0.0.0 then the user is to assume this is a development
-version. Otherwise the version must be driven by the source
-control management through appropriate tagging.</p></div>
+<div class="desc"><p>Format the results for the CLI.</p>
+<p>Returns a single line per path.</p></div>
+</dd>
+<dt id="src.jsonid.output.mimeout"><code class="name flex">
+<span>def <span class="ident">mimeout</span></span>(<span>results: list)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mimeout(results: list):
+    &#34;&#34;&#34;For every result in the result set generate an appropriate
+    MIMEType.
+
+    See the associated unit tests for more information on
+    expected results.
+    &#34;&#34;&#34;
+    res = []
+    for item in results:
+        # In the first instance, deal with data we have definitively
+        # identified using JSONID. Everything else will receive default
+        # MIMETypes below.
+        if isinstance(item, registry_class.RegistryEntry):
+            res.append(
+                f&#39;{item.mime[0]}; charset={item.encoding}; doctype=&#34;{item.name[0][&#34;@en&#34;]}&#34;; ref={item.identifier}&#39;
+            )
+            continue
+        # Defensive check for the remaining data types we may be
+        # working with in this utility. In the fullness of time it
+        # should be possible to remove this.
+        if not isinstance(item, registry.BaseCharacteristics):
+            logger.error(&#34;invalid data, cannot output value for: %s&#34;, item)
+            continue
+        # Each remaining `if` works as a precedence. Empty over all.
+        # Compression over binary, and so on.
+        if item.empty:
+            res.append(&#34;inode/x-empty; charset=binary&#34;)
+            continue
+        if item.compression:
+            res.append(f&#34;{item.compression}; charset=binary&#34;)
+            continue
+        if item.binary:
+            res.append(&#34;application/octet-stream; charset=binary&#34;)
+            continue
+        if item.text and item.encoding:
+            res.append(f&#34;text/plain; charset={item.encoding}&#34;)
+            continue
+        if item.text:
+            res.append(&#34;text/plain; charset=unknown&#34;)
+            continue
+        res.append(&#34;application/octet-stream; charset=unknown&#34;)
+    return res</code></pre>
+</details>
+<div class="desc"><p>For every result in the result set generate an appropriate
+MIMEType.</p>
+<p>See the associated unit tests for more information on
+expected results.</p></div>
+</dd>
+<dt id="src.jsonid.output.output_results"><code class="name flex">
+<span>def <span class="ident">output_results</span></span>(<span>path: str, results: list, padding: int, agentout: bool)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def output_results(path: str, results: list, padding: int, agentout: bool):
+    &#34;&#34;&#34;Output JSONID results.
+
+    Print is wrapped in print_result to better enable testing, i.e.
+    we can assert print_result was called with a given value easier
+    and avoid risking false-negatives using standard `print()`.
+    &#34;&#34;&#34;
+    res = mimeout(results)
+    if agentout:
+        res = format_results_for_agentout(path, res)
+        print_result(res)
+        return
+    cli_res = format_results_for_cli(path, padding, res)
+    print_result(cli_res)
+    return</code></pre>
+</details>
+<div class="desc"><p>Output JSONID results.</p>
+<p>Print is wrapped in print_result to better enable testing, i.e.
+we can assert print_result was called with a given value easier
+and avoid risking false-negatives using standard <code>print()</code>.</p></div>
+</dd>
+<dt id="src.jsonid.output.print_result"><code class="name flex">
+<span>def <span class="ident">print_result</span></span>(<span>result: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_result(result: str):
+    &#34;&#34;&#34;Wrap print to enable e2e testing.&#34;&#34;&#34;
+    print(result)</code></pre>
+</details>
+<div class="desc"><p>Wrap print to enable e2e testing.</p></div>
 </dd>
 </dl>
 </section>
@@ -107,8 +211,11 @@ control management through appropriate tagging.</p></div>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="src.jsonid.version.get_agent" href="#src.jsonid.version.get_agent">get_agent</a></code></li>
-<li><code><a title="src.jsonid.version.get_version" href="#src.jsonid.version.get_version">get_version</a></code></li>
+<li><code><a title="src.jsonid.output.format_results_for_agentout" href="#src.jsonid.output.format_results_for_agentout">format_results_for_agentout</a></code></li>
+<li><code><a title="src.jsonid.output.format_results_for_cli" href="#src.jsonid.output.format_results_for_cli">format_results_for_cli</a></code></li>
+<li><code><a title="src.jsonid.output.mimeout" href="#src.jsonid.output.mimeout">mimeout</a></code></li>
+<li><code><a title="src.jsonid.output.output_results" href="#src.jsonid.output.output_results">output_results</a></code></li>
+<li><code><a title="src.jsonid.output.print_result" href="#src.jsonid.output.print_result">print_result</a></code></li>
 </ul>
 </li>
 </ul>

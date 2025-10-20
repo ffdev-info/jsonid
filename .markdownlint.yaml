@@ -1,5 +1,8 @@
 # Configurtion file for Markdown lint. Add exceptions here.
-default: true
+default: False
 
 # Exceptions, example given, MD045
-# MD012: false    # no multiple blank-lines.
+# MD045: false # allow image with no tag
+
+# Unordered list style.
+MD004: False

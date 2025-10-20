@@ -3,11 +3,23 @@
 # pylint: disable=C0103,R0401,R0801
 
 import json
+from dataclasses import dataclass
 from typing import Final
 
 import pytest
 
 from src.jsonid import registry, registry_class
+
+
+@dataclass
+class base_obj_mock:
+    """Mock base_obj object to enable testing."""
+
+    data: str
+    encoding: str
+    doctype: str
+    compression: str
+
 
 fundamentals_registry = [
     registry_class.RegistryEntry(
@@ -66,9 +78,9 @@ test_data_3: Final[
     """
 
 fundamental_tests = [
-    (fundamentals_registry, test_data_1, "test_id1:doctype_json"),
-    (fundamentals_registry, test_data_2, "test_id2:doctype_json"),
-    (fundamentals_registry, test_data_3, "test_id3:doctype_json"),
+    (fundamentals_registry, test_data_1, "test_id1"),
+    (fundamentals_registry, test_data_2, "test_id2"),
+    (fundamentals_registry, test_data_3, "test_id3"),
 ]
 
 
@@ -80,7 +92,13 @@ def test_fundamentals(mocker, test_registry, test_data, expected_id):
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
-    res = registry.matcher(json_loaded, "", "doctype_json")
+    base_obj = base_obj_mock(
+        data=json_loaded,
+        encoding="",
+        doctype="doctype_json",
+        compression=None,
+    )
+    res = registry.matcher(base_obj=base_obj)
     assert len(res) == 1, "results for these tests should have one value only"
     assert res[0].identifier == expected_id
 
@@ -99,7 +117,13 @@ def test_json_only():
         json_loaded = json.loads(only_json)
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
-    res = registry.matcher(json_loaded, doctype=registry.DOCTYPE_JSON)
+    base_obj = base_obj_mock(
+        data=json_loaded,
+        encoding="",
+        doctype=registry.DOCTYPE_JSON,
+        compression=None,
+    )
+    res = registry.matcher(base_obj=base_obj)
     assert res[0].identifier == registry_class.JSON_ID
     assert res[0].description[0]["@en"] == registry.IS_JSON
 
@@ -124,5 +148,8 @@ def test_forms(test_data, expected_additional):
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
-    res = registry.matcher(json_loaded)
+    base_obj = base_obj_mock(
+        data=json_loaded, encoding="", doctype="", compression=None
+    )
+    res = registry.matcher(base_obj=base_obj)
     assert res[0].additional == expected_additional

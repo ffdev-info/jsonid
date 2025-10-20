@@ -14,10 +14,17 @@ except ModuleNotFoundError:
         from jsonid import helpers
 
 
-JSON_ID: Final[int] = "jrid:0000:json"
-JSONL_ID: Final[int] = "jrid:0000:jsonl"
-YAML_ID: Final[int] = "jrid:0000:yaml"
-TOML_ID: Final[int] = "jrid:0000:toml"
+JSON_ID: Final[int] = "jrid:JSON"
+JSONL_ID: Final[int] = "jrid:JSONL"
+YAML_ID: Final[int] = "jrid:YAML"
+TOML_ID: Final[int] = "jrid:TOML"
+
+BASELINE_IDENTIFIERS: Final[list] = (
+    JSON_ID,
+    JSONL_ID,
+    YAML_ID,
+    TOML_ID,
+)
 
 
 @dataclass
@@ -48,41 +55,38 @@ class RegistryEntry:  # pylint: disable=R0902
 
     def __str__(self):
         """Return summary string."""
-        if self.identifier in (JSON_ID, JSONL_ID, YAML_ID, TOML_ID):
+        if self.identifier in BASELINE_IDENTIFIERS:
             data = {
+                "name": self.name,
+                "mime": self.mime,
+                "documentation": [
+                    {"archive_team": self.archive_team},
+                ],
                 "identifiers": [
                     {"rfc": self.rfc},
                     {"pronom": self.pronom},
                     {"loc": self.loc},
                     {"wikidata": self.wikidata},
                 ],
-                "documentation": [
-                    {"archive_team": self.archive_team},
-                ],
-                "mime": self.mime,
-                "name": self.name,
-                "depth": self.depth,
-                "additional": self.additional,
-                "encoding": self.encoding,
             }
-            return yaml.dump(data, indent=2, allow_unicode=True).strip()
+            return yaml.dump(
+                data, indent=2, allow_unicode=True, sort_keys=False
+            ).strip()
         data = {
+            "name": self.name,
+            "mime": self.mime,
+            "description": self.description,
+            "documentation": [
+                {"archive_team": self.archive_team},
+            ],
             "identifiers": [
                 {"rfc": self.rfc},
                 {"pronom": self.pronom},
                 {"loc": self.loc},
                 {"wikidata": self.wikidata},
             ],
-            "documentation": [
-                {"archive_team": self.archive_team},
-            ],
-            "mime": self.mime,
-            "name": self.name,
-            "additional": self.additional,
-            "encoding": self.encoding,
-            "description": self.description,
         }
-        return yaml.dump(data, indent=2, allow_unicode=True).strip()
+        return yaml.dump(data, indent=2, allow_unicode=True, sort_keys=False).strip()
 
     def json(self):
         """Override default __dict__ behavior."""

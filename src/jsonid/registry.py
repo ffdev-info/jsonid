@@ -3,7 +3,8 @@
 import copy
 import json
 import logging
-from typing import Final, Union
+from dataclasses import dataclass
+from typing import Any, Final, Union
 
 try:
     import analysis
@@ -101,6 +102,52 @@ TOML_ONLY: Final[registry_class.RegistryEntry] = registry_class.RegistryEntry(
     markers=None,
 )
 
+REGISTERED: Final[str] = (DOCTYPE_JSON, DOCTYPE_JSONL, DOCTYPE_YAML, DOCTYPE_TOML)
+CORE_RECORDS: Final[str] = [JSON_ONLY, JSONL_ONLY, YAML_ONLY, TOML_ONLY]
+
+
+@dataclass
+class BaseCharacteristics:
+    """BaseCharacteristics wraps information about the base object
+    for ease of moving it through the code to where we need it.
+
+    NB. one consideration is what to do with the term `valid` here. It
+    is doing more work than necessary. It is both, not valid text, and
+    not valid object type, i.e. JSON,YAML,TOML etc. It's probably
+    too broad and might cause inconsistent results. We should observe
+    `binary` output and make sure it works as expected.
+    """
+
+    # Too many instance attributes.
+    # pylint: disable=R0902
+
+    # valid describes whether or not the object has been parsed
+    # correctly.
+    valid: bool = False
+    # data represents the Data as parsed by the utility.
+    data: Union[Any, None] = None
+    # doctype describes the object type we have identified.
+    doctype: Union[str, None] = None
+    # encoding describes the character encoding of the object.
+    encoding: Union[str, None] = None
+    # content_for_analysis is the string/byte data that was the
+    # original object and is used in the structural analysis of
+    # the object.
+    content_for_analysis: Union[str, None] = None
+    # compression describes whether or not the object was originally
+    # compressed before identification. (JSONL only)
+    compression: Union[str, None] = None
+    # content is binary content.
+    binary: bool = False
+    # content is text. NB. This may be redundant in the fullness of
+    # time, but to begin with we will try to be as explicit as
+    # possible to ensure the accuracy of the output.
+    text: bool = False
+    # file is empty.
+    empty: bool = False
+    # file only contains whitespace.
+    only_whitespace: bool = False
+
 
 def _get_language(string_field: list[dict], language: str = "@en") -> str:
     """Return a string in a given language from a result string."""
@@ -110,6 +157,19 @@ def _get_language(string_field: list[dict], language: str = "@en") -> str:
         except KeyError:
             pass
     return string_field[0]
+
+
+def _get_core(doctype: str) -> registry_class.RegistryEntry:
+    """Return a version of a core registry object when requested."""
+    if doctype == DOCTYPE_JSON:
+        return copy.deepcopy(JSON_ONLY)
+    if doctype == DOCTYPE_JSONL:
+        return copy.deepcopy(JSONL_ONLY)
+    if doctype == DOCTYPE_YAML:
+        return copy.deepcopy(YAML_ONLY)
+    if doctype == DOCTYPE_TOML:
+        return copy.deepcopy(TOML_ONLY)
+    return copy.deepcopy(NIL_ENTRY)
 
 
 def get_additional(data: Union[dict, list, float, int]) -> str:
@@ -223,7 +283,8 @@ def process_markers(registry_entry: registry_class.RegistryEntry, data: dict) ->
 
 
 def build_identifier(
-    registry_entry: registry_class.RegistryEntry, encoding: str, doctype: str
+    registry_entry: registry_class.RegistryEntry,
+    base_obj: BaseCharacteristics,
 ) -> registry_class.RegistryEntry:
     """Create a match object to return to the caller. For the
     identifier and borrowing from MIMETypes buuld a hierarchical
@@ -231,17 +292,26 @@ def build_identifier(
     e.g. yaml, json, etc.
     """
     match_obj = copy.deepcopy(registry_entry)
-    match_obj.identifier = f"{match_obj.identifier}:{doctype.lower()}"
-    match_obj.encoding = encoding
+    match_obj.encoding = base_obj.encoding
+    core = _get_core(base_obj.doctype)
+    match_obj.mime = core.mime
+    if base_obj.compression:
+        match_obj.mime = base_obj.compression
+    if base_obj.doctype == DOCTYPE_JSONL:
+        try:
+            suffix = base_obj.compression.split("/")[1]
+            match_obj.mime = [f"{mime}+{suffix}" for mime in core.mime]
+        except AttributeError:
+            pass
     return match_obj
 
 
-def matcher(data: dict, encoding: str = "", doctype: str = "") -> list:
-    """Matcher for registry objects"""
-    logger.debug("type: '%s'", type(data))
-    if isinstance(data, str):
+def matcher(base_obj: BaseCharacteristics) -> list:
+    """Matcher for registry objects."""
+    logger.debug("type: '%s'", type(base_obj.data))
+    if isinstance(base_obj.data, str):
         try:
-            data = json.loads(data)
+            base_obj.data = json.loads(base_obj.data)
         except json.decoder.JSONDecodeError as err:
             logger.error("unprocessable data: %s", err)
             return []
@@ -250,35 +320,36 @@ def matcher(data: dict, encoding: str = "", doctype: str = "") -> list:
     for idx, registry_entry in enumerate(reg):
         try:
             logger.debug("processing registry entry: %s", idx)
-            match = process_markers(registry_entry, data)
+            match = process_markers(registry_entry, base_obj.data)
             if not match:
                 continue
             if registry_entry in matches:
                 continue
-            match_obj = build_identifier(registry_entry, encoding, doctype)
+            match_obj = build_identifier(registry_entry, base_obj)
             matches.append(match_obj)
         except TypeError as err:
             logger.debug("%s", err)
             continue
     if len(matches) == 0 or matches[0] == NIL_ENTRY:
-        additional = get_additional(data)
+        additional = get_additional(base_obj.data)
         res_obj = registry_class.RegistryEntry()
-        if doctype == DOCTYPE_JSON:
+        if base_obj.doctype == DOCTYPE_JSON:
             res_obj = JSON_ONLY
-            res_obj.depth = analysis.analyse_depth(data)
-        elif doctype == DOCTYPE_JSONL:
+            res_obj.depth = analysis.analyse_depth(base_obj.data)
+        elif base_obj.doctype == DOCTYPE_JSONL:
             # NB. JSONL does not have a depth calculation we can
             # use at this point in the analysis. This can only be
             # output via the analysis switch.
             res_obj = JSONL_ONLY
-        elif doctype == DOCTYPE_YAML:
+        elif base_obj.doctype == DOCTYPE_YAML:
             res_obj = YAML_ONLY
-            res_obj.depth = analysis.analyse_depth(data)
-        elif doctype == DOCTYPE_TOML:
+            res_obj.depth = analysis.analyse_depth(base_obj.data)
+        elif base_obj.doctype == DOCTYPE_TOML:
             res_obj = TOML_ONLY
-            res_obj.depth = analysis.analyse_depth(data)
+            res_obj.depth = analysis.analyse_depth(base_obj.data)
         res_obj.additional = additional
-        res_obj.encoding = encoding
+        res_obj.encoding = base_obj.encoding
+        res_obj = build_identifier(res_obj, base_obj)
         return [res_obj]
     logger.debug(matches)
     return matches

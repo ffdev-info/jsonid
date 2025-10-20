@@ -21,7 +21,7 @@ from pypi.org.
 
 <!-- via: https://luciopaiva.com/markdown-toc/ -->
 
-- [Before you begin...](#before-you-begin)
+- [Before you begin](#before-you-begin)
   - [MacOS](#macos)
   - [Windows](#windows)
   - [Linux](#linux)
@@ -38,6 +38,10 @@ from pypi.org.
   - [Local rules](#local-rules)
 - [PRONOM](#pronom)
 - [Output format](#output-format)
+  - [Agent out](#agent-out)
+- [Lookup](#lookup)
+  - [Core formats](#core-formats)
+  - [Doctype formats](#doctype-formats)
 - [JSONL](#jsonl)
   - [Handling JSONL](#handling-jsonl)
 - [Analysis](#analysis)
@@ -79,6 +83,16 @@ identified just yet.
 * There are no known exceptions for Linux users.
 
 ## Introduction to JSONID
+
+JSONID is designed to identify data we recognize as JSON, YAML, TOML,
+and JSONL (currently a non-exhaustive list that can easily be extended).
+
+JSON, YAML, TOML, and JSONL, are all serialization formats; that is, when a
+computer program wants to persist data from memory to disk, it serializes
+the data into a serialization format. When the same program wants to read
+the data back into memory, it deserializes the structures from disk. These
+formats are also called "serde," a combination the words
+ser(ialize) and de(serialize).
 
 JSONID borrows from the Python approach to ask forgiveness rather than
 permission (EAFP) to attempt to open every object it scans and see if it
@@ -207,6 +221,8 @@ and the current set of tests can be reviewed in the repository's
 [test folder][testing-1]. More tests should be added, in general, and over
 time.
 
+Run `just coverage` to see JSONID's current level of test coverage.
+
 [testing-1]: https://github.com/ffdev-info/jsonid/tree/main/tests
 
 ## Sample files
@@ -316,22 +332,70 @@ of the JSONID registry.
 
 ## Output format
 
-For ease of development, the utility currently outputs `yaml`. The structure
-is still very fluid, and will also vary depending on the desired level of
-detail in the registry, e.g. there isn't currently a lot of information about
-the contents beyond a basic title and identifier.
+Previously JSONID output YAML containing all result object metadata. It has
+since coalesced on a MIME based output approximating that of `$file --mime`.
+Exceptions include the ability to output multiple IDs separated by `|` and
+a count describing how many identifiers were returned.
 
-E.g.:
+> NB. it is still a goal of JSONID to avoid multiple IDs but serde formats
+are as flexible as they need to be and will not always behave well.
+
+An example output looks as follows.
+
+<!--markdownlint-disable-->
+
+```text
+samples/encoding/UTF-16LE-map.json	[1]	application/json; charset=UTF-16; doctype="JavaScript Object Notation (JSON)"; ref=jrid:JSON
+samples/encoding/UTF-32LE-list.json	[1]	application/json; charset=UTF-32; doctype="JavaScript Object Notation (JSON)"; ref=jrid:JSON
+```
+
+```text
+integration_files/json/mame/mame-hiscore-plugin.json    [1]	application/json; charset=UTF-8; doctype="MAME Plugin (JSON)"; ref=jrid:0073
+integration_files/jsonl/asciicast/asciicast-v2.jsonl    [1]	application/jsonl; charset=UTF-8; doctype="asciicast (asciinema.org) v2"; ref=jrid:0079
+```
+
+You can see a demonstration of multiple identification output in the
+integration tests.
+
+```text
+test_file.json  [2] application/json; charset=UTF-8; doctype="MULTI_ID_1"; ref=jrid:0001 | application/json; charset=UTF-8; doctype="MULTI_ID_2"; ref=jrid:0002
+```
+
+### Agent out
+
+The `--agentout` arg makes JSONID output a full JSON snippet complete with
+version information for integration into workflows in digital preservation
+systems. Example output:
+
+```json
+{
+  "path": "samples/encoding/UTF-16-map_whitespace.json",
+  "results": [
+    "application/json; charset=UTF-16; doctype=\"JavaScript Object Notation (JSON)\"; ref=jrid:JSON"
+  ],
+  "count": 1,
+  "agent": "jsonid/0.0.0 (ffdev-info)"
+}
+```
+
+<!--markdownlint-enable-->
+
+## Lookup
+
+Registry metadata is no longer output in results. As such, a `lookup` function
+is provided to return that information. See for example:
+
+### Core formats
+
+```text
+python jsonid.py core JSON
+```
 
 ```yaml
----
-jsonid: 0.0.0
-scandate: 2025-04-21T18:40:48Z
----
-file: integration_files/plain.json
-additional:
-- '@en': data is dict type
-depth: 1
+name:
+- '@en': JavaScript Object Notation (JSON)
+mime:
+- application/json
 documentation:
 - archive_team: http://fileformats.archiveteam.org/wiki/JSON
 identifiers:
@@ -339,14 +403,28 @@ identifiers:
 - pronom: http://www.nationalarchives.gov.uk/PRONOM/fmt/817
 - loc: https://www.loc.gov/preservation/digital/formats/fdd/fdd000381.shtml
 - wikidata: https://www.wikidata.org/entity/Q2063
-mime:
-- application/json
-name:
-- '@en': JavaScript Object Notation (JSON)
----
 ```
 
-The structure should become more concrete as JSONID is formalized.
+### Doctype formats
+
+```text
+python jsonid.py lookup jrid:0055
+```
+
+```yaml
+name:
+- '@en': Lottie vector graphics
+mime: []
+description:
+- '@en': a animated file format using JSON also known as Bodymovin JSON
+documentation:
+- archive_team: http://fileformats.archiveteam.org/wiki/Lottie
+identifiers:
+- rfc: ''
+- pronom: ''
+- loc: ''
+- wikidata: http://www.wikidata.org/entity/Q98855048
+```
 
 ## JSONL
 
@@ -505,6 +583,8 @@ python -m tox -e py3
 python -m tox -e linting
 ```
 
+<!--markdownlint-disable-->
+
 ### pre-commit
 
 Pre-commit can be used to provide more feedback before committing code. This
@@ -578,6 +658,8 @@ Publishing for public use can be achieved with:
 which provides a way to look at package metadata and documentation and ensure
 that it is correct before uploading to the official [pypi.org][pypi-2]
 repository using `just package-upload`.
+
+<!--markdownlint-enable-->
 
 [pypi-1]: https://test.pypi.org
 [pypi-2]: https://pypi.org
