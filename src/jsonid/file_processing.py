@@ -206,50 +206,65 @@ async def analyse_json(paths: list[str], strategy: list):
     return analysis_res
 
 
-# pylint: disable=R0913,R0917
-async def process_result(
-    idx: int, path: str, data: Any, doctype: str, encoding: str, simple: bool
-):
-    """Process something JSON/YAML/TOML"""
-    res = []
-    # NB. these switch-like ifs might not be needed in the fullness
-    # of time. It depends if we need to do any custom processing of
-    # any of the formats registered. We may want to consider removing
-    # these before releasing v1.0.0.
-    if doctype == registry.DOCTYPE_JSON:
-        res = registry.matcher(data, encoding=encoding, doctype=doctype)
-    if doctype == registry.DOCTYPE_JSONL:
-        res = registry.matcher(data, encoding=encoding, doctype=doctype)
-    if doctype == registry.DOCTYPE_YAML:
-        res = registry.matcher(data, encoding=encoding, doctype=doctype)
-    if doctype == registry.DOCTYPE_TOML:
-        res = registry.matcher(data, encoding=encoding, doctype=doctype)
-    if simple:
-        for item in res:
-            name_ = item.name[0]["@en"]
-            version_ = item.version
-            if version_ is not None:
-                name_ = f"{name_}: {version_}"
-            print(
-                json.dumps(
-                    {
-                        "identifier": item.identifier,
-                        "format name": item.name[0]["@en"],
-                        "filename": os.path.basename(path),
-                        "encoding": item.encoding,
-                    }
-                )
+def _output_simple_results(path: str, results: list):
+    """Output simplified results as JSONL."""
+    for item in results:
+        name_ = item.name[0]["@en"]
+        version_ = item.version
+        if version_ is not None:
+            name_ = f"{name_}: {version_}"
+        print(
+            json.dumps(
+                {
+                    "identifier": item.identifier,
+                    "format name": item.name[0]["@en"],
+                    "filename": os.path.basename(path),
+                    "encoding": item.encoding,
+                }
             )
-        return
+        )
+
+
+def _output_detailed_results(idx: int, path: str, results: list):
+    """Output detailed results containing all registry information."""
     if idx == 0:
         print("---")
         print(version_header())
         print("---")
     print(f"file: {path}")
-    for item in res:
+    for item in results:
         print(item)
     print("---")
+
+
+def output_results(idx: int, path: str, results: list, simple: bool):
+    """Output JSONID results."""
+    if not simple:
+        _output_detailed_results(idx=idx, path=path, results=results)
+        return
+    _output_simple_results(path=path, results=results)
     return
+
+
+# pylint: disable=R0913,R0917
+async def process_result(
+    idx: int, path: str, data: Any, doctype: str, encoding: str, simple: bool
+):
+    """Process something JSON/YAML/TOML"""
+    results = []
+    # NB. these switch-like ifs might not be needed in the fullness
+    # of time. It depends if we need to do any custom processing of
+    # any of the formats registered. We may want to consider removing
+    # these before releasing v1.0.0.
+    if doctype == registry.DOCTYPE_JSON:
+        results = registry.matcher(data, encoding=encoding, doctype=doctype)
+    if doctype == registry.DOCTYPE_JSONL:
+        results = registry.matcher(data, encoding=encoding, doctype=doctype)
+    if doctype == registry.DOCTYPE_YAML:
+        results = registry.matcher(data, encoding=encoding, doctype=doctype)
+    if doctype == registry.DOCTYPE_TOML:
+        results = registry.matcher(data, encoding=encoding, doctype=doctype)
+    output_results(idx=idx, path=path, results=results, simple=bool)
 
 
 async def identify_json(paths: list[str], strategy: list, binary: bool, simple: bool):
