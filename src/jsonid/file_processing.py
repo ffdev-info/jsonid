@@ -67,6 +67,9 @@ class BaseCharacteristics:
     # compression describes whether or not the object was originally
     # compressed before identification. (JSONL only)
     compression: Union[bool, None] = None
+    # TODO: fixup
+    binary: bool = False
+    empty: bool = False
 
 
 async def text_check(chars: str) -> bool:
@@ -244,10 +247,22 @@ def mimeout(idx: int, path: str, results: list, padding: int):
     unk0: inode/x-empty; charset=binary
 
     """
+
     for item in results:
-        print(
-            f"{os.path.basename(path):{padding}} {item.mime[0]}; charset={item.encoding}; doctype=\"{item.name[0]["@en"]}\"; ref={item.identifier}"
-        )
+        path_formatted = f"{os.path.basename(path)}:"
+        if not isinstance(item, BaseCharacteristics):
+            print(
+                f"{path_formatted:{padding}} {item.mime[0]}; charset={item.encoding}; doctype=\"{item.name[0]["@en"]}\"; ref={item.identifier}"
+            )
+            continue
+        if item.binary:
+            print(f"{path_formatted:{padding}} application/octet-stream; charset=binary")
+            continue
+        if item.empty:
+            print(f"{path_formatted:{padding}} inode/x-empty; charset=binary")
+            continue
+        print(f"{path_formatted:{padding}} text/plain; charset=unknown")
+
 
 
 def output_results(idx: int, path: str, results: list, padding: int, simple: bool):
@@ -265,9 +280,7 @@ def output_results(idx: int, path: str, results: list, padding: int, simple: boo
 async def process_result(
     idx: int,
     path: str,
-    data: Any,
-    doctype: str,
-    encoding: str,
+    base_obj: BaseCharacteristics,
     padding: int,
     simple: bool,
 ):
@@ -277,15 +290,21 @@ async def process_result(
     # of time. It depends if we need to do any custom processing of
     # any of the formats registered. We may want to consider removing
     # these before releasing v1.0.0.
-    if doctype == registry.DOCTYPE_JSON:
-        results = registry.matcher(data, encoding=encoding, doctype=doctype)
-    if doctype == registry.DOCTYPE_JSONL:
-        results = registry.matcher(data, encoding=encoding, doctype=doctype)
-    if doctype == registry.DOCTYPE_YAML:
-        results = registry.matcher(data, encoding=encoding, doctype=doctype)
-    if doctype == registry.DOCTYPE_TOML:
-        results = registry.matcher(data, encoding=encoding, doctype=doctype)
+    if base_obj.empty or base_obj.binary:
+        output_results(idx=idx, path=path, results=[base_obj], padding=padding, simple=simple)
+        return
+    if not base_obj.valid:
+        output_results(idx=idx, path=path, results=[base_obj], padding=padding, simple=simple)
+    if base_obj.doctype == registry.DOCTYPE_JSON:
+        results = registry.matcher(base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype)
+    if base_obj.doctype == registry.DOCTYPE_JSONL:
+        results = registry.matcher(base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype)
+    if base_obj.doctype == registry.DOCTYPE_YAML:
+        results = registry.matcher(base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype)
+    if base_obj.doctype == registry.DOCTYPE_TOML:
+        results = registry.matcher(base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype)
     output_results(idx=idx, path=path, results=results, padding=padding, simple=simple)
+    return
 
 
 def _get_padding(paths: list):
@@ -304,16 +323,19 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, simple: 
     padding = _get_padding(paths=paths)
 
     for idx, path in enumerate(paths):
+
         if os.path.getsize(path) == 0:
             logger.debug("'%s' is an empty file")
-            if binary:
-                logger.warning("report on binary object...")
-            continue
-        base_obj = await identify_plaintext_bytestream(
-            path=path,
-            strategy=strategy,
-            analyse=False,
-        )
+            base_obj = BaseCharacteristics(empty=True)
+            #if binary:
+            #    logger.warning("report on binary object...")
+            #continue
+        else:
+            base_obj = await identify_plaintext_bytestream(
+                path=path,
+                strategy=strategy,
+                analyse=False,
+            )
 
         # TODO: for binary and empty files they may still need to
         # be output...
@@ -327,18 +349,18 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, simple: 
 
         if not base_obj.valid:
             logger.debug("%s: is not plaintext", path)
-            if binary:
-                logger.warning("report on binary object...")
-            continue
+            #if binary:
+            #    logger.warning("report on binary object...")
+            #continue
         if base_obj.data == "" or base_obj.data is None:
-            continue
+            pass
+            #base_obj.empty = True
+            #continue
         logger.debug("processing: %s (%s)", path, base_obj.doctype)
         await process_result(
             idx,
             path,
-            base_obj.data,
-            base_obj.doctype,
-            base_obj.encoding,
+            base_obj,
             padding,
             simple,
         )
@@ -361,6 +383,7 @@ async def open_and_decode(
                 return None, None, result_no_id
             compression = await compressionlib.compress_check(first_chars)
             if not compression:
+                result_no_id.binary=True
                 return None, None, result_no_id
         if not compression:
             content = first_chars + json_stream.read()
@@ -371,6 +394,7 @@ async def open_and_decode(
             if not content:
                 return None, None, result_no_id
         if not await whitespace_check(content):
+            print("ws")
             return None, None, result_no_id
     return content, compression, None
 
@@ -398,11 +422,11 @@ async def identify_plaintext_bytestream(
         "SHIFT-JIS",
         "BIG5",
     ]
-    file_contents, compression, base_characteristics = await open_and_decode(
+    file_contents, compression, base_obj = await open_and_decode(
         path, strategy
     )
     if not file_contents:
-        return base_characteristics
+        return base_obj
     for encoding in supported_encodings:
         try:
             content = file_contents.decode(encoding)
