@@ -237,8 +237,23 @@ def _output_detailed_results(idx: int, path: str, results: list):
     print("---")
 
 
-def output_results(idx: int, path: str, results: list, simple: bool):
+def mimeout(idx: int, path: str, results: list, padding: int):
+    """todo...
+
+    unk:  application/octet-stream; charset=binary
+    unk0: inode/x-empty; charset=binary
+
+    """
+    for item in results:
+        print(
+            f"{os.path.basename(path):{padding}} {item.mime[0]}; charset={item.encoding}; doctype=\"{item.name[0]["@en"]}\"; ref={item.identifier}"
+        )
+
+
+def output_results(idx: int, path: str, results: list, padding: int, simple: bool):
     """Output JSONID results."""
+    mimeout(idx, path, results, padding)
+    return
     if not simple:
         _output_detailed_results(idx=idx, path=path, results=results)
         return
@@ -248,7 +263,13 @@ def output_results(idx: int, path: str, results: list, simple: bool):
 
 # pylint: disable=R0913,R0917
 async def process_result(
-    idx: int, path: str, data: Any, doctype: str, encoding: str, simple: bool
+    idx: int,
+    path: str,
+    data: Any,
+    doctype: str,
+    encoding: str,
+    padding: int,
+    simple: bool,
 ):
     """Process something JSON/YAML/TOML"""
     results = []
@@ -264,11 +285,24 @@ async def process_result(
         results = registry.matcher(data, encoding=encoding, doctype=doctype)
     if doctype == registry.DOCTYPE_TOML:
         results = registry.matcher(data, encoding=encoding, doctype=doctype)
-    output_results(idx=idx, path=path, results=results, simple=bool)
+    output_results(idx=idx, path=path, results=results, padding=padding, simple=simple)
+
+
+def _get_padding(paths: list):
+    """todo..."""
+    padding = 0
+    for path in paths:
+        fname = os.path.basename(path)
+        if not len(fname) > padding:
+            continue
+        padding = len(fname)
+    return padding
 
 
 async def identify_json(paths: list[str], strategy: list, binary: bool, simple: bool):
     """Identify objects."""
+    padding = _get_padding(paths=paths)
+
     for idx, path in enumerate(paths):
         if os.path.getsize(path) == 0:
             logger.debug("'%s' is an empty file")
@@ -280,6 +314,17 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, simple: 
             strategy=strategy,
             analyse=False,
         )
+
+        # TODO: for binary and empty files they may still need to
+        # be output...
+        #
+        #  application/octet-stream; charset=binary
+        #  inode/x-empty; charset=binary
+        #  application/x-xz; charset=binary
+        #  jsonl -- consider application/json
+        #  application/json; charset=us-ascii
+        #  application/jsonl+<suffix>
+
         if not base_obj.valid:
             logger.debug("%s: is not plaintext", path)
             if binary:
@@ -289,7 +334,13 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, simple: 
             continue
         logger.debug("processing: %s (%s)", path, base_obj.doctype)
         await process_result(
-            idx, path, base_obj.data, base_obj.doctype, base_obj.encoding, simple
+            idx,
+            path,
+            base_obj.data,
+            base_obj.doctype,
+            base_obj.encoding,
+            padding,
+            simple,
         )
 
 
