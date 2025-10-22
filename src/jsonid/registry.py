@@ -73,7 +73,7 @@ JSONL_ONLY: Final[registry_class.RegistryEntry] = registry_class.RegistryEntry(
     loc="",
     wikidata="https://www.wikidata.org/entity/Q111841144",
     archive_team="",
-    mime=["application/jsonl"],
+    mime=["application/jsonl+todo"],
     markers=None,
 )
 
@@ -100,6 +100,8 @@ TOML_ONLY: Final[registry_class.RegistryEntry] = registry_class.RegistryEntry(
     mime=["application/toml"],
     markers=None,
 )
+
+registered: Final[str] = ("JSON", "JSONL", "YAML", "TOML")
 
 
 def _get_language(string_field: list[dict], language: str = "@en") -> str:

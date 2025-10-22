@@ -14,12 +14,13 @@ try:
     import export
     import file_processing
     import helpers
+    import lookup
     import registry
 except ModuleNotFoundError:
     try:
-        from src.jsonid import export, file_processing, helpers, registry
+        from src.jsonid import export, file_processing, helpers, lookup, registry
     except ModuleNotFoundError:
-        from jsonid import export, file_processing, helpers, registry
+        from jsonid import export, file_processing, helpers, lookup, registry
 
 
 logger = None
@@ -47,6 +48,20 @@ def init_logging(debug):
     global logger
     logger = logging.getLogger(__name__)
     logger.debug("debug logging is configured")
+
+
+def _attempt_lookup(args: argparse.Namespace):
+    """Attempt to lookup a registry entry in the database."""
+    try:
+        lookup.lookup_entry(args.lookup)
+        sys.exit()
+    except AttributeError:
+        pass
+    try:
+        lookup.lookup_entry(args.core)
+        sys.exit()
+    except AttributeError:
+        pass
 
 
 def _get_strategy(args: argparse.Namespace):
@@ -186,10 +201,29 @@ def main() -> None:
         type=str,
         metavar="PATH",
     )
+    subparsers = parser.add_subparsers(help="registry lookup functions")
+    parser_core = subparsers.add_parser(
+        "core", help=f"display information about core formats: {registry.registered}"
+    )
+    parser_core.add_argument(
+        "core", choices=registry.registered, help="lookup one of the core entries"
+    )
+    parser_lookup = subparsers.add_parser("lookup", help="a help")
+    parser_lookup.add_argument(
+        "lookup", type=str, help="lookup all non-core registry entries"
+    )
     args = parser.parse_args()
+
+    # Initialize logging.
     init_logging(args.debug)
+
+    # Attempt lookup in the registry. This should come first as it
+    # doesn't involve reading files.
+    _attempt_lookup(args)
+
     # Determine which decode strategy to adopt.
     strategy = _get_strategy(args)
+
     # Primary application functions.
     if args.registry:
         raise NotImplementedError("custom registry is not yet available")

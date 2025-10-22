@@ -251,18 +251,24 @@ def mimeout(idx: int, path: str, results: list, padding: int):
     for item in results:
         path_formatted = f"{os.path.basename(path)}:"
         if not isinstance(item, BaseCharacteristics):
-            print(
-                f"{path_formatted:{padding}} {item.mime[0]}; charset={item.encoding}; doctype=\"{item.name[0]["@en"]}\"; ref={item.identifier}"
-            )
+            try:
+                print(
+                    f'{path_formatted:{padding}} {item.mime[0]}; charset={item.encoding}; doctype="{item.name[0]["@en"]}"; ref={item.identifier}'
+                )
+            except IndexError:
+                print(
+                    f'{path_formatted:{padding}} <mime-needed>; charset={item.encoding}; doctype="{item.name[0]["@en"]}"; ref={item.identifier}'
+                )
             continue
         if item.binary:
-            print(f"{path_formatted:{padding}} application/octet-stream; charset=binary")
+            print(
+                f"{path_formatted:{padding}} application/octet-stream; charset=binary"
+            )
             continue
         if item.empty:
             print(f"{path_formatted:{padding}} inode/x-empty; charset=binary")
             continue
         print(f"{path_formatted:{padding}} text/plain; charset=unknown")
-
 
 
 def output_results(idx: int, path: str, results: list, padding: int, simple: bool):
@@ -291,18 +297,44 @@ async def process_result(
     # any of the formats registered. We may want to consider removing
     # these before releasing v1.0.0.
     if base_obj.empty or base_obj.binary:
-        output_results(idx=idx, path=path, results=[base_obj], padding=padding, simple=simple)
+        output_results(
+            idx=idx, path=path, results=[base_obj], padding=padding, simple=simple
+        )
         return
     if not base_obj.valid:
-        output_results(idx=idx, path=path, results=[base_obj], padding=padding, simple=simple)
+        output_results(
+            idx=idx, path=path, results=[base_obj], padding=padding, simple=simple
+        )
+
+    # If we don't exit early and we try and identify the file... we then
+    # create a new class object with an identification...
+
+    logger.info("here...")
+
     if base_obj.doctype == registry.DOCTYPE_JSON:
-        results = registry.matcher(base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype)
+        results = registry.matcher(
+            base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype
+        )
     if base_obj.doctype == registry.DOCTYPE_JSONL:
-        results = registry.matcher(base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype)
+        results = registry.matcher(
+            base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype
+        )
     if base_obj.doctype == registry.DOCTYPE_YAML:
-        results = registry.matcher(base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype)
+        results = registry.matcher(
+            base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype
+        )
     if base_obj.doctype == registry.DOCTYPE_TOML:
-        results = registry.matcher(base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype)
+        results = registry.matcher(
+            base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype
+        )
+
+    logger.info("outputting...")
+
+    for item in results:
+        logger.info("%s", type(item))
+
+    # Registry entry versus baseobj....
+
     output_results(idx=idx, path=path, results=results, padding=padding, simple=simple)
     return
 
@@ -327,9 +359,9 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, simple: 
         if os.path.getsize(path) == 0:
             logger.debug("'%s' is an empty file")
             base_obj = BaseCharacteristics(empty=True)
-            #if binary:
+            # if binary:
             #    logger.warning("report on binary object...")
-            #continue
+            # continue
         else:
             base_obj = await identify_plaintext_bytestream(
                 path=path,
@@ -349,14 +381,15 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, simple: 
 
         if not base_obj.valid:
             logger.debug("%s: is not plaintext", path)
-            #if binary:
+            # if binary:
             #    logger.warning("report on binary object...")
-            #continue
+            # continue
         if base_obj.data == "" or base_obj.data is None:
             pass
-            #base_obj.empty = True
-            #continue
+            # base_obj.empty = True
+            # continue
         logger.debug("processing: %s (%s)", path, base_obj.doctype)
+
         await process_result(
             idx,
             path,
@@ -383,7 +416,7 @@ async def open_and_decode(
                 return None, None, result_no_id
             compression = await compressionlib.compress_check(first_chars)
             if not compression:
-                result_no_id.binary=True
+                result_no_id.binary = True
                 return None, None, result_no_id
         if not compression:
             content = first_chars + json_stream.read()
@@ -422,9 +455,7 @@ async def identify_plaintext_bytestream(
         "SHIFT-JIS",
         "BIG5",
     ]
-    file_contents, compression, base_obj = await open_and_decode(
-        path, strategy
-    )
+    file_contents, compression, base_obj = await open_and_decode(path, strategy)
     if not file_contents:
         return base_obj
     for encoding in supported_encodings:
