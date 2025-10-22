@@ -3,12 +3,23 @@
 # pylint: disable=C0103,R0801
 
 import json
+from dataclasses import dataclass
 from typing import Final
 
 import pytest
 
 from src.jsonid.registry import matcher
 from src.jsonid.registry_class import RegistryEntry
+
+
+@dataclass
+class base_obj_mock:
+    """Mock base_obj object to enable testing."""
+
+    data: str
+    encoding: str
+    doctype: str
+
 
 spec_registry = [
     RegistryEntry(
@@ -189,7 +200,12 @@ def test_spec(mocker, registry, test_data, expected_id):
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
-    res = matcher(json_loaded, "", "json")
+    base_obj = base_obj_mock(
+        data=json_loaded,
+        encoding="",
+        doctype="json",
+    )
+    res = matcher(base_obj=base_obj)
     assert (
         len(res) == 1
     ), f"results for these tests should have one value only, got: {len(res)}"
@@ -229,7 +245,12 @@ def test_noexist_spec(mocker, registry, test_data, expected_id):
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
-    res = matcher(json_loaded, "", "json")
+    base_obj = base_obj_mock(
+        data=json_loaded,
+        encoding="",
+        doctype="json",
+    )
+    res = matcher(base_obj)
     assert (
         len(res) == 1
     ), f"results for these tests should have one value only, got: {len(res)}"
