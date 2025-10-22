@@ -203,10 +203,10 @@ def main() -> None:
     )
     subparsers = parser.add_subparsers(help="registry lookup functions")
     parser_core = subparsers.add_parser(
-        "core", help=f"display information about core formats: {registry.registered}"
+        "core", help=f"display information about core formats: {registry.REGISTERED}"
     )
     parser_core.add_argument(
-        "core", choices=registry.registered, help="lookup one of the core entries"
+        "core", choices=registry.REGISTERED, help="lookup one of the core entries"
     )
     parser_lookup = subparsers.add_parser("lookup", help="a help")
     parser_lookup.add_argument(

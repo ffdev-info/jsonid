@@ -7,9 +7,8 @@ import logging
 import os
 import sys
 import tomllib as toml
-from dataclasses import dataclass
 from datetime import timezone
-from typing import Any, Final, Union
+from typing import Final, Union
 
 import yaml
 
@@ -44,32 +43,6 @@ FFB: Final[int] = 42
 
 # Minimum no. lines in a JSONL file.
 JSONL_MIN_LINES = 1
-
-
-@dataclass
-class BaseCharacteristics:
-    """BaseCharacteristics wraps information about the base object
-    for ease of moving it through the code to where we need it.
-    """
-
-    # valid describes whether or not the object has been parsed
-    # correctly.
-    valid: bool = False
-    # data represents the Data as parsed by the utility.
-    data: Union[Any, None] = None
-    # doctype describes the object type we have identified.
-    doctype: Union[str, None] = None
-    # encoding describes the character encoding of the object.
-    encoding: Union[str, None] = None
-    # content is the string/byte data that was the original object and
-    # is used in the structural analysis of the object.
-    content: Union[str, None] = None
-    # compression describes whether or not the object was originally
-    # compressed before identification. (JSONL only)
-    compression: Union[bool, None] = None
-    # TODO: fixup
-    binary: bool = False
-    empty: bool = False
 
 
 async def text_check(chars: str) -> bool:
@@ -247,28 +220,23 @@ def mimeout(idx: int, path: str, results: list, padding: int):
     unk0: inode/x-empty; charset=binary
 
     """
-
+    extra: Final[int] = 1
     for item in results:
         path_formatted = f"{os.path.basename(path)}:"
-        if not isinstance(item, BaseCharacteristics):
-            try:
-                print(
-                    f'{path_formatted:{padding}} {item.mime[0]}; charset={item.encoding}; doctype="{item.name[0]["@en"]}"; ref={item.identifier}'
-                )
-            except IndexError:
-                print(
-                    f'{path_formatted:{padding}} <mime-needed>; charset={item.encoding}; doctype="{item.name[0]["@en"]}"; ref={item.identifier}'
-                )
+        if not isinstance(item, registry.BaseCharacteristics):
+            print(
+                f'{path_formatted:{padding+extra}} {item.mime[0]}; charset={item.encoding}; doctype="{item.name[0]["@en"]}"; ref={item.identifier}'
+            )
             continue
         if item.binary:
             print(
-                f"{path_formatted:{padding}} application/octet-stream; charset=binary"
+                f"{path_formatted:{padding+extra}} application/octet-stream; charset=binary"
             )
             continue
         if item.empty:
-            print(f"{path_formatted:{padding}} inode/x-empty; charset=binary")
+            print(f"{path_formatted:{padding+extra}} inode/x-empty; charset=binary")
             continue
-        print(f"{path_formatted:{padding}} text/plain; charset=unknown")
+        print(f"{path_formatted:{padding+extra}} text/plain;")
 
 
 def output_results(idx: int, path: str, results: list, padding: int, simple: bool):
@@ -286,7 +254,7 @@ def output_results(idx: int, path: str, results: list, padding: int, simple: boo
 async def process_result(
     idx: int,
     path: str,
-    base_obj: BaseCharacteristics,
+    base_obj: registry.BaseCharacteristics,
     padding: int,
     simple: bool,
 ):
@@ -309,30 +277,24 @@ async def process_result(
     # If we don't exit early and we try and identify the file... we then
     # create a new class object with an identification...
 
-    logger.info("here...")
+    # logger.info("here...")
 
     if base_obj.doctype == registry.DOCTYPE_JSON:
-        results = registry.matcher(
-            base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype
-        )
+        results = registry.matcher(base_obj)
     if base_obj.doctype == registry.DOCTYPE_JSONL:
-        results = registry.matcher(
-            base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype
-        )
+        results = registry.matcher(base_obj)
     if base_obj.doctype == registry.DOCTYPE_YAML:
-        results = registry.matcher(
-            base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype
-        )
+        results = registry.matcher(base_obj)
     if base_obj.doctype == registry.DOCTYPE_TOML:
-        results = registry.matcher(
-            base_obj.data, encoding=base_obj.encoding, doctype=base_obj.doctype
-        )
+        results = registry.matcher(base_obj)
 
-    logger.info("outputting...")
+    # logger.info("outputting...")
 
-    for item in results:
-        logger.info("%s", type(item))
+    # for item in results:
+    #    logger.info("%s", type(item))
 
+    # TODO: .........
+    # TODO: .........
     # Registry entry versus baseobj....
 
     output_results(idx=idx, path=path, results=results, padding=padding, simple=simple)
@@ -358,7 +320,7 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, simple: 
 
         if os.path.getsize(path) == 0:
             logger.debug("'%s' is an empty file")
-            base_obj = BaseCharacteristics(empty=True)
+            base_obj = registry.BaseCharacteristics(empty=True)
             # if binary:
             #    logger.warning("report on binary object...")
             # continue
@@ -401,11 +363,11 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, simple: 
 
 async def open_and_decode(
     path: str, strategy: list
-) -> Union[bool, bool, BaseCharacteristics]:
+) -> Union[bool, bool, registry.BaseCharacteristics]:
     """Attempt to open a given file and decode it as JSON."""
     content = None
     compression = None
-    result_no_id = BaseCharacteristics(False, None, None, None, None)
+    result_no_id = registry.BaseCharacteristics(False, None, None, None, None)
     if not os.path.getsize(path):
         logger.debug("file is zero bytes: %s", path)
         return None, None, result_no_id
@@ -435,7 +397,7 @@ async def open_and_decode(
 @helpers.timeit
 async def identify_plaintext_bytestream(
     path: str, strategy: list, analyse: bool = False
-) -> BaseCharacteristics:
+) -> registry.BaseCharacteristics:
     """Ensure that the file is a palintext bytestream and can be
     processed as JSON.
 
@@ -467,18 +429,18 @@ async def identify_plaintext_bytestream(
                 # object type.
                 data = data[0]
             if valid and analyse:
-                return BaseCharacteristics(
+                return registry.BaseCharacteristics(
                     valid, data, doctype, encoding, content, compression
                 )
             if valid:
-                return BaseCharacteristics(
+                return registry.BaseCharacteristics(
                     valid, data, doctype, encoding, None, compression
                 )
         except UnicodeDecodeError as err:
             logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
         except UnicodeError as err:
             logger.debug("(%s) can't process: '%s', err: %s", encoding, path, err)
-    return BaseCharacteristics(False, None, None, None, None)
+    return registry.BaseCharacteristics(False, None, None, None, None)
 
 
 async def create_manifest(path: str) -> list[str]:
