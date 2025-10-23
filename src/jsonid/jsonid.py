@@ -34,12 +34,17 @@ decode_strategies: Final[list] = [
 ]
 
 
-def init_logging(debug):
+def init_logging(debug: bool):
     """Initialize logging."""
+    level = logging.INFO
+    if debug is True:
+        level = logging.DEBUG
     logging.basicConfig(
         format="%(asctime)-15s %(levelname)s :: %(filename)s:%(lineno)s:%(funcName)s() :: %(message)s",  # noqa: E501
         datefmt="%Y-%m-%d %H:%M:%S",
-        level=logging.DEBUG if debug else logging.INFO,
+        level=level,
+        # TODO: fix logging...
+        # level=logging.DEBUG if debug else logging.INFO,
         handlers=[
             logging.StreamHandler(),
         ],
@@ -68,14 +73,6 @@ def _get_strategy(args: argparse.Namespace):
     """Return a set of decode strategies for the code to identify
     formats against.
     """
-
-    # pylint: disable=W0613
-    def signal_handler(*args):
-        logger.info("gracefully exiting...")
-        sys.exit(0)
-
-    signal.signal(signal.SIGINT, signal_handler)
-
     strategy = list(decode_strategies)
     if args.nojson:
         try:
@@ -265,6 +262,15 @@ def main() -> None:
     if not args.path:
         parser.print_help(sys.stderr)
         sys.exit()
+
+    # TODO: document this function was moved...
+    # pylint: disable=W0613
+    def signal_handler(*args):
+        logger.info("exiting...")
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+
     asyncio.run(
         file_processing.process_data(
             path=args.path,

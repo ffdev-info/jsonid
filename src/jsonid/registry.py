@@ -282,14 +282,14 @@ def build_identifier(
     if base_obj.doctype == DOCTYPE_JSONL:
         try:
             suffix = base_obj.compression.split("/")[1]
-            match_obj.mime = [f"{m}+{suffix}" for m in core.mime]
+            match_obj.mime = [f"{mime}+{suffix}" for mime in core.mime]
         except AttributeError:
             pass
     return match_obj
 
 
 def matcher(base_obj: BaseCharacteristics) -> list:
-    """Matcher for registry objects"""
+    """Matcher for registry objects."""
     logger.debug("type: '%s'", type(base_obj.data))
     if isinstance(base_obj.data, str):
         try:

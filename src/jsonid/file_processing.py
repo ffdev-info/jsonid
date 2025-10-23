@@ -315,9 +315,7 @@ def _get_padding(paths: list):
 async def identify_json(paths: list[str], strategy: list, binary: bool, simple: bool):
     """Identify objects."""
     padding = _get_padding(paths=paths)
-
     for idx, path in enumerate(paths):
-
         if os.path.getsize(path) == 0:
             logger.debug("'%s' is an empty file")
             base_obj = registry.BaseCharacteristics(empty=True)
@@ -330,17 +328,6 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, simple: 
                 strategy=strategy,
                 analyse=False,
             )
-
-        # TODO: for binary and empty files they may still need to
-        # be output...
-        #
-        #  application/octet-stream; charset=binary
-        #  inode/x-empty; charset=binary
-        #  application/x-xz; charset=binary
-        #  jsonl -- consider application/json
-        #  application/json; charset=us-ascii
-        #  application/jsonl+<suffix>
-
         if not base_obj.valid:
             logger.debug("%s: is not plaintext", path)
             # if binary:
@@ -351,7 +338,6 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, simple: 
             # base_obj.empty = True
             # continue
         logger.debug("processing: %s (%s)", path, base_obj.doctype)
-
         await process_result(
             idx,
             path,
