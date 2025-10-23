@@ -2,6 +2,10 @@
 outputs from the tool.
 """
 
+import pytest
+
+from src.jsonid import file_processing, jsonid
+
 """
         # TODO: for binary and empty files they may still need to
         # be output...
@@ -14,15 +18,10 @@ outputs from the tool.
         #  application/jsonl+<suffix>
 """
 
-
-
-import pytest
-
-from src.jsonid import file_processing, jsonid
-
 integration_tests = [
     (
-        '{"test": "1"}',
+        # JSON example: {"test": "1"} .
+        b"\x7b\x22\x74\x65\x73\x74\x22\x3a\x20\x22\x31\x22\x7d\x0a",
         'test_file.json: application/json; charset=UTF-8; doctype="JavaScript Object Notation (JSON)"; ref=jrid:TODO:JSON',
     ),
 ]
@@ -33,7 +32,7 @@ integration_tests = [
 async def test_jsonl_processing(data, expected, capsys, tmp_path):
     """Ensure that JSONL processing worrks as expected."""
     test_file = tmp_path / "test_file.json"
-    test_file.write_text(data, encoding="UTF-8")
+    test_file.write_bytes(data)
     await file_processing.identify_json(
         [test_file], jsonid.decode_strategies, False, False
     )
