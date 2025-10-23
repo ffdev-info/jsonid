@@ -935,12 +935,13 @@ _registry = [
     # Asciicast / Asciinema V3: JSONL
     # Ref: https://docs.asciinema.org/manual/asciicast/v3/
     registry_class.RegistryEntry(
-        identifier="jrid:0080",
+        identifier="jrid:0080:xxx",
         name=[{"@en": "asciicast (asciinema.org) v3"}],
         markers=[
             {"KEY": "version", "ISTYPE": int},
             {"KEY": "term", "ISTYPE": dict},
         ],
+        mime=["xxxxx"],
     ),
 ]
 

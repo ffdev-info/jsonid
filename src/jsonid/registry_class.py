@@ -14,10 +14,10 @@ except ModuleNotFoundError:
         from jsonid import helpers
 
 
-JSON_ID: Final[int] = "jrid:0000:json"
-JSONL_ID: Final[int] = "jrid:0000:jsonl"
-YAML_ID: Final[int] = "jrid:0000:yaml"
-TOML_ID: Final[int] = "jrid:0000:toml"
+JSON_ID: Final[int] = "jrid:TODO:JSON"
+JSONL_ID: Final[int] = "jrid:TODO:JSONL"
+YAML_ID: Final[int] = "jrid:TODO:YAML"
+TOML_ID: Final[int] = "jrid:TODO:TOML"
 
 
 @dataclass

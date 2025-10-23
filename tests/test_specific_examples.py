@@ -3,10 +3,21 @@
 # pylint: disable=C0103,R0801
 
 import json
+from dataclasses import dataclass
 
 import pytest
 
 from src.jsonid import analysis, file_processing, registry, registry_class
+
+
+@dataclass
+class base_obj_mock:
+    """Mock base_obj object to enable testing."""
+
+    data: str
+    encoding: str
+    doctype: str
+
 
 specific_registry = [
     registry_class.RegistryEntry(
@@ -45,7 +56,12 @@ def test_specific(mocker, test_registry, test_data, expected_id):
         json_loaded = json.loads(test_data)
     except json.JSONDecodeError as err:
         assert False, f"data won't decode as JSON: {err}"
-    res = registry.matcher(json_loaded, "", "json")
+    base_obj = base_obj_mock(
+        data=json_loaded,
+        encoding="",
+        doctype="json",
+    )
+    res = registry.matcher(base_obj=base_obj)
     assert res[0].identifier == expected_id
 
 
@@ -100,7 +116,7 @@ async def test_utf16(tmp_path):
         file_,
         strategy=["JSON"],
     )
-    assert base_obj == file_processing.BaseCharacteristics(
+    assert base_obj == registry.BaseCharacteristics(
         True, {"a": "b"}, registry.DOCTYPE_JSON, "UTF-16", None
     )
 
@@ -114,9 +130,7 @@ async def test_utf16(tmp_path):
         file_,
         strategy=["JSON"],
     )
-    assert base_obj == file_processing.BaseCharacteristics(
-        False, None, None, None, None
-    )
+    assert base_obj == registry.BaseCharacteristics(False, None, None, None, None)
 
     json_data = '{"a": "b"}'
     dir_ = tmp_path / "jsonid-utf16LE"
@@ -128,7 +142,7 @@ async def test_utf16(tmp_path):
         file_,
         strategy=["JSON"],
     )
-    assert base_obj == file_processing.BaseCharacteristics(
+    assert base_obj == registry.BaseCharacteristics(
         True,
         {"a": "b"},
         registry.DOCTYPE_JSON,
@@ -146,7 +160,7 @@ async def test_utf16(tmp_path):
         file_,
         strategy=["JSON"],
     )
-    assert base_obj == file_processing.BaseCharacteristics(
+    assert base_obj == registry.BaseCharacteristics(
         True, {"a": "b"}, registry.DOCTYPE_JSON, "UTF-16BE", None
     )
 
