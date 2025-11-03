@@ -27,6 +27,8 @@ from pypi.org.
   - [Linux](#linux)
 - [Introduction to JSONID](#introduction-to-jsonid)
 - [Why?](#why)
+  - [Encodings](#encodings)
+  - [Enxodings explained](#enxodings-explained)
 - [What does JSONID get you?](#what-does-jsonid-get-you)
 - [Ruleset](#ruleset)
   - [Backed by tests](#backed-by-tests)
@@ -147,6 +149,87 @@ use a JSON-inspired grammar to describe keys and key-value pairs as "markers"
 that can potentially identify the JSON objects that we are looking at.
 Certainly narrow down the potential instances of JSON objects that we might
 be looking at.
+
+### Encodings
+
+A better reason might appear if we look at encodings. Look at the following
+hexdumps:
+
+#### UTF-16LE
+
+```text
+$ hexdump -C UTF-16LE-map.json
+00000000  7b 00 22 00 61 00 22 00  3a 00 20 00 22 00 62 00  |{.".a.".:. .".b.|
+00000010  22 00 7d 00 0a 00                                 |".}...|
+00000016
+```
+
+#### UTF-16BE
+
+```text
+$ hexdump -C UTF-16BE-map.json
+00000000  00 7b 00 22 00 61 00 22  00 3a 00 20 00 22 00 62  |.{.".a.".:. .".b|
+00000010  00 22 00 7d 00 0a                                 |.".}..|
+00000016
+```
+
+#### UTF-32BE
+
+```text
+$ hexdump -C UTF-32BE-map.json
+00000000  00 00 00 7b 00 00 00 22  00 00 00 61 00 00 00 22  |...{..."...a..."|
+00000010  00 00 00 3a 00 00 00 20  00 00 00 22 00 00 00 62  |...:... ..."...b|
+00000020  00 00 00 22 00 00 00 7d  00 00 00 0a              |..."...}....|
+0000002c
+```
+
+#### UTF-32LE
+
+```text
+$ hexdump -C UTF-32LE-map.json
+00000000  7b 00 00 00 22 00 00 00  61 00 00 00 22 00 00 00  |{..."...a..."...|
+00000010  3a 00 00 00 20 00 00 00  22 00 00 00 62 00 00 00  |:... ..."...b...|
+00000020  22 00 00 00 7d 00 00 00  0a 00 00 00              |"...}.......|
+0000002c
+```
+
+#### UTF-8
+
+```text
+$ hexdump -C UTF-8-map.json
+00000000  7b 22 61 22 3a 20 22 62  22 7d 0a                 |{"a": "b"}.|
+0000000b
+```
+
+### Enxodings explained
+
+Each of the hexdumps shown are the equivalent of different files on disk, but
+each of those files encodes exactly the same information. The difference is
+how the information was encoded using a character set that could *potentially*
+store more information, but ultimately does not.
+
+It is entirely possible to deserialize these files to exactly the same
+structure in memory, at which point JSONID can begin to assert equivalence
+and output the underlying document type as well as other information.
+
+If we want to understand the complexity required to write a PRONOM signature
+to account for different encodings, look at how the `00` bytes are
+placed between examples. We have to be able to encode the bytes we know about,
+as well as the bytes that are output as part of the encoding. If we treat
+the UTF-8 version of the file above as the primary object, but say, we want
+to find all versions if they exist, we need to write four other signatures
+(at least, before we even talk about whitespace). This is difficult for
+a human.
+
+I hope with JSONID we will soon be able to use the JSONID declarative
+language to automatically output PRONOM-compatible signatures.
+
+This means, in the example above, we can encode one ruleset in JSONID which
+will work for all variants given to JSONID. We can then output five or more
+PRONOM-compatible signatures that can be given to the PRONOM registry
+to improve their capabilities in the future. That's five signatures for
+the price of one and it gives JSONID a unique way of contributing back to
+a core resource in digital preservation.
 
 ## What does JSONID get you?
 
