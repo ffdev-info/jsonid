@@ -86,3 +86,19 @@ check-debug:
 # code coverage
 coverage:
  python -m tox -e coverage
+
+# lookup registry example (core)
+lookup-core-ex:
+ python jsonid.py core JSON
+
+# lookup registry example (doctype)
+lookup-ref-ex:
+ python jsonid.py lookup jrid:0055
+
+# lookup core
+@lookup-core core:
+ python jsonid.py core {{core}}
+
+# lookup ref
+@lookup-ref ref:
+ python jsonid.py lookup {{ref}}
