@@ -3,11 +3,18 @@
 # pylint: disable=C0103
 
 import json
+import tomllib as toml
 from typing import Final
 
 import pytest
+import yaml
 
 from src.jsonid import analysis
+
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
 
 example_1: Final[dict] = {}
 example_2: Final[list] = []
@@ -306,15 +313,16 @@ async def test_analysis_partial_integration(data, content):
 roundtrip_tests = [
     (
         """
-            {
-                "values": [
-                    1,
-                    2,
-                    3.142
-                ],
-                "hello": "world",
-                "goodbye": false
-            }
+{
+    "hello": "world",
+    "goodbye": false,
+    "values": [
+        1,
+        2,
+        3.142
+    ]
+}
+
         """,
         """
 values:
@@ -329,8 +337,8 @@ values = [1, 2, 3.142]
 hello = "world"
 goodbye = false
         """,
-        "UNF:6:ECtRuXZaVqPomffPDuOOUg==",
-        "bafkreiasdg6yustqjrbbawq2f5ing5mttdzqg3zy2kjfbauoc225j3kcjm",
+        "UNF:6:97EfAWBIQlObVCVwa7kc0g==",
+        "bafkreiawsimwdn4blnb7scz2cfwtdksifrayccsl3z6gmxam6uxddctkoy",
     )
 ]
 
@@ -342,9 +350,11 @@ async def test_equivalent_formats(
 ):
     """Provide a mechanism for testing equivalencies."""
 
-    res_json = await analysis.analyse_input("", json_data, False)
-    res_yaml = await analysis.analyse_input("", yaml_data, False)
-    res_toml = await analysis.analyse_input("", toml_data, False)
+    res_json = await analysis.analyse_input(json.loads(json_data), "", False)
+    res_yaml = await analysis.analyse_input(
+        yaml.load(yaml_data.strip(), Loader=Loader), "", False
+    )
+    res_toml = await analysis.analyse_input(toml.loads(toml_data), "", False)
 
     assert res_json["fingerprint"] == res_yaml["fingerprint"] == res_toml["fingerprint"]
     assert res_json["fingerprint"]["unf"] == UNF
