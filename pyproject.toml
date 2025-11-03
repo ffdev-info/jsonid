@@ -42,7 +42,7 @@ momoa = "jsonid.jsonid:main"
 json2json = "utils.json2json:main"
 
 [build-system]
-requires = ["setuptools>=74.0.0", "wheel>=0.44.0", "setuptools_scm[toml]>=8.1.0"]
+requires = ["setuptools>=80.9.0", "wheel>=0.45.1", "setuptools_scm[toml]>=9.2.2"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
