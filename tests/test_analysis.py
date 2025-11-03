@@ -301,3 +301,51 @@ async def test_analysis_partial_integration(data, content):
         json.dumps(res)
     except Exception as err:  # pylint: disable=W0718
         assert False, f"JSON dumps should work for analysis: {err}"
+
+
+roundtrip_tests = [
+    (
+        """
+            {
+                "values": [
+                    1,
+                    2,
+                    3.142
+                ],
+                "hello": "world",
+                "goodbye": false
+            }
+        """,
+        """
+values:
+- 1
+- 2
+- 3.142
+hello: world
+goodbye: false
+        """,
+        """
+values = [1, 2, 3.142]
+hello = "world"
+goodbye = false
+        """,
+        "UNF:6:ECtRuXZaVqPomffPDuOOUg==",
+        "bafkreiasdg6yustqjrbbawq2f5ing5mttdzqg3zy2kjfbauoc225j3kcjm",
+    )
+]
+
+
+@pytest.mark.parametrize("json_data, yaml_data, toml_data, UNF, CID", roundtrip_tests)
+@pytest.mark.asyncio
+async def test_equivalent_formats(
+    json_data: str, yaml_data: str, toml_data: str, UNF: str, CID: str
+):
+    """Provide a mechanism for testing equivalencies."""
+
+    res_json = await analysis.analyse_input("", json_data, False)
+    res_yaml = await analysis.analyse_input("", yaml_data, False)
+    res_toml = await analysis.analyse_input("", toml_data, False)
+
+    assert res_json["fingerprint"] == res_yaml["fingerprint"] == res_toml["fingerprint"]
+    assert res_json["fingerprint"]["unf"] == UNF
+    assert res_json["fingerprint"]["cid"] == CID
