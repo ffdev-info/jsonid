@@ -19,6 +19,7 @@ divergences should be investigated and JSONID brought into alignment.
 
 # pylint: disable=C0103
 
+import sys
 from typing import Final
 
 import pytest
@@ -117,6 +118,9 @@ integration_testsx = [
 ]
 
 
+@pytest.mark.skipif(
+    sys.platform.startswith("win"), reason="python-magic incompatibilties"
+)
 @pytest.mark.parametrize("data, expected", integration_tests)
 @pytest.mark.asyncio
 async def test_e2e_output(mocker, data, expected, tmp_path):
@@ -231,6 +235,9 @@ test_page_tests: Final[list] = [
 ]
 
 
+@pytest.mark.skipif(
+    sys.platform.startswith("win"), reason="python-magic incompatibilties"
+)
 @pytest.mark.parametrize("registry, data, expected", test_page_tests)
 @pytest.mark.asyncio
 async def test_integration_with_test_page(mocker, tmp_path, registry, data, expected):

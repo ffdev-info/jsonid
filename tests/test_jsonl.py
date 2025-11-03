@@ -10,8 +10,6 @@ import pytest
 
 from src.jsonid import compressionlib, file_processing, jsonid, registry
 
-pytestmark = pytest.mark.skipif(sys.platform.startswith("win"), reason="todo")
-
 jsonl_1_valid = """
  1
  2
@@ -55,6 +53,9 @@ bz_tests = [
 ]
 
 
+@pytest.mark.skipif(
+    sys.platform.startswith("win"), reason="python-magic incompatibilties"
+)
 @pytest.mark.parametrize("content, doctype, compression", bz_tests)
 @pytest.mark.asyncio
 async def test_bz_jsonl(tmp_path, content, doctype, compression):
@@ -82,6 +83,9 @@ gz_tests = [
 ]
 
 
+@pytest.mark.skipif(
+    sys.platform.startswith("win"), reason="python-magic incompatibilties"
+)
 @pytest.mark.parametrize("content, doctype, compression", gz_tests)
 @pytest.mark.asyncio
 async def test_gz_jsonl(tmp_path, content, doctype, compression):
