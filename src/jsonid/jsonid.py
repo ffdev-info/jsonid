@@ -169,7 +169,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--check",
-        help="check the registry entrues are correct",
+        help="check the registry entries are correct",
         required=False,
         action="store_true",
     )
