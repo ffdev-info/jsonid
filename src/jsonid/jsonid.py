@@ -98,9 +98,9 @@ def main() -> None:
     # pylint: disable=R0912,R0915
 
     parser = argparse.ArgumentParser(
-        prog="json-id",
+        prog="jsonid",
         description="proof-of-concept identifier for JSON objects on disk based on identifying valid objects and their key-values",
-        epilog="for more information visit https://github.com/ffdev-info/json-id",
+        epilog="for more information visit https://github.com/ffdev-info/jsonid",
     )
     parser.add_argument(
         "--debug",
