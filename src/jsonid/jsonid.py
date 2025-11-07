@@ -189,6 +189,7 @@ def main() -> None:
     parser.add_argument(
         "--analyse",
         "--analyze",
+        "--analysis",
         "-a",
         help="analyse a file in support of ruleset development and data preservation",
         required=False,
