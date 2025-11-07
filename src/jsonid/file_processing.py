@@ -180,6 +180,7 @@ async def analyse_json(paths: list[str], strategy: list):
         res = await analysis.analyse_input(base_obj.data, base_obj.content_for_analysis)
         res["doctype"] = base_obj.doctype
         res["encoding"] = base_obj.encoding
+        res["agent"] = version.get_agent()
         if base_obj.doctype == registry.DOCTYPE_JSONL:
             res["compression"] = base_obj.compression
             res.pop("content_length")

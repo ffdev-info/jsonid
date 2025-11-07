@@ -92,15 +92,107 @@ def _get_strategy(args: argparse.Namespace):
     return strategy
 
 
+def analysis() -> None:
+    """Secondary entry point for analysis functionality.
+
+    Enables us to call analysis from the command line once installed
+    via PyPi.
+    """
+    parser = argparse.ArgumentParser(
+        prog="jsonida",
+        description="JSONID(A)nalysis",
+        epilog="for more information visit https://github.com/ffdev-info/jsonid",
+    )
+    parser.add_argument(
+        "--debug",
+        help="use debug loggng",
+        required=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--nojson",
+        "-nj",
+        action="store_true",
+        required=False,
+    )
+    parser.add_argument(
+        "--nojsonl",
+        "-njl",
+        action="store_true",
+        required=False,
+    )
+    parser.add_argument(
+        "--noyaml",
+        "-ny",
+        action="store_true",
+        required=False,
+    )
+    parser.add_argument(
+        "--notoml",
+        "-nt",
+        action="store_true",
+        required=False,
+    )
+    parser.add_argument(
+        "--language",
+        help="return results in different languages",
+        required=False,
+    )
+    parser.add_argument(
+        "--path",
+        "-p",
+        help="analyse a file in support of ruleset development and data preservation",
+        required=False,
+        type=str,
+        metavar="PATH",
+    )
+    args = parser.parse_args()
+
+    if not args.path:
+        parser.print_help(sys.stderr)
+        sys.exit()
+
+    # Initialize logging.
+    init_logging(args.debug)
+
+    # Attempt lookup in the registry. This should come first as it
+    # doesn't involve reading files.
+    _attempt_lookup(args)
+
+    # Determine which decode strategy to adopt.
+    strategy = _get_strategy(args)
+    if not strategy:
+        logger.error(
+            "please ensure there is one remaining decode strategy, e.g. %s",
+            ",".join(decode_strategies),
+        )
+        sys.exit(1)
+
+    # Enable graceful exit via signal handler...
+    def signal_handler(*args):  # pylint: disable=W0613
+        logger.info("exiting...")
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+
+    if args.path:
+        asyncio.run(
+            file_processing.analyse_data(
+                path=args.path,
+                strategy=strategy,
+            )
+        )
+
+
 def main() -> None:
     """Primary entry point for this script."""
 
     # pylint: disable=R0912,R0915
 
     parser = argparse.ArgumentParser(
-        prog="json-id",
-        description="proof-of-concept identifier for JSON objects on disk based on identifying valid objects and their key-values",
-        epilog="for more information visit https://github.com/ffdev-info/json-id",
+        prog="jsonid",
+        description="JSON(ID)entification of objects on disk based on identifying valid objects and their key-values",
+        epilog="for more information visit https://github.com/ffdev-info/jsonid",
     )
     parser.add_argument(
         "--debug",
@@ -187,6 +279,7 @@ def main() -> None:
     parser.add_argument(
         "--analyse",
         "--analyze",
+        "--analysis",
         "-a",
         help="analyse a file in support of ruleset development and data preservation",
         required=False,
