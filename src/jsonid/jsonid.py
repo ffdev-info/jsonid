@@ -100,7 +100,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         prog="jsonid",
         description="proof-of-concept identifier for JSON objects on disk based on identifying valid objects and their key-values",
-        epilog="for more information visit https://github.com/ffdev-info/json-id",
+        epilog="for more information visit https://github.com/ffdev-info/jsonid",
     )
     parser.add_argument(
         "--debug",
