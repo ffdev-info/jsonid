@@ -5,6 +5,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class UnprocessableEntity(Exception):
+    """Provide a way to give complete feedback to the caller to allow
+    it to exit."""
+
+
 def _str_to_hex_str(s: str) -> str:
     """todo..."""
 
@@ -15,7 +20,7 @@ def _str_to_hex_str(s: str) -> str:
     return k.replace("0x", "")
 
 
-def process_markers(markers: list):
+def process_markers(markers: list) -> list:
     """todo...
 
     dict_keys(['CONTAINS'])
@@ -26,16 +31,19 @@ def process_markers(markers: list):
 
     """
 
-    print("1. {0-4095}7B")
+    res = []
+
+    res.append("1. {0-4095}7B")
 
     for idx, marker in enumerate(markers, 2):
 
         if "GOTO" in marker.keys():
             logger.error("GOTO not yet handled")
-            break
+            raise UnprocessableEntity("GOTO")
+
         if "INDEX" in marker.keys():
             logger.error("INDEX not yet handled")
-            break
+            raise UnprocessableEntity("INDEX")
 
         k1 = _str_to_hex_str(marker["KEY"])
 
@@ -43,11 +51,10 @@ def process_markers(markers: list):
         s = f"22{k1.upper()}22"
 
         if "EXISTS" in marker.keys():
-            print(f"{idx}.", s)
+            res.append(f"{idx}.{s}")
             continue
 
         if "ISTYPE" in marker.keys():
-            logger.info("no idea how to handle ISTYPE...")
             """
             boolean == true/false
             int == lexicographically between 30 and 39? 0 and 65000?
@@ -55,31 +62,33 @@ def process_markers(markers: list):
             list == begins with [
             dict == begins with {
             """
-            break
+            raise UnprocessableEntity("ISTYPE")
 
         if "IS" in marker.keys():
             k2 = _str_to_hex_str(marker["KEY"])
             isk = f"{idx}. 22{k2}22"
-            print(isk)
+            res.append(isk)
             continue
 
         if "STARTSWITH" in marker.keys():
             k2 = _str_to_hex_str(marker["KEY"])
             isk = f"{idx}. 22{k2}"
-            print(isk)
+            res.append(isk)
             continue
 
         if "ENDSWITH" in marker.keys():
             k2 = _str_to_hex_str(marker["KEY"])
             isk = f"{idx}. {k2}22"
-            print(isk)
+            res.append(isk)
             continue
 
         if "CONTAINS" in marker.keys():
             k2 = _str_to_hex_str(marker["KEY"])
             isk = f"{idx}. *{k2}*"
-            print(isk)
+            res.append(isk)
             continue
 
         marker.pop("KEY")
         print(marker.keys())
+
+    return res

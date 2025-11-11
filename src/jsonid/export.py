@@ -43,9 +43,14 @@ def exportPRONOM() -> None:
     logger.debug("exporting registry as PRONOM")
     data = registry_data.registry()
     for datum in data:
-        print("---")
-        pronom.process_markers(datum.json()["markers"])
-        # break
+        print("--- START ---")
+        print(f"--- {datum.json()['identifier']} {datum.json()['name']} ---")
+        try:
+            res = pronom.process_markers(datum.json()["markers"])
+            for r in res:
+                print(r)
+        except pronom.UnprocessableEntity as err:
+            logger.error("can't yet process: %s", err)
 
 
 def exportPRONOMXML() -> None:
