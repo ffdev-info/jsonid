@@ -338,6 +338,27 @@ async def identify_plaintext_bytestream(
 
     If analysis is `True` we try to return more low-level file
     information to help folks make appraisal decisions.
+
+    Encodings in Python are split into the following, where UTF-32 on
+    its own is a little confusing. If WE are writing the encoding then
+    I believe it leaves off the byte-order-marker and we want to
+    select UTF-32LE to make sure it is written.
+
+    If we are decoding, then I don't think it matters. I think we
+    try to decode and if it works it works.
+
+    Encodings:
+
+        "UTF-8",
+        "UTF-16",
+        "UTF-16LE",
+        "UTF-16BE",
+        "UTF-32",
+        "UTF-32LE",
+        "UTF-32BE",
+        "SHIFT-JIS",
+        "BIG5",
+
     """
 
     # pylint: disable=R0911
