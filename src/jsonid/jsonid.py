@@ -160,6 +160,7 @@ def main() -> None:
         "--pronom",
         help="return a PRONOM-centric view of the results",
         required=False,
+        action="store_true",
     )
     parser.add_argument(
         "--export",
@@ -220,7 +221,8 @@ def main() -> None:
     if args.registry:
         raise NotImplementedError("custom registry is not yet available")
     if args.pronom:
-        raise NotImplementedError("pronom view is not yet implemented")
+        export.exportPRONOM()
+        sys.exit()
     if args.language:
         raise NotImplementedError("multiple languages are not yet implemented")
     if args.export:
