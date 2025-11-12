@@ -6,20 +6,21 @@ import logging
 from datetime import timezone
 
 try:
+    import pronom
     import registry_data
     import version
 except ModuleNotFoundError:
     try:
-        from src.jsonid import registry_data, version
+        from src.jsonid import pronom, registry_data, version
     except ModuleNotFoundError:
-        from jsonid import registry_data, version
+        from jsonid import pronom, registry_data, version
 
 logger = logging.getLogger(__name__)
 
 
 def exportJSON() -> None:  # pylint: disable=C0103
     """Export to JSON."""
-    logger.debug("exporting registry ad JSON")
+    logger.debug("exporting registry as JSON")
     data = registry_data.registry()
     json_obj = []
     id_ = {
@@ -35,3 +36,22 @@ def exportJSON() -> None:  # pylint: disable=C0103
     for datum in data:
         json_obj.append(datum.json())
     print(json.dumps(json_obj, indent=2))
+
+
+def exportPRONOM() -> None:
+    """Export a PRONOM compatible set of signatures."""
+    logger.debug("exporting registry as PRONOM")
+    data = registry_data.registry()
+    for datum in data:
+        print("--- START ---")
+        print(f"--- {datum.json()['identifier']} {datum.json()['name']} ---")
+        try:
+            res = pronom.process_markers(datum.json()["markers"])
+            for r in res:
+                print(r)
+        except pronom.UnprocessableEntity as err:
+            logger.error("can't yet process: %s", err)
+
+
+def exportPRONOMXML() -> None:
+    """Export a PRONOM compatible set of signatures."""
