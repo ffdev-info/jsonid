@@ -12,12 +12,19 @@ class UnprocessableEntity(Exception):
 
 def _type_to_str(t: type) -> str:
     """todo..."""
-    if t == "integer":
-        # how do we represent larger numbers?
+    if t == "integer" or t == "float":
+        # how do we represent larger numbers? and do we need to?
         return "[30:39]"
     if t == "bool":
         # true | false
         return "22(74727565|66616C7365)22"
+    if t == "map":
+        # { == 7B.
+        return "7B"
+    if t == "list":
+        # [ == 5B.
+        return "5B"
+    # This should only be string at this point.
     raise UnprocessableEntity(f"{t}")
 
 
@@ -31,8 +38,12 @@ def _str_to_hex_str(s: str) -> str:
     return k.replace("0x", "")
 
 
-def process_markers(markers: list) -> list:
+def process_markers(markers: list) -> tuple[list | bool]:
     """todo...
+
+    returns a tuple describing the processed value and a flag to
+    highlight the result is potentially lossless, e.g. in the case
+    of matching types, e.g. strings.
 
     dict_keys(['CONTAINS'])
     dict_keys(['ENDSWITH'])
@@ -52,11 +63,15 @@ def process_markers(markers: list) -> list:
     for idx, marker in enumerate(markers, 2):
 
         if "GOTO" in marker.keys():
-            logger.error("GOTO not yet handled")
+            # first key exists like regular key, then we have to
+            # search for the next key...
+            logger.error("GOTO not yet handled: %s", marker)
             raise UnprocessableEntity("GOTO")
 
         if "INDEX" in marker.keys():
-            logger.error("INDEX not yet handled")
+            # first we have a square bracket that then needs a search
+            # parameter for the next key...
+            logger.error("INDEX not yet handled: %s", marker)
             raise UnprocessableEntity("INDEX")
 
         k1 = _str_to_hex_str(marker["KEY"])
@@ -77,7 +92,7 @@ def process_markers(markers: list) -> list:
             dict == begins with {
             """
             t = _type_to_str(marker["ISTYPE"])
-            k2 = f"{t}"
+            k2 = f"{idx} {t}"
             res.append(k2)
             continue
 
