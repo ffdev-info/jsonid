@@ -10,6 +10,17 @@ class UnprocessableEntity(Exception):
     it to exit."""
 
 
+def _type_to_str(t: type) -> str:
+    """todo..."""
+    if t == "integer":
+        # how do we represent larger numbers?
+        return "[30:39]"
+    if t == "bool":
+        # true | false
+        return "22(74727565|66616C7365)22"
+    raise UnprocessableEntity(f"{t}")
+
+
 def _str_to_hex_str(s: str) -> str:
     """todo..."""
 
@@ -28,6 +39,9 @@ def process_markers(markers: list) -> list:
     dict_keys(['IS']
     dict_keys(['ISTYPE'])
     dict_keys(['STARTSWITH'])
+
+
+    key(0-n):(0-n)value
 
     """
 
@@ -62,7 +76,10 @@ def process_markers(markers: list) -> list:
             list == begins with [
             dict == begins with {
             """
-            raise UnprocessableEntity("ISTYPE")
+            t = _type_to_str(marker["ISTYPE"])
+            k2 = f"{t}"
+            res.append(k2)
+            continue
 
         if "IS" in marker.keys():
             k2 = _str_to_hex_str(marker["KEY"])
