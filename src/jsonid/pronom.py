@@ -18,13 +18,16 @@ def _type_to_str(t: type) -> str:
     if t == "bool":
         # true | false
         return "22(74727565|66616C7365)22"
+    if t == "string":
+        # string begins with a double quote and ends in a double quote.
+        return "22*22"
     if t == "map":
         # { == 7B.
         return "7B"
     if t == "list":
         # [ == 5B.
         return "5B"
-    # This should only be string at this point.
+    # This should only trigger for incorrect values at this point..
     raise UnprocessableEntity(f"{t}")
 
 
