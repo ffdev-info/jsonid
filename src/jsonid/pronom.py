@@ -1,20 +1,19 @@
 """PRONOM export routines."""
 
 import logging
+from typing import Final
 
 try:
     import helpers
+    import registry_matchers
 except ModuleNotFoundError:
     try:
-        from src.jsonid import helpers
+        from src.jsonid import helpers, registry_matchers
     except ModuleNotFoundError:
-        from jsonid import helpers
+        from jsonid import helpers, registry_matchers
 
 
 logger = logging.getLogger(__name__)
-
-
-
 
 
 class UnprocessableEntity(Exception):
@@ -39,13 +38,20 @@ def _type_to_str(t: type) -> str:
     if t == helpers.TYPE_LIST:
         # [ == 5B; ] == 5D
         return "5B*5D"
+    if t == helpers.TYPE_NONE:
+        # null
+        return "6E756C6C"
     # This should only trigger for incorrect values at this point..
-    raise UnprocessableEntity(f"{t}")
+    raise UnprocessableEntity(f"type_to_str: {t}")
+
+
+def _complex_is_type() -> str:
+    """todo..."""
+    raise UnprocessableEntity("complex IS type")
 
 
 def _str_to_hex_str(s: str) -> str:
     """todo..."""
-
     k = ""
     for c in s:
         b = hex(ord(c))
@@ -71,71 +77,79 @@ def process_markers(markers: list) -> tuple[list | bool]:
 
     """
 
+    COLON: Final[str] = "3A"
+    CURLY_OPEN: Final[str] = "7B"
+    SQUARE_OPEN: Final[str] = "5B"
+    DOUBLE_QUOTE: Final[str] = "22"
+    WS: Final[str] = "(0-10)"
+
     res = []
 
-    res.append("1. {0-4095}7B")
+    res.append("{0-4095}7B")
 
     for idx, marker in enumerate(markers, 2):
 
-        if "GOTO" in marker.keys():
+        logger.debug("marker: %s", marker)
+
+        if registry_matchers.MARKER_GOTO in marker.keys():
             # first key exists like regular key, then we have to
             # search for the next key...
-            logger.error("GOTO not yet handled: %s", marker)
-            raise UnprocessableEntity("GOTO")
-
-        if "INDEX" in marker.keys():
+            k0 = _str_to_hex_str(marker["GOTO"])
+            k1 = _str_to_hex_str(marker["KEY"])
+            k0 = f"{DOUBLE_QUOTE}{k0}{DOUBLE_QUOTE}"
+            k1 = f"{DOUBLE_QUOTE}{k1}{DOUBLE_QUOTE}"
+            k1 = f"{k0}{WS}{COLON}*{WS}{k1}{WS}{COLON}"
+            marker.pop("KEY")
+        if registry_matchers.MARKER_INDEX in marker.keys():
             # first we have a square bracket that then needs a search
-            # parameter for the next key...
-            logger.error("INDEX not yet handled: %s", marker)
-            raise UnprocessableEntity("INDEX")
-
-        k1 = _str_to_hex_str(marker["KEY"])
-
-        # how to model whitespace?
-        s = f"22{k1.upper()}22"
-
-        if "EXISTS" in marker.keys():
-            res.append(f"{idx}.{s}")
+            # parameter for the next object (curly bracket) and then
+            # key...
+            k0 = SQUARE_OPEN
+            k1 = _str_to_hex_str(marker["KEY"])
+            k1 = f"{WS}{k0}*{CURLY_OPEN}*{DOUBLE_QUOTE}{k1}{DOUBLE_QUOTE}"
+        if "KEY" in marker.keys():
+            k1 = _str_to_hex_str(marker["KEY"])
+            k1 = f"{DOUBLE_QUOTE}{k1}{DOUBLE_QUOTE}"
+            marker.pop("KEY")
+        # Given a key, each of the remaining rule parts must result in
+        # exiting early.
+        if registry_matchers.MARKER_KEY_EXISTS in marker.keys():
+            res.append(f"k.{k1}{WS}{COLON}".upper())
             continue
-
-        if "ISTYPE" in marker.keys():
-            """
-            boolean == true/false
-            int == lexicographically between 30 and 39? 0 and 65000?
-            string... length is a problem...
-            list == begins with [
-            dict == begins with {
-            """
+        if registry_matchers.MARKER_IS_TYPE in marker.keys():
             t = _type_to_str(marker["ISTYPE"])
-            k2 = f"{idx} {t}"
-            res.append(k2)
+            k1 = f"k.{k1}{WS}{COLON}{WS} v.{t}"
+            res.append(k1.upper())
             continue
-
-        if "IS" in marker.keys():
-            k2 = _str_to_hex_str(marker["KEY"])
-            isk = f"{idx}. 22{k2}22"
-            res.append(isk)
+        if registry_matchers.MARKER_IS in marker.keys():
+            marker_is = marker["IS"]
+            if not isinstance(marker_is, str):
+                _complex_is_type()
+            k2 = _str_to_hex_str(marker_is)
+            isk = f"k.{k1}{WS}{COLON}{WS} v.{k2}"
+            res.append(isk.upper())
             continue
-
-        if "STARTSWITH" in marker.keys():
-            k2 = _str_to_hex_str(marker["KEY"])
-            isk = f"{idx}. 22{k2}"
-            res.append(isk)
+        if registry_matchers.MARKER_STARTSWITH in marker.keys():
+            k2 = _str_to_hex_str(marker["STARTSWITH"])
+            isk = f"k.{k1}{WS}{COLON}{WS} v.22{k2}"
+            res.append(isk.upper())
             continue
-
-        if "ENDSWITH" in marker.keys():
-            k2 = _str_to_hex_str(marker["KEY"])
-            isk = f"{idx}. {k2}22"
-            res.append(isk)
+        if registry_matchers.MARKER_ENDSWITH in marker.keys():
+            k2 = _str_to_hex_str(marker["ENDSWITH"])
+            isk = f"k.{k1}{WS}{COLON}{WS} v.*{k2}22"
+            res.append(isk.upper())
             continue
-
-        if "CONTAINS" in marker.keys():
-            k2 = _str_to_hex_str(marker["KEY"])
-            isk = f"{idx}. *{k2}*"
-            res.append(isk)
+        if registry_matchers.MARKER_CONTAINS in marker.keys():
+            k2 = _str_to_hex_str(marker["CONTAINS"])
+            isk = f"k.{k1}{WS}{COLON}{WS} v.*{k2}*"
+            res.append(isk.upper())
             continue
-
-        marker.pop("KEY")
-        print(marker.keys())
-
+        if registry_matchers.MARKER_REGEX in marker.keys():
+            raise UnprocessableEntity("REGEX not yet implemented")
+        if registry_matchers.MARKER_KEY_NO_EXIST in marker.keys():
+            raise UnprocessableEntity("KEY NO EXIST not yet implemented")
+    res.append("7D{0-4095}")
+    # Debug logging to demonstrate output.
+    for idx, item in enumerate(res, 1):
+        logger.debug("%s. %s", idx, item)
     return res

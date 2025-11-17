@@ -2,7 +2,7 @@
 
 import logging
 import time
-from typing import Union, Final
+from typing import Final, Union
 
 try:
     import htm_template
@@ -82,9 +82,6 @@ TYPE_LIST: Final[str] = "list"
 TYPE_NONE: Final[str] = "NoneType"
 TYPE_MAP: Final[str] = "map"
 TYPE_STRING: Final[str] = "string"
-
-
-
 
 
 def substitute_type_text(replace_me: Union[str, type]):
