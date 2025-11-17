@@ -2,7 +2,19 @@
 
 import logging
 
+try:
+    import helpers
+except ModuleNotFoundError:
+    try:
+        from src.jsonid import helpers
+    except ModuleNotFoundError:
+        from jsonid import helpers
+
+
 logger = logging.getLogger(__name__)
+
+
+
 
 
 class UnprocessableEntity(Exception):
@@ -12,21 +24,21 @@ class UnprocessableEntity(Exception):
 
 def _type_to_str(t: type) -> str:
     """todo..."""
-    if t == "integer" or t == "float":
+    if t == helpers.TYPE_INTEGER or t == helpers.TYPE_FLOAT:
         # how do we represent larger numbers? and do we need to?
         return "[30:39]"
-    if t == "bool":
+    if t == helpers.TYPE_BOOL:
         # true | false
         return "22(74727565|66616C7365)22"
-    if t == "string":
+    if t == helpers.TYPE_STRING:
         # string begins with a double quote and ends in a double quote.
         return "22*22"
-    if t == "map":
-        # { == 7B.
-        return "7B"
-    if t == "list":
-        # [ == 5B.
-        return "5B"
+    if t == helpers.TYPE_MAP:
+        # { == 7B; } == 7D
+        return "7B*7D"
+    if t == helpers.TYPE_LIST:
+        # [ == 5B; ] == 5D
+        return "5B*5D"
     # This should only trigger for incorrect values at this point..
     raise UnprocessableEntity(f"{t}")
 
