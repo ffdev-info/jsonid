@@ -75,6 +75,10 @@ def process_markers(markers: list) -> tuple[list | bool]:
 
     key(0-n):(0-n)value
 
+    Need to return something like:
+
+      <ByteSequence Reference="BOFoffset" Sequence="FFD8FFE0{2}4A464946000101(00|01|02)" MinOffset="0" MaxOffset=""/>
+
     """
 
     COLON: Final[str] = "3A"
@@ -85,7 +89,7 @@ def process_markers(markers: list) -> tuple[list | bool]:
 
     res = []
 
-    res.append("{0-4095}7B")
+    res.append("BOF: {0-4095}7B")
 
     for idx, marker in enumerate(markers, 2):
 
@@ -114,11 +118,11 @@ def process_markers(markers: list) -> tuple[list | bool]:
         # Given a key, each of the remaining rule parts must result in
         # exiting early.
         if registry_matchers.MARKER_KEY_EXISTS in marker.keys():
-            res.append(f"k.{k1}{WS}{COLON}".upper())
+            res.append(f"BOF: k.{k1}{WS}{COLON}".upper())
             continue
         if registry_matchers.MARKER_IS_TYPE in marker.keys():
             t = _type_to_str(marker["ISTYPE"])
-            k1 = f"k.{k1}{WS}{COLON}{WS} v.{t}"
+            k1 = f"BOF: k.{k1}{WS}{COLON}{WS} v.{t}"
             res.append(k1.upper())
             continue
         if registry_matchers.MARKER_IS in marker.keys():
@@ -126,29 +130,29 @@ def process_markers(markers: list) -> tuple[list | bool]:
             if not isinstance(marker_is, str):
                 _complex_is_type()
             k2 = _str_to_hex_str(marker_is)
-            isk = f"k.{k1}{WS}{COLON}{WS} v.{k2}"
+            isk = f"BOF: k.{k1}{WS}{COLON}{WS} v.{k2}"
             res.append(isk.upper())
             continue
         if registry_matchers.MARKER_STARTSWITH in marker.keys():
             k2 = _str_to_hex_str(marker["STARTSWITH"])
-            isk = f"k.{k1}{WS}{COLON}{WS} v.22{k2}"
+            isk = f"BOF: k.{k1}{WS}{COLON}{WS} v.22{k2}"
             res.append(isk.upper())
             continue
         if registry_matchers.MARKER_ENDSWITH in marker.keys():
             k2 = _str_to_hex_str(marker["ENDSWITH"])
-            isk = f"k.{k1}{WS}{COLON}{WS} v.*{k2}22"
+            isk = f"BOF: k.{k1}{WS}{COLON}{WS} v.*{k2}22"
             res.append(isk.upper())
             continue
         if registry_matchers.MARKER_CONTAINS in marker.keys():
             k2 = _str_to_hex_str(marker["CONTAINS"])
-            isk = f"k.{k1}{WS}{COLON}{WS} v.*{k2}*"
+            isk = f"BOF: k.{k1}{WS}{COLON}{WS} v.*{k2}*"
             res.append(isk.upper())
             continue
         if registry_matchers.MARKER_REGEX in marker.keys():
             raise UnprocessableEntity("REGEX not yet implemented")
         if registry_matchers.MARKER_KEY_NO_EXIST in marker.keys():
             raise UnprocessableEntity("KEY NO EXIST not yet implemented")
-    res.append("7D{0-4095}")
+    res.append("EOF: 7D{0-4095}")
     # Debug logging to demonstrate output.
     for idx, item in enumerate(res, 1):
         logger.debug("%s. %s", idx, item)

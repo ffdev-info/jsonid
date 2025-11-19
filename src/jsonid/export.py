@@ -42,21 +42,41 @@ def exportPRONOM() -> None:
     """Export a PRONOM compatible set of signatures."""
     logger.debug("exporting registry as PRONOM")
     data = registry_data.registry()
+    all_sequences = []
     for datum in data:
+
+        id_ = datum.json()["identifier"]
+        name_ = datum.json()["name"]
+
         markers = datum.json()["markers"]
         try:
-            _ = pronom.process_markers(markers.copy())
+            sequences = pronom.process_markers(markers.copy())
+            all_sequences.append((id_, name_, sequences))
         except pronom.UnprocessableEntity as err:
             logger.error(
                 "%s %s: cannot handle: %s",
-                datum.json()["identifier"],
-                datum.json()["name"],
+                id_,
+                name_,
                 err,
             )
             for marker in markers:
                 logger.debug("--- START ---")
                 logger.debug("marker: %s", marker)
                 logger.debug("---  END  ---")
+    # Process all the results.
+    for sequences in all_sequences:
+        if not isinstance(sequences[2], list):
+            raise TypeError
+        print("-----")
+        print(f"{sequences[0]}: {sequences[1][0]["@en"]}")
+        print("")
+        for idx, sequence in enumerate(sequences[2]):
+            # Need to return a set of internal signatures:
+            # <InternalSignature ID="67" Specificity="Specific">
+            #    ... bytesequences...
+            #
+            #
+            print(idx, ".", sequence)
 
 
 def exportPRONOMXML() -> None:
