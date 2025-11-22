@@ -53,6 +53,11 @@ def _complex_is_type() -> str:
 def _str_to_hex_str(s: str) -> str:
     """todo..."""
     k = ""
+
+    x = s.encode("UTF-32")
+    for g in x:
+        print(hex(g).replace("0x", ""))
+
     for c in s:
         b = hex(ord(c))
         k = f"{k}{b}"
@@ -79,6 +84,24 @@ def process_markers(markers: list) -> tuple[list | bool]:
 
       <ByteSequence Reference="BOFoffset" Sequence="FFD8FFE0{2}4A464946000101(00|01|02)" MinOffset="0" MaxOffset=""/>
 
+
+    Different encodings need to be accounted for, e.g.
+
+    UTF-32:
+
+        00000000: fffe 0000 2000 0000 2000 0000 2000 0000  .... ... ... ...
+        00000010: 2000 0000 2000 0000 2000 0000 0a00 0000   ... ... .......
+        00000020: 0a00 0000 0a00 0000 0a00 0000 7b00 0000  ............{...
+        00000030: 2200 0000 6100 0000 2200 0000 3a00 0000  "...a..."...:...
+        00000040: 2000 0000 2200 0000 6200 0000 2200 0000   ..."...b..."...
+        00000050: 7d00 0000 0a00 0000                      }.......
+
+    UTF-16:
+
+        00000000: fffe 2000 2000 2000 2000 2000 2000 0a00  .. . . . . . ...
+        00000010: 0a00 0a00 0a00 7b00 2200 6100 2200 3a00  ......{.".a.".:.
+        00000020: 2000 2200 6200 2200 7d00 0a00             .".b.".}...
+
     """
 
     COLON: Final[str] = "3A"
@@ -103,6 +126,7 @@ def process_markers(markers: list) -> tuple[list | bool]:
             k0 = f"{DOUBLE_QUOTE}{k0}{DOUBLE_QUOTE}"
             k1 = f"{DOUBLE_QUOTE}{k1}{DOUBLE_QUOTE}"
             k1 = f"{k0}{WS}{COLON}*{WS}{k1}{WS}{COLON}"
+            marker.pop("GOTO")
             marker.pop("KEY")
         if registry_matchers.MARKER_INDEX in marker.keys():
             # first we have a square bracket that then needs a search
@@ -111,6 +135,8 @@ def process_markers(markers: list) -> tuple[list | bool]:
             k0 = SQUARE_OPEN
             k1 = _str_to_hex_str(marker["KEY"])
             k1 = f"{WS}{k0}*{CURLY_OPEN}*{DOUBLE_QUOTE}{k1}{DOUBLE_QUOTE}"
+            marker.pop("INDEX")
+            marker.pop("KEY")
         if "KEY" in marker.keys():
             k1 = _str_to_hex_str(marker["KEY"])
             k1 = f"{DOUBLE_QUOTE}{k1}{DOUBLE_QUOTE}"

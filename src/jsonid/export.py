@@ -77,6 +77,7 @@ def exportPRONOM() -> None:
             #
             #
             print(idx, ".", sequence)
+        return
 
 
 def exportPRONOMXML() -> None:
