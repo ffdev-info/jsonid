@@ -1,7 +1,11 @@
 """PRONOM export routines."""
 
+import codecs
 import logging
-from typing import Final
+import xml.dom.minidom
+from dataclasses import dataclass
+from functools import lru_cache
+from typing import Final, Any
 
 try:
     import helpers
@@ -16,55 +20,286 @@ except ModuleNotFoundError:
 logger = logging.getLogger(__name__)
 
 
+UTC_TIME_FORMAT: Final[str] = "%Y-%m-%dT%H:%M:%SZ"
+DISK_SECTOR_SIZE: Final[int] = 4095
+
+
 class UnprocessableEntity(Exception):
     """Provide a way to give complete feedback to the caller to allow
     it to exit."""
 
 
-def _type_to_str(t: type) -> str:
+@dataclass
+class ExternalSignature:
+    id: str
+    signature: str
+    type: str
+
+
+@dataclass
+class ByteSequence:
+    id: str
+    pos: str
+    min_off: str
+    max_off: str
+    endian: str
+    value: str
+
+
+@dataclass
+class InternalSignature:
+    id: str
+    name: str
+    byte_sequences: list[ByteSequence]
+
+
+@dataclass
+class Priority:
+    type: str
+    id: str
+
+
+@dataclass
+class Identifier:
+    type: str
+    value: str
+
+
+@dataclass
+class Format:
+    id: str
+    name: str
+    version: str
+    puid: str
+    mime: str
+    classification: str
+    external_signatures: list[ExternalSignature]
+    internal_signatures: list[InternalSignature]
+    priorities: list[int]
+
+
+def create_many_to_one_byte_sequence(internal_signatures: list[InternalSignature]):
+    """Create a many to one byte sequence, i.e. a format with multiple
+    Internal Signatures.
+    """
+    internal_signature = ""
+    for internal in internal_signatures:
+        id_ = internal.id
+        bs = create_one_to_many_byte_sequence(internal.byte_sequences)
+        internal_signature = f"""
+{internal_signature}<InternalSignature ID=\"{id_}\" Specificity=\"Specific\">
+    {bs}
+</InternalSignature>
+        """
+    return internal_signature.strip()
+
+
+def calculate_variable_off_bof(item: ByteSequence):
+    """Given variable offsets, calculate the correct syntax."""
+    seq = item.value
+    if (
+        item.min_off != ""
+        and int(item.min_off) > 0
+        and item.max_off != ""
+        and int(item.max_off) > 0
+    ):
+        seq = f"{{{item.min_off}-{int(item.min_off)+int(item.max_off)}}}{seq}"
+    elif item.max_off != "" and int(item.max_off) > 0:
+        seq = f"{{0-{item.max_off}}}{seq}"
+    elif item.min_off != "" and int(item.min_off) > 0:
+        seq = f"{{{item.min_off}}}{seq}"
+    return seq
+
+
+def calculate_variable_off_eof(item: ByteSequence):
+    """Given variable offsets, calculate the correct syntax."""
+    seq = item.value
+    if (
+        item.min_off != ""
+        and int(item.min_off) > 0
+        and item.max_off != ""
+        and int(item.max_off) > 0
+    ):
+        seq = f"{seq}{{{item.min_off}-{int(item.min_off)+int(item.max_off)}}}"
+    elif item.max_off != "" and int(item.max_off) > 0:
+        seq = f"{seq}{{0-{item.max_off}}}"
+    elif item.min_off != "" and int(item.min_off) > 0:
+        seq = f"{seq}{{{item.min_off}}}"
+    return seq
+
+
+def create_one_to_many_byte_sequence(byte_sequences: list[ByteSequence]):
+    """Create a byte sequence object."""
+    byte_sequence = ""
+    for item in byte_sequences:
+        seq = item.value
+        if item.pos.startswith("EOF"):
+            seq = calculate_variable_off_eof(item)
+        elif item.pos.startswith("BOF"):
+            seq = calculate_variable_off_bof(item)
+        byte_sequence = f"""
+{byte_sequence.strip()}
+    <ByteSequence Reference=\"{item.pos}\" Sequence=\"{seq}\" MinOffset=\"{item.min_off}\" MaxOffset=\"{item.max_off}\"/>
+        """
+    return byte_sequence.strip()
+
+
+def create_file_format_collection(fmt: list[Format]):
+    """Create the FileFormatCollection object.
+
+    ```
+        <FileFormat ID="1" Name="Development Signature" PUID="dev/1" Version="1.0" MIMEType="application/octet-stream">
+            <InternalSignatureID>1</InternalSignatureID>
+            <Extension>ext</Extension>
+        </FileFormat>
+
+        <FileFormat ID="49" MIMEType="application/postscript"  FormatType="Text (Structured)"
+            Name="Adobe Illustrator" PUID="x-fmt/20" Version="1.0 / 1.1">
+            <InternalSignatureID>880</InternalSignatureID>
+            <InternalSignatureID>881</InternalSignatureID>
+            <Extension>ai</Extension>
+            <HasPriorityOverFileFormatID>86</HasPriorityOverFileFormatID>
+            <HasPriorityOverFileFormatID>331</HasPriorityOverFileFormatID>
+            <HasPriorityOverFileFormatID>332</HasPriorityOverFileFormatID>
+            <HasPriorityOverFileFormatID>771</HasPriorityOverFileFormatID>
+            <HasPriorityOverFileFormatID>773</HasPriorityOverFileFormatID>
+        </FileFormat>
+    ```
+
+    """
+    EXT: Final[str] = "File extension"
+    internal_sigs = [
+        f"<InternalSignatureID>{sig.id}</InternalSignatureID>"
+        for sig in fmt.internal_signatures
+    ]
+    external_sigs = [
+        f"<Extension>{sig.signature}</Extension>"
+        for sig in fmt.external_signatures
+        if sig.type == EXT
+    ]
+    priorities = [
+        f"<HasPriorityOverFileFormatID>{priority.id}</HasPriorityOverFileFormatID>"
+        for priority in fmt.priorities
+    ]
+    ff = f"""
+<FileFormat ID=\"{fmt.id}\" Name=\"{fmt.name}\" PUID=\"{fmt.puid}\" Version="{fmt.version}" MIMEType=\"{fmt.mime}\" FormatType=\"{fmt.classification}\" >
+    {"".join(internal_sigs).strip()}
+    {"".join(external_sigs).strip()}
+    {"".join(priorities).strip()}
+</FileFormat>
+    """
+    return ff.strip()
+
+
+def process_formats_and_save(formats: list[Format], filename: str):
+    """Process the collected formats and output a signature file.
+
+    NB. Given our dataclasses here, we have the opportunity to rework
+    this data into many new structures. We output XML because DROID
+    expects XML.
+    """
+    isc = []
+    ffc = []
+    for fmt in formats:
+        ffc.append(create_file_format_collection(fmt))
+        if fmt.internal_signatures:
+            isc.append(create_many_to_one_byte_sequence(fmt.internal_signatures))
+    droid_template = f"""
+<?xml version="1.0" encoding="UTF-8"?>
+<FFSignatureFile xmlns='http://www.nationalarchives.gov.uk/pronom/SignatureFile' Version='1' DateCreated='{get_utc_timestamp_now()}'>
+    <InternalSignatureCollection>
+        {"".join(isc).strip()}
+    </InternalSignatureCollection>
+    <FileFormatCollection>
+        {"".join(ffc).strip()}
+    </FileFormatCollection>
+</FFSignatureFile>
+    """
+    dom = xml.dom.minidom.parseString(droid_template.strip().replace("\n", ""))
+    pretty_xml = dom.toprettyxml(indent=" ", encoding="utf-8")
+    prettier_xml = new_prettify(pretty_xml)
+    logger.info("outputting to: %s", filename)
+    with open(filename, "w", encoding="utf=8") as output_file:
+        output_file.write(prettier_xml)
+
+
+def _type_to_str(t: type, encoding: str) -> str:
     """todo..."""
+
     if t == helpers.TYPE_INTEGER or t == helpers.TYPE_FLOAT:
         # how do we represent larger numbers? and do we need to?
         return "[30:39]"
     if t == helpers.TYPE_BOOL:
         # true | false
-        return "22(74727565|66616C7365)22"
+        return (
+            f"{'\x22'.encode(encoding)}(74727565|66616C7365){'\x22'.encode(encoding)}"
+        )
     if t == helpers.TYPE_STRING:
         # string begins with a double quote and ends in a double quote.
-        return "22*22"
+        return f"{'\x22'.encode(encoding)}*{'\x22'.encode(encoding)}"
     if t == helpers.TYPE_MAP:
         # { == 7B; } == 7D
-        return "7B*7D"
+        return f"{'\x7B'.encode('utf-8')}*{'\x7D'.encode('utf-8')}"
     if t == helpers.TYPE_LIST:
         # [ == 5B; ] == 5D
-        return "5B*5D"
+        return f"{'\x5b'.encode(encoding)}*{'\x5d'.encode(encoding)}"
     if t == helpers.TYPE_NONE:
         # null
-        return "6E756C6C"
+        return "\x6e\x75\x6c\x6c".encode(encoding)
     # This should only trigger for incorrect values at this point..
     raise UnprocessableEntity(f"type_to_str: {t}")
 
 
-def _complex_is_type() -> str:
+def _complex_is_type(marker: Any) -> str:
     """todo..."""
-    raise UnprocessableEntity("complex IS type")
+    raise UnprocessableEntity(f"complex IS type: '{marker}' (WIP)")
 
 
-def _str_to_hex_str(s: str) -> str:
+@lru_cache()
+def _get_bom(ttl_hash=None) -> list:
+    """Todo..."""
+    replaces = [
+        codecs.BOM,
+        codecs.BOM_BE,
+        codecs.BOM_LE,
+        codecs.BOM_UTF8,
+        codecs.BOM_UTF16,
+        codecs.BOM_UTF16_BE,
+        codecs.BOM_UTF16_LE,
+        codecs.BOM_UTF32,
+        codecs.BOM_UTF32_BE,
+        codecs.BOM_UTF32_LE,
+    ]
+
+    res = []
+
+    for bom in replaces:
+        hex_bom = ""
+        for marker in bom:
+            char = hex(marker)
+            hex_bom = f"{hex_bom}{char.replace("0x", "")}".upper()
+        res.append(hex_bom)
+
+    return res
+
+
+def _str_to_hex_str(s: str, encoding: str) -> str:
     """todo..."""
-    k = ""
+    encoded_s = s.encode(encoding)
+    bytes = []
+    replaces = _get_bom()
+    for byte_ in encoded_s:
+        bytes.append(hex(byte_).replace("0x", ""))
+    hex_str = "".join(bytes).upper()
+    for bom in replaces:
+        if not hex_str.startswith(bom):
+            continue
+        hex_str = hex_str.replace(bom, "", 1)
+        break
+    return hex_str
 
-    x = s.encode("UTF-32")
-    for g in x:
-        print(hex(g).replace("0x", ""))
 
-    for c in s:
-        b = hex(ord(c))
-        k = f"{k}{b}"
-    return k.replace("0x", "")
-
-
-def process_markers(markers: list) -> tuple[list | bool]:
+def process_markers(markers: list, encoding: str = "") -> tuple[list | bool]:
     """todo...
 
     returns a tuple describing the processed value and a flag to
@@ -85,24 +320,44 @@ def process_markers(markers: list) -> tuple[list | bool]:
       <ByteSequence Reference="BOFoffset" Sequence="FFD8FFE0{2}4A464946000101(00|01|02)" MinOffset="0" MaxOffset=""/>
 
 
-    Different encodings need to be accounted for, e.g.
+    Different encodings need to be accounted for, e.g. (with added
+    whitespace below)
 
-    UTF-32:
+    UTF-32-LE:
 
-        00000000: fffe 0000 2000 0000 2000 0000 2000 0000  .... ... ... ...
-        00000010: 2000 0000 2000 0000 2000 0000 0a00 0000   ... ... .......
-        00000020: 0a00 0000 0a00 0000 0a00 0000 7b00 0000  ............{...
-        00000030: 2200 0000 6100 0000 2200 0000 3a00 0000  "...a..."...:...
-        00000040: 2000 0000 2200 0000 6200 0000 2200 0000   ..."...b..."...
-        00000050: 7d00 0000 0a00 0000                      }.......
+        00000000: 2000 0000 2000 0000 2000 0000 2000 0000   ... ... ... ...
+        00000010: 2000 0000 2000 0000 0a00 0000 0a00 0000   ... ...........
+        00000020: 0a00 0000 0a00 0000 7b00 0000 2200 0000  ........{..."...
+        00000030: 6100 0000 2200 0000 3a00 0000 2000 0000  a..."...:... ...
+        00000040: 2200 0000 6200 0000 2200 0000 7d00 0000  "...b..."...}...
+        00000050: 0a00 0000                                ....
 
-    UTF-16:
+    UTF-32-BE:
 
-        00000000: fffe 2000 2000 2000 2000 2000 2000 0a00  .. . . . . . ...
-        00000010: 0a00 0a00 0a00 7b00 2200 6100 2200 3a00  ......{.".a.".:.
-        00000020: 2000 2200 6200 2200 7d00 0a00             .".b.".}...
+        00000000: 0000 0020 0000 0020 0000 0020 0000 0020  ... ... ... ...
+        00000010: 0000 0020 0000 0020 0000 000a 0000 000a  ... ... ........
+        00000020: 0000 000a 0000 000a 0000 007b 0000 0022  ...........{..."
+        00000030: 0000 0061 0000 0022 0000 003a 0000 0020  ...a..."...:...
+        00000040: 0000 0022 0000 0062 0000 0022 0000 007d  ..."...b..."...}
+        00000050: 0000 000a                                ....
+
+
+    UTF-16-LE:
+
+        00000000: 2000 2000 2000 2000 2000 2000 0a00 0a00   . . . . . .....
+        00000010: 0a00 0a00 7b00 2200 6100 2200 3a00 2000  ....{.".a.".:. .
+        00000020: 2200 6200 2200 7d00 0a00                 ".b.".}...
+
+    UTF-16-BE:
+
+        00000000: 0020 0020 0020 0020 0020 0020 000a 000a  . . . . . . ....
+        00000010: 000a 000a 007b 0022 0061 0022 003a 0020  .....{.".a.".:.
+        00000020: 0022 0062 0022 007d 000a                 .".b.".}..
+
 
     """
+
+    encoding = "utf-8"
 
     COLON: Final[str] = "3A"
     CURLY_OPEN: Final[str] = "7B"
@@ -112,8 +367,6 @@ def process_markers(markers: list) -> tuple[list | bool]:
 
     res = []
 
-    res.append("BOF: {0-4095}7B")
-
     for idx, marker in enumerate(markers, 2):
 
         logger.debug("marker: %s", marker)
@@ -121,8 +374,8 @@ def process_markers(markers: list) -> tuple[list | bool]:
         if registry_matchers.MARKER_GOTO in marker.keys():
             # first key exists like regular key, then we have to
             # search for the next key...
-            k0 = _str_to_hex_str(marker["GOTO"])
-            k1 = _str_to_hex_str(marker["KEY"])
+            k0 = _str_to_hex_str(marker["GOTO"], encoding=encoding)
+            k1 = _str_to_hex_str(marker["KEY"], encoding=encoding)
             k0 = f"{DOUBLE_QUOTE}{k0}{DOUBLE_QUOTE}"
             k1 = f"{DOUBLE_QUOTE}{k1}{DOUBLE_QUOTE}"
             k1 = f"{k0}{WS}{COLON}*{WS}{k1}{WS}{COLON}"
@@ -133,12 +386,12 @@ def process_markers(markers: list) -> tuple[list | bool]:
             # parameter for the next object (curly bracket) and then
             # key...
             k0 = SQUARE_OPEN
-            k1 = _str_to_hex_str(marker["KEY"])
+            k1 = _str_to_hex_str(marker["KEY"], encoding=encoding)
             k1 = f"{WS}{k0}*{CURLY_OPEN}*{DOUBLE_QUOTE}{k1}{DOUBLE_QUOTE}"
             marker.pop("INDEX")
             marker.pop("KEY")
         if "KEY" in marker.keys():
-            k1 = _str_to_hex_str(marker["KEY"])
+            k1 = _str_to_hex_str(marker["KEY"], encoding=encoding)
             k1 = f"{DOUBLE_QUOTE}{k1}{DOUBLE_QUOTE}"
             marker.pop("KEY")
         # Given a key, each of the remaining rule parts must result in
@@ -147,30 +400,30 @@ def process_markers(markers: list) -> tuple[list | bool]:
             res.append(f"BOF: k.{k1}{WS}{COLON}".upper())
             continue
         if registry_matchers.MARKER_IS_TYPE in marker.keys():
-            t = _type_to_str(marker["ISTYPE"])
+            t = _type_to_str(marker["ISTYPE"], encoding=encoding)  # TODO...
             k1 = f"BOF: k.{k1}{WS}{COLON}{WS} v.{t}"
             res.append(k1.upper())
             continue
         if registry_matchers.MARKER_IS in marker.keys():
             marker_is = marker["IS"]
             if not isinstance(marker_is, str):
-                _complex_is_type()
-            k2 = _str_to_hex_str(marker_is)
+                _complex_is_type(marker_is)
+            k2 = _str_to_hex_str(marker_is, encoding=encoding)
             isk = f"BOF: k.{k1}{WS}{COLON}{WS} v.{k2}"
             res.append(isk.upper())
             continue
         if registry_matchers.MARKER_STARTSWITH in marker.keys():
-            k2 = _str_to_hex_str(marker["STARTSWITH"])
+            k2 = _str_to_hex_str(marker["STARTSWITH"], encoding=encoding)
             isk = f"BOF: k.{k1}{WS}{COLON}{WS} v.22{k2}"
             res.append(isk.upper())
             continue
         if registry_matchers.MARKER_ENDSWITH in marker.keys():
-            k2 = _str_to_hex_str(marker["ENDSWITH"])
+            k2 = _str_to_hex_str(marker["ENDSWITH"], encoding=encoding)
             isk = f"BOF: k.{k1}{WS}{COLON}{WS} v.*{k2}22"
             res.append(isk.upper())
             continue
         if registry_matchers.MARKER_CONTAINS in marker.keys():
-            k2 = _str_to_hex_str(marker["CONTAINS"])
+            k2 = _str_to_hex_str(marker["CONTAINS"], encoding=encoding)
             isk = f"BOF: k.{k1}{WS}{COLON}{WS} v.*{k2}*"
             res.append(isk.upper())
             continue
@@ -178,8 +431,64 @@ def process_markers(markers: list) -> tuple[list | bool]:
             raise UnprocessableEntity("REGEX not yet implemented")
         if registry_matchers.MARKER_KEY_NO_EXIST in marker.keys():
             raise UnprocessableEntity("KEY NO EXIST not yet implemented")
-    res.append("EOF: 7D{0-4095}")
+
+    BOF = f"{{0-{DISK_SECTOR_SIZE}}}7B"
+    EOF = f"7D{{0-{DISK_SECTOR_SIZE}}}"
+
+    bs_res = []
+
+    bs_res.append(
+        ByteSequence(
+            id=1,
+            pos="BOF",
+            min_off=0,
+            max_off=f"{DISK_SECTOR_SIZE}",
+            endian="",
+            value=BOF,
+        )
+    )
+
     # Debug logging to demonstrate output.
-    for idx, item in enumerate(res, 1):
+    for idx, item in enumerate(res, 2):
         logger.debug("%s. %s", idx, item)
-    return res
+
+        bs = ByteSequence(
+            id=idx,
+            pos="BOF",
+            min_off=1,
+            max_off="",
+            endian="",
+            value=item,
+        )
+        bs_res.append(bs)
+
+    bs_res.append(
+        ByteSequence(
+            id=1,
+            pos="EOF",
+            min_off="0",
+            max_off=f"{DISK_SECTOR_SIZE}",
+            endian="",
+            value=BOF,
+        )
+    )
+
+    """
+    class ByteSequence:
+        id: str
+        pos: str
+        min_off: str
+        max_off: str
+        endian: str
+        value: str
+    """
+
+    return bs_res
+
+
+def create_baseline_json_sequences():
+    """Create baseline JSON sequences that match map and list types
+    with various different encodings.
+    """
+
+    # TODO...
