@@ -43,15 +43,20 @@ def exportPRONOM() -> None:
     logger.debug("exporting registry as PRONOM")
     data = registry_data.registry()
     all_sequences = []
-    for datum in data:
 
+    formats = []
+
+    for datum in data:
         id_ = datum.json()["identifier"]
         name_ = datum.json()["name"]
-
         markers = datum.json()["markers"]
+
+        format_sequences = []
+
         try:
             sequences = pronom.process_markers(markers.copy())
             all_sequences.append((id_, name_, sequences))
+            format_sequences.append(sequences)
         except pronom.UnprocessableEntity as err:
             logger.error(
                 "%s %s: cannot handle: %s",
@@ -63,6 +68,28 @@ def exportPRONOM() -> None:
                 logger.debug("--- START ---")
                 logger.debug("marker: %s", marker)
                 logger.debug("---  END  ---")
+            continue
+
+        format = pronom.Format(
+            id=0,
+            name=name_,
+            version="",
+            puid=id_,
+            mime="TODO",
+            classification="structured text",  # TODO: magic
+            external_signatures=[
+                pronom.ExternalSignature(
+                    id=0,
+                    signature="JSON",
+                    type="TODO",
+                )
+            ],
+            internal_signatures=format_sequences[0],
+            priorities=[],
+        )
+
+        formats.append(format)
+
     # Process all the results.
     for sequences in all_sequences:
         if not isinstance(sequences[2], list):
@@ -76,8 +103,10 @@ def exportPRONOM() -> None:
             #    ... bytesequences...
             #
             #
-            print(idx, ".", sequence)
-        return
+            print(idx, ".", sequence.byte_sequences)
+        # return
+
+    pronom.process_formats_and_save(formats, "abc.xml")
 
 
 def exportPRONOMXML() -> None:

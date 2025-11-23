@@ -5,22 +5,22 @@ import logging
 import xml.dom.minidom
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Final, Any
+from typing import Any, Final
 
 try:
+    import export_helpers
     import helpers
     import registry_matchers
 except ModuleNotFoundError:
     try:
-        from src.jsonid import helpers, registry_matchers
+        from src.jsonid import export_helpers, helpers, registry_matchers
     except ModuleNotFoundError:
-        from jsonid import helpers, registry_matchers
+        from jsonid import export_helpers, helpers, registry_matchers
 
 
 logger = logging.getLogger(__name__)
 
 
-UTC_TIME_FORMAT: Final[str] = "%Y-%m-%dT%H:%M:%SZ"
 DISK_SECTOR_SIZE: Final[int] = 4095
 
 
@@ -206,7 +206,7 @@ def process_formats_and_save(formats: list[Format], filename: str):
             isc.append(create_many_to_one_byte_sequence(fmt.internal_signatures))
     droid_template = f"""
 <?xml version="1.0" encoding="UTF-8"?>
-<FFSignatureFile xmlns='http://www.nationalarchives.gov.uk/pronom/SignatureFile' Version='1' DateCreated='{get_utc_timestamp_now()}'>
+<FFSignatureFile xmlns='http://www.nationalarchives.gov.uk/pronom/SignatureFile' Version='1' DateCreated='{export_helpers.get_utc_timestamp_now()}'>
     <InternalSignatureCollection>
         {"".join(isc).strip()}
     </InternalSignatureCollection>
@@ -215,9 +215,18 @@ def process_formats_and_save(formats: list[Format], filename: str):
     </FileFormatCollection>
 </FFSignatureFile>
     """
-    dom = xml.dom.minidom.parseString(droid_template.strip().replace("\n", ""))
+    dom = None
+    signature_file = droid_template.strip().replace("\n", "")
+    try:
+        dom = xml.dom.minidom.parseString(signature_file)
+    except xml.parsers.expat.ExpatError as err:
+        logger.error("cannot process xml: %s", err)
+        print("xxxxxxxxxxxx")
+        print(signature_file)
+        return
+
     pretty_xml = dom.toprettyxml(indent=" ", encoding="utf-8")
-    prettier_xml = new_prettify(pretty_xml)
+    prettier_xml = export_helpers.new_prettify(pretty_xml)
     logger.info("outputting to: %s", filename)
     with open(filename, "w", encoding="utf=8") as output_file:
         output_file.write(prettier_xml)
@@ -231,18 +240,22 @@ def _type_to_str(t: type, encoding: str) -> str:
         return "[30:39]"
     if t == helpers.TYPE_BOOL:
         # true | false
+        # TODO:
+        """ENCODE then hexlify...
         return (
             f"{'\x22'.encode(encoding)}(74727565|66616C7365){'\x22'.encode(encoding)}"
         )
+        """
+        return "22(74727565|66616C7365)22"
     if t == helpers.TYPE_STRING:
         # string begins with a double quote and ends in a double quote.
-        return f"{'\x22'.encode(encoding)}*{'\x22'.encode(encoding)}"
+        return "'22*22"
     if t == helpers.TYPE_MAP:
         # { == 7B; } == 7D
-        return f"{'\x7B'.encode('utf-8')}*{'\x7D'.encode('utf-8')}"
+        return "7B*7D"
     if t == helpers.TYPE_LIST:
         # [ == 5B; ] == 5D
-        return f"{'\x5b'.encode(encoding)}*{'\x5d'.encode(encoding)}"
+        return "5b*5d"
     if t == helpers.TYPE_NONE:
         # null
         return "\x6e\x75\x6c\x6c".encode(encoding)
@@ -469,21 +482,44 @@ def process_markers(markers: list, encoding: str = "") -> tuple[list | bool]:
             min_off="0",
             max_off=f"{DISK_SECTOR_SIZE}",
             endian="",
-            value=BOF,
+            value=EOF,
         )
     )
 
     """
-    class ByteSequence:
-        id: str
-        pos: str
-        min_off: str
-        max_off: str
-        endian: str
-        value: str
+    internal_sigs = []
+    for internal in internal_signatures:
+        sig_id = _get_node_value("SignatureID", internal)
+        sig_name = _get_node_value("SignatureName", internal)
+        _ = _get_node_value("SignatureNote", internal)
+        try:
+            byte_sequences = internal.getElementsByTagName("ByteSequence")
+            sequences = get_bytes(byte_sequences)
+        except IndexError:
+            continue
+        internal_sigs.append(
+            InternalSignature(
+                id=sig_id,
+                name=sig_name,
+                byte_sequences=sequences,
+            )
+        )
     """
 
-    return bs_res
+    iss = InternalSignature(
+        id=0,
+        name="",
+        byte_sequences=bs_res,
+    )
+
+    return [iss]
+
+
+def create_xml(all: list[InternalSignature]) -> None:
+    """todo..."""
+    for x in all:
+        print("============")
+        print(x)
 
 
 def create_baseline_json_sequences():
