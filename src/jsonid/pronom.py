@@ -258,21 +258,28 @@ def encode_roundtrip(val: str, encoding: str) -> str:
 def _type_to_str(t: type, encoding: str) -> str:
     """todo..."""
 
+    colon_encoded = encode_roundtrip(COLON, encoding)
+    curly_open_encoded = encode_roundtrip(CURLY_OPEN, encoding)
+    curly_close_encoded: Final[str] = encode_roundtrip(CURLY_CLOSE, encoding)
+    square_open_encoded: Final[str] = encode_roundtrip(SQUARE_OPEN, encoding)
+    square_close_encoded: Final[str] = encode_roundtrip(SQUARE_CLOSE, encoding)
+    double_quote_encoded: Final[str] = encode_roundtrip(DOUBLE_QUOTE, encoding)
+
     if t == helpers.TYPE_INTEGER or t == helpers.TYPE_FLOAT:
         # how do we represent larger numbers? and do we need to?
         return "[30:39]"
     if t == helpers.TYPE_BOOL:
         # true | false
-        return f"{encode_roundtrip(DOUBLE_QUOTE, encoding)}({encode_roundtrip('74727565', encoding)}|{encode_roundtrip('66616C7365', encoding)}){encode_roundtrip(DOUBLE_QUOTE  , encoding)}"
+        return f"{double_quote_encoded}({encode_roundtrip('74727565', encoding)}|{encode_roundtrip('66616C7365', encoding)}){double_quote_encoded}"
     if t == helpers.TYPE_STRING:
         # string begins with a double quote and ends in a double quote.
-        return f"'{encode_roundtrip(DOUBLE_QUOTE, encoding)}*{encode_roundtrip(DOUBLE_QUOTE, encoding)}"
+        return f"'{double_quote_encoded}*{double_quote_encoded}"
     if t == helpers.TYPE_MAP:
         # { == 7B; } == 7D
-        return f"{encode_roundtrip(CURLY_OPEN, encoding)}*{encode_roundtrip(CURLY_CLOSE, encoding)}"
+        return f"{curly_open_encoded}*{curly_close_encoded}"
     if t == helpers.TYPE_LIST:
         # [ == 5B; ] == 5D
-        return f"{encode_roundtrip(SQUARE_OPEN, encoding)}*{encode_roundtrip(SQUARE_CLOSE, encoding)}"
+        return f"{square_open_encoded}*{square_close_encoded}"
     if t == helpers.TYPE_NONE:
         # null
         return f"{encode_roundtrip('6e756c6c', encoding)}".encode(encoding)
@@ -313,7 +320,7 @@ def _get_bom(ttl_hash=None) -> list:
     return res
 
 
-def _str_to_hex_str(s: str, encoding: str) -> str:
+def _str_to_hex_str_(s: str, encoding: str) -> str:
     """todo..."""
     encoded_s = s.encode(encoding)
     bytes = []
@@ -326,6 +333,15 @@ def _str_to_hex_str(s: str, encoding: str) -> str:
             continue
         hex_str = hex_str.replace(bom, "", 1)
         break
+    return hex_str
+
+
+def _str_to_hex_str(s: str) -> str:
+    """todo..."""
+    bytes = []
+    for byte_ in s.encode():
+        bytes.append(hex(byte_).replace("0x", ""))
+    hex_str = "".join(bytes).upper()
     return hex_str
 
 
@@ -387,7 +403,14 @@ def process_markers(markers: list, encoding: str = "") -> tuple[list | bool]:
 
     """
 
-    encoding = "utf-8"
+    encoding = "utf-16"
+
+    colon_encoded = encode_roundtrip(COLON, encoding)
+    curly_open_encoded = encode_roundtrip(CURLY_OPEN, encoding)
+    curly_close_encoded: Final[str] = encode_roundtrip(CURLY_CLOSE, encoding)
+    square_open_encoded: Final[str] = encode_roundtrip(SQUARE_OPEN, encoding)
+    square_close_encoded: Final[str] = encode_roundtrip(SQUARE_CLOSE, encoding)
+    double_quote_encoded: Final[str] = encode_roundtrip(DOUBLE_QUOTE, encoding)
 
     res = []
 
@@ -398,59 +421,58 @@ def process_markers(markers: list, encoding: str = "") -> tuple[list | bool]:
         if registry_matchers.MARKER_GOTO in marker.keys():
             # first key exists like regular key, then we have to
             # search for the next key...
-            k0 = _str_to_hex_str(marker["GOTO"], encoding=encoding)
-            k1 = _str_to_hex_str(marker["KEY"], encoding=encoding)
-            k0 = f"{DOUBLE_QUOTE}{k0}{DOUBLE_QUOTE}"
-            k1 = f"{DOUBLE_QUOTE}{k1}{DOUBLE_QUOTE}"
-            k1 = f"{encode_roundtrip(k0, encoding)}{WS_REGEX}{COLON}*{WS_REGEX}{encode_roundtrip(k1, encoding)}{WS_REGEX}{COLON}"
-            # k1 = {encode_roundtrip(k1, encoding)}
+            k0 = _str_to_hex_str(marker["GOTO"])
+            k1 = _str_to_hex_str(marker["KEY"])
+            k0 = f"{double_quote_encoded}{encode_roundtrip(k0, encoding)}{double_quote_encoded}"
+            k1 = f"{double_quote_encoded}{encode_roundtrip(k1, encoding)}{double_quote_encoded}"
+            k1 = (
+                f"{k0}{WS_REGEX}{colon_encoded}*{WS_REGEX}{k1}{WS_REGEX}{colon_encoded}"
+            )
             marker.pop("GOTO")
             marker.pop("KEY")
         if registry_matchers.MARKER_INDEX in marker.keys():
-            # first we have a square bracket that then needs a search
-            # parameter for the next object (curly bracket) and then
-            # key...
-            k0 = SQUARE_OPEN
-            k1 = _str_to_hex_str(marker["KEY"], encoding=encoding)
-            k1 = f"{WS_REGEX}{k0}*{CURLY_OPEN}*{DOUBLE_QUOTE}{encode_roundtrip(k1, encoding)}{DOUBLE_QUOTE}"
+            # we want to match a list so first we have a square bracket
+            # that then needs a search parameter for the next object
+            # (curly bracket) and then key...
+            k1 = _str_to_hex_str(marker["KEY"])
+            k1 = f"{WS_REGEX}{square_open_encoded}*{curly_close_encoded}*{double_quote_encoded}{encode_roundtrip(k1, encoding)}{double_quote_encoded}"
             marker.pop("INDEX")
             marker.pop("KEY")
         if "KEY" in marker.keys():
-            k1 = _str_to_hex_str(marker["KEY"], encoding=encoding)
-            k1 = f"{DOUBLE_QUOTE}{k1}{DOUBLE_QUOTE}"
-            k1 = f"{encode_roundtrip(k1, encoding)}"
+            k1 = _str_to_hex_str(marker["KEY"])
+            k1 = f"{double_quote_encoded}{encode_roundtrip(k1, encoding)}{double_quote_encoded}"
             marker.pop("KEY")
         # Given a key, each of the remaining rule parts must result in
         # exiting early.
         if registry_matchers.MARKER_KEY_EXISTS in marker.keys():
-            res.append(f"{k1}{WS_REGEX}{COLON}".upper())
+            res.append(f"{k1}{WS_REGEX}{colon_encoded}".upper())
             continue
         if registry_matchers.MARKER_IS_TYPE in marker.keys():
-            is_type = _type_to_str(marker["ISTYPE"], encoding=encoding)  # TODO...
-            k1 = f"{k1}{WS_REGEX}{COLON}{WS_REGEX}{is_type}"
+            is_type = _type_to_str(marker["ISTYPE"], encoding=encoding)
+            k1 = f"{k1}{WS_REGEX}{colon_encoded}{WS_REGEX}{is_type}"
             res.append(k1.upper())
             continue
         if registry_matchers.MARKER_IS in marker.keys():
             marker_is = marker["IS"]
             if not isinstance(marker_is, str):
                 _complex_is_type(marker_is)
-            is_val = _str_to_hex_str(marker_is, encoding=encoding)
-            k1 = f"{k1}{WS_REGEX}{COLON}{WS_REGEX}{is_val}"
+            is_val = _str_to_hex_str(marker_is)
+            k1 = f"{k1}{WS_REGEX}{WS_REGEX}{encode_roundtrip(is_val, encoding)}"
             res.append(k1.upper())
             continue
         if registry_matchers.MARKER_STARTSWITH in marker.keys():
-            starts_with = _str_to_hex_str(marker["STARTSWITH"], encoding=encoding)
-            k1 = f"{k1}{WS_REGEX}{COLON}{WS_REGEX}{encode_roundtrip(DOUBLE_QUOTE, encoding)}{starts_with}"
+            starts_with = _str_to_hex_str(marker["STARTSWITH"])
+            k1 = f"{k1}{WS_REGEX}{colon_encoded}{WS_REGEX}{double_quote_encoded}{starts_with}"
             res.append(k1.upper())
             continue
         if registry_matchers.MARKER_ENDSWITH in marker.keys():
-            ends_with = _str_to_hex_str(marker["ENDSWITH"], encoding=encoding)
-            k1 = f"{k1}{WS_REGEX}{COLON}{WS_REGEX}*{ends_with}{encode_roundtrip(DOUBLE_QUOTE, encoding)}"
+            ends_with = _str_to_hex_str(marker["ENDSWITH"])
+            k1 = f"{k1}{WS_REGEX}{colon_encoded}{WS_REGEX}*{ends_with}{double_quote_encoded}"
             res.append(k1.upper())
             continue
         if registry_matchers.MARKER_CONTAINS in marker.keys():
-            contains = _str_to_hex_str(marker["CONTAINS"], encoding=encoding)
-            k1 = f"{k1}{WS_REGEX}{COLON}{WS_REGEX}{encode_roundtrip(DOUBLE_QUOTE, encoding)}*{contains}*{encode_roundtrip(DOUBLE_QUOTE, encoding)}"
+            contains = _str_to_hex_str(marker["CONTAINS"])
+            k1 = f"{k1}{WS_REGEX}{colon_encoded}{WS_REGEX}{double_quote_encoded}*{contains}*{double_quote_encoded}"
             res.append(k1.upper())
             continue
         if registry_matchers.MARKER_REGEX in marker.keys():
@@ -458,8 +480,8 @@ def process_markers(markers: list, encoding: str = "") -> tuple[list | bool]:
         if registry_matchers.MARKER_KEY_NO_EXIST in marker.keys():
             raise UnprocessableEntity("KEY NO EXIST not yet implemented")
 
-    BOF = f"{encode_roundtrip(CURLY_OPEN, encoding)}"
-    EOF = f"{encode_roundtrip(CURLY_CLOSE, encoding)}"
+    BOF = f"{curly_open_encoded}"
+    EOF = f"{curly_close_encoded}"
 
     bs_res = []
 
