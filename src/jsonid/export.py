@@ -48,7 +48,7 @@ def exportPRONOM() -> None:
 
     for datum in data:
         id_ = datum.json()["identifier"]
-        name_ = datum.json()["name"]
+        name_ = datum.json()["name"][0]["@en"]
         markers = datum.json()["markers"]
 
         format_sequences = []
@@ -89,22 +89,6 @@ def exportPRONOM() -> None:
         )
 
         formats.append(format)
-
-    # Process all the results.
-    for sequences in all_sequences:
-        if not isinstance(sequences[2], list):
-            raise TypeError
-        print("-----")
-        print(f"{sequences[0]}: {sequences[1][0]["@en"]}")
-        print("")
-        for idx, sequence in enumerate(sequences[2]):
-            # Need to return a set of internal signatures:
-            # <InternalSignature ID="67" Specificity="Specific">
-            #    ... bytesequences...
-            #
-            #
-            print(idx, ".", sequence.byte_sequences)
-        # return
 
     pronom.process_formats_and_save(formats, "abc.xml")
 

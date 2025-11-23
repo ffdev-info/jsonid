@@ -1,5 +1,9 @@
-"""PRONOM export routines."""
+"""PRONOM export routines.
 
+XML tooling: https://xmllint.com/
+"""
+
+import binascii
 import codecs
 import logging
 import xml.dom.minidom
@@ -22,6 +26,15 @@ logger = logging.getLogger(__name__)
 
 
 DISK_SECTOR_SIZE: Final[int] = 4095
+
+# Common PRONOM characters.
+COLON: Final[str] = "3A"
+CURLY_OPEN: Final[str] = "7B"
+CURLY_CLOSE: Final[str] = "7D"
+SQUARE_OPEN: Final[str] = "5B"
+SQUARE_CLOSE: Final[str] = "5D"
+DOUBLE_QUOTE: Final[str] = "22"
+WS_REGEX: Final[str] = "(0-10)"
 
 
 class UnprocessableEntity(Exception):
@@ -221,15 +234,25 @@ def process_formats_and_save(formats: list[Format], filename: str):
         dom = xml.dom.minidom.parseString(signature_file)
     except xml.parsers.expat.ExpatError as err:
         logger.error("cannot process xml: %s", err)
-        print("xxxxxxxxxxxx")
-        print(signature_file)
         return
-
     pretty_xml = dom.toprettyxml(indent=" ", encoding="utf-8")
     prettier_xml = export_helpers.new_prettify(pretty_xml)
     logger.info("outputting to: %s", filename)
     with open(filename, "w", encoding="utf=8") as output_file:
         output_file.write(prettier_xml)
+
+
+def encode_roundtrip(val: str, encoding: str) -> str:
+    """We want to get a plain-text byte-sequence into a new
+    encoding. It takes a few hops and skips.
+    """
+    val = val.strip()
+    try:
+        re_encoded = binascii.unhexlify(val).decode("utf-8").encode(encoding)
+    except (binascii.Error, UnicodeDecodeError) as err:
+        logger.error("cannot convert: %s len: %s ('%s')", val, len(val), err)
+        return val
+    return binascii.hexlify(re_encoded).decode().upper()
 
 
 def _type_to_str(t: type, encoding: str) -> str:
@@ -240,25 +263,19 @@ def _type_to_str(t: type, encoding: str) -> str:
         return "[30:39]"
     if t == helpers.TYPE_BOOL:
         # true | false
-        # TODO:
-        """ENCODE then hexlify...
-        return (
-            f"{'\x22'.encode(encoding)}(74727565|66616C7365){'\x22'.encode(encoding)}"
-        )
-        """
-        return "22(74727565|66616C7365)22"
+        return f"{encode_roundtrip(DOUBLE_QUOTE, encoding)}({encode_roundtrip('74727565', encoding)}|{encode_roundtrip('66616C7365', encoding)}){encode_roundtrip(DOUBLE_QUOTE  , encoding)}"
     if t == helpers.TYPE_STRING:
         # string begins with a double quote and ends in a double quote.
-        return "'22*22"
+        return f"'{encode_roundtrip(DOUBLE_QUOTE, encoding)}*{encode_roundtrip(DOUBLE_QUOTE, encoding)}"
     if t == helpers.TYPE_MAP:
         # { == 7B; } == 7D
-        return "7B*7D"
+        return f"{encode_roundtrip(CURLY_OPEN, encoding)}*{encode_roundtrip(CURLY_CLOSE, encoding)}"
     if t == helpers.TYPE_LIST:
         # [ == 5B; ] == 5D
-        return "5b*5d"
+        return f"{encode_roundtrip(SQUARE_OPEN, encoding)}*{encode_roundtrip(SQUARE_CLOSE, encoding)}"
     if t == helpers.TYPE_NONE:
         # null
-        return "\x6e\x75\x6c\x6c".encode(encoding)
+        return f"{encode_roundtrip('6e756c6c', encoding)}".encode(encoding)
     # This should only trigger for incorrect values at this point..
     raise UnprocessableEntity(f"type_to_str: {t}")
 
@@ -372,12 +389,6 @@ def process_markers(markers: list, encoding: str = "") -> tuple[list | bool]:
 
     encoding = "utf-8"
 
-    COLON: Final[str] = "3A"
-    CURLY_OPEN: Final[str] = "7B"
-    SQUARE_OPEN: Final[str] = "5B"
-    DOUBLE_QUOTE: Final[str] = "22"
-    WS: Final[str] = "(0-10)"
-
     res = []
 
     for idx, marker in enumerate(markers, 2):
@@ -391,7 +402,8 @@ def process_markers(markers: list, encoding: str = "") -> tuple[list | bool]:
             k1 = _str_to_hex_str(marker["KEY"], encoding=encoding)
             k0 = f"{DOUBLE_QUOTE}{k0}{DOUBLE_QUOTE}"
             k1 = f"{DOUBLE_QUOTE}{k1}{DOUBLE_QUOTE}"
-            k1 = f"{k0}{WS}{COLON}*{WS}{k1}{WS}{COLON}"
+            k1 = f"{encode_roundtrip(k0, encoding)}{WS_REGEX}{COLON}*{WS_REGEX}{encode_roundtrip(k1, encoding)}{WS_REGEX}{COLON}"
+            # k1 = {encode_roundtrip(k1, encoding)}
             marker.pop("GOTO")
             marker.pop("KEY")
         if registry_matchers.MARKER_INDEX in marker.keys():
@@ -400,53 +412,54 @@ def process_markers(markers: list, encoding: str = "") -> tuple[list | bool]:
             # key...
             k0 = SQUARE_OPEN
             k1 = _str_to_hex_str(marker["KEY"], encoding=encoding)
-            k1 = f"{WS}{k0}*{CURLY_OPEN}*{DOUBLE_QUOTE}{k1}{DOUBLE_QUOTE}"
+            k1 = f"{WS_REGEX}{k0}*{CURLY_OPEN}*{DOUBLE_QUOTE}{encode_roundtrip(k1, encoding)}{DOUBLE_QUOTE}"
             marker.pop("INDEX")
             marker.pop("KEY")
         if "KEY" in marker.keys():
             k1 = _str_to_hex_str(marker["KEY"], encoding=encoding)
             k1 = f"{DOUBLE_QUOTE}{k1}{DOUBLE_QUOTE}"
+            k1 = f"{encode_roundtrip(k1, encoding)}"
             marker.pop("KEY")
         # Given a key, each of the remaining rule parts must result in
         # exiting early.
         if registry_matchers.MARKER_KEY_EXISTS in marker.keys():
-            res.append(f"BOF: k.{k1}{WS}{COLON}".upper())
+            res.append(f"{k1}{WS_REGEX}{COLON}".upper())
             continue
         if registry_matchers.MARKER_IS_TYPE in marker.keys():
-            t = _type_to_str(marker["ISTYPE"], encoding=encoding)  # TODO...
-            k1 = f"BOF: k.{k1}{WS}{COLON}{WS} v.{t}"
+            is_type = _type_to_str(marker["ISTYPE"], encoding=encoding)  # TODO...
+            k1 = f"{k1}{WS_REGEX}{COLON}{WS_REGEX}{is_type}"
             res.append(k1.upper())
             continue
         if registry_matchers.MARKER_IS in marker.keys():
             marker_is = marker["IS"]
             if not isinstance(marker_is, str):
                 _complex_is_type(marker_is)
-            k2 = _str_to_hex_str(marker_is, encoding=encoding)
-            isk = f"BOF: k.{k1}{WS}{COLON}{WS} v.{k2}"
-            res.append(isk.upper())
+            is_val = _str_to_hex_str(marker_is, encoding=encoding)
+            k1 = f"{k1}{WS_REGEX}{COLON}{WS_REGEX}{is_val}"
+            res.append(k1.upper())
             continue
         if registry_matchers.MARKER_STARTSWITH in marker.keys():
-            k2 = _str_to_hex_str(marker["STARTSWITH"], encoding=encoding)
-            isk = f"BOF: k.{k1}{WS}{COLON}{WS} v.22{k2}"
-            res.append(isk.upper())
+            starts_with = _str_to_hex_str(marker["STARTSWITH"], encoding=encoding)
+            k1 = f"{k1}{WS_REGEX}{COLON}{WS_REGEX}{encode_roundtrip(DOUBLE_QUOTE, encoding)}{starts_with}"
+            res.append(k1.upper())
             continue
         if registry_matchers.MARKER_ENDSWITH in marker.keys():
-            k2 = _str_to_hex_str(marker["ENDSWITH"], encoding=encoding)
-            isk = f"BOF: k.{k1}{WS}{COLON}{WS} v.*{k2}22"
-            res.append(isk.upper())
+            ends_with = _str_to_hex_str(marker["ENDSWITH"], encoding=encoding)
+            k1 = f"{k1}{WS_REGEX}{COLON}{WS_REGEX}*{ends_with}{encode_roundtrip(DOUBLE_QUOTE, encoding)}"
+            res.append(k1.upper())
             continue
         if registry_matchers.MARKER_CONTAINS in marker.keys():
-            k2 = _str_to_hex_str(marker["CONTAINS"], encoding=encoding)
-            isk = f"BOF: k.{k1}{WS}{COLON}{WS} v.*{k2}*"
-            res.append(isk.upper())
+            contains = _str_to_hex_str(marker["CONTAINS"], encoding=encoding)
+            k1 = f"{k1}{WS_REGEX}{COLON}{WS_REGEX}{encode_roundtrip(DOUBLE_QUOTE, encoding)}*{contains}*{encode_roundtrip(DOUBLE_QUOTE, encoding)}"
+            res.append(k1.upper())
             continue
         if registry_matchers.MARKER_REGEX in marker.keys():
             raise UnprocessableEntity("REGEX not yet implemented")
         if registry_matchers.MARKER_KEY_NO_EXIST in marker.keys():
             raise UnprocessableEntity("KEY NO EXIST not yet implemented")
 
-    BOF = f"{{0-{DISK_SECTOR_SIZE}}}7B"
-    EOF = f"7D{{0-{DISK_SECTOR_SIZE}}}"
+    BOF = f"{encode_roundtrip(CURLY_OPEN, encoding)}"
+    EOF = f"{encode_roundtrip(CURLY_CLOSE, encoding)}"
 
     bs_res = []
 
@@ -467,8 +480,8 @@ def process_markers(markers: list, encoding: str = "") -> tuple[list | bool]:
 
         bs = ByteSequence(
             id=idx,
-            pos="BOF",
-            min_off=1,
+            pos="VAR",
+            min_off="",
             max_off="",
             endian="",
             value=item,
