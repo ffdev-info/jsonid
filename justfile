@@ -102,3 +102,7 @@ lookup-ref-ex:
 # lookup ref
 @lookup-ref ref:
  python jsonid.py lookup {{ref}}
+
+# Move pronom to .droid folder
+pronom-to-droid:
+ cp abc.xml ~/.droid6/signature_files/
