@@ -34,7 +34,7 @@ CURLY_CLOSE: Final[str] = "7D"
 SQUARE_OPEN: Final[str] = "5B"
 SQUARE_CLOSE: Final[str] = "5D"
 DOUBLE_QUOTE: Final[str] = "22"
-WS_REGEX: Final[str] = "(0-10)"
+WS_REGEX: Final[str] = "{0-10}"
 
 
 class UnprocessableEntity(Exception):
@@ -258,7 +258,6 @@ def encode_roundtrip(val: str, encoding: str) -> str:
 def _type_to_str(t: type, encoding: str) -> str:
     """todo..."""
 
-    colon_encoded = encode_roundtrip(COLON, encoding)
     curly_open_encoded = encode_roundtrip(CURLY_OPEN, encoding)
     curly_close_encoded: Final[str] = encode_roundtrip(CURLY_CLOSE, encoding)
     square_open_encoded: Final[str] = encode_roundtrip(SQUARE_OPEN, encoding)
@@ -403,7 +402,7 @@ def process_markers(markers: list, encoding: str = "") -> tuple[list | bool]:
 
     """
 
-    encoding = "utf-16"
+    encoding = "utf-8"
 
     colon_encoded = encode_roundtrip(COLON, encoding)
     curly_open_encoded = encode_roundtrip(CURLY_OPEN, encoding)
@@ -557,9 +556,42 @@ def create_xml(all: list[InternalSignature]) -> None:
         print(x)
 
 
-def create_baseline_json_sequences():
+def create_baseline_json_sequences(encoding: str):
     """Create baseline JSON sequences that match map and list types
     with various different encodings.
     """
 
-    # TODO...
+    curly_open_encoded = encode_roundtrip(CURLY_OPEN, encoding)
+    curly_close_encoded: Final[str] = encode_roundtrip(CURLY_CLOSE, encoding)
+
+    bs_res = []
+
+    bs_res.append(
+        ByteSequence(
+            id=1,
+            pos="BOF",
+            min_off=0,
+            max_off=f"{DISK_SECTOR_SIZE}",
+            endian="",
+            value=BOF,
+        )
+    )
+
+    iss = InternalSignature(
+        id=0,
+        name="",
+        byte_sequences=bs_res,
+    )
+
+    bs_res.append(
+        ByteSequence(
+            id=1,
+            pos="EOF",
+            min_off="0",
+            max_off=f"{DISK_SECTOR_SIZE}",
+            endian="",
+            value=EOF,
+        )
+    )
+
+    return iss

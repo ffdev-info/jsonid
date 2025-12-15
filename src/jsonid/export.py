@@ -46,7 +46,7 @@ def exportPRONOM() -> None:
 
     formats = []
 
-    for datum in data:
+    for idx, datum in enumerate(data):
         id_ = datum.json()["identifier"]
         name_ = datum.json()["name"][0]["@en"]
         markers = datum.json()["markers"]
@@ -89,6 +89,9 @@ def exportPRONOM() -> None:
         )
 
         formats.append(format)
+        if idx < 3:
+            continue
+        break
 
     pronom.process_formats_and_save(formats, "abc.xml")
 
