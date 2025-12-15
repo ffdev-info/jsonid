@@ -3,7 +3,7 @@
 
 pdoc3==0.11.6
 pip-upgrader==1.4.15
-pre-commit==4.3.0
+pre-commit==4.5.0
 pylint==4.0.2
 pytest==8.4.2
 pytest-asyncio==1.2.0
