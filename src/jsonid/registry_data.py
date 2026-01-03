@@ -204,12 +204,14 @@ _registry = [
     registry_class.RegistryEntry(
         identifier="jrid:0020",
         name=[
-            {"@en": "GL Transmission Format: GLTF runtime 3D asset library (Generic)"}
+            {
+                "@en": "GL Transmission Format: GLTF runtime 3D asset library schema (Generic)"
+            }
         ],
         archive_team="http://fileformats.archiveteam.org/wiki/GlTF",
         markers=[
-            {"KEY": "$schema", "STARTSWITH": "http://json-schema.org/"},
-            {"KEY": "$schema", "ENDSWITH": "/schema#"},
+            {"KEY": "$schema", "STARTSWITH": "https://json-schema.org/"},
+            {"KEY": "$schema", "ENDSWITH": "/schema"},
             {"KEY": "title", "EXISTS": None},
             {"KEY": "type", "IS": "object"},
             {"KEY": "description", "IS": "The root object for a glTF asset."},
