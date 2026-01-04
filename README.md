@@ -437,7 +437,10 @@ As a high-level language, signatures can be defined in easy to understand
 syntax and then output consistently via the `json2pronom` utility. Signatures
 include sensible defaults for whitespace and other aspects that are
 difficult for signature developers to consistently anticipate when writing
-JSON based signatures.
+JSON based signatures. One particular benefit of using `json2pronom` is that
+it can automatically output JSON signatures using different
+character encodings which use a lot of excess characters difficult for
+humans to format correctly into a DROID compatible format.
 
 Given a [sample pattern file](./pronom_example/patterns_example.json) a DROID
 compatible snippet can be output as follows (UTF-8 shown for brevity):
@@ -465,7 +468,8 @@ compatible snippet can be output as follows (UTF-8 shown for brevity):
 
 <!--markdownlint-enable-->
 
-Feedback on this utility is welcome.
+Feedback on this utility is welcome. Hopefully we can build on this
+approach for other structured formats such as XML.
 
 ## Output format
 
