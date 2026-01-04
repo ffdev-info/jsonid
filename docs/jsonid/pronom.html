@@ -1,0 +1,1040 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>src.jsonid.pronom API documentation</title>
+<meta name="description" content="PRONOM export routines …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.jsonid.pronom</code></h1>
+</header>
+<section id="section-intro">
+<p>PRONOM export routines.</p>
+<p>XML tooling: <a href="https://xmllint.com/">https://xmllint.com/</a></p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="src.jsonid.pronom.calculate_variable_off_bof"><code class="name flex">
+<span>def <span class="ident">calculate_variable_off_bof</span></span>(<span>item: <a title="src.jsonid.pronom.ByteSequence" href="#src.jsonid.pronom.ByteSequence">ByteSequence</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate_variable_off_bof(item: ByteSequence):
+    &#34;&#34;&#34;Given variable offsets, calculate the correct syntax.&#34;&#34;&#34;
+    seq = item.value
+    if (
+        item.min_off != &#34;&#34;
+        and int(item.min_off) &gt; 0
+        and item.max_off != &#34;&#34;
+        and int(item.max_off) &gt; 0
+    ):
+        seq = f&#34;{{{item.min_off}-{int(item.min_off)+int(item.max_off)}}}{seq}&#34;
+    elif item.max_off != &#34;&#34; and int(item.max_off) &gt; 0:
+        seq = f&#34;{{0-{item.max_off}}}{seq}&#34;
+    elif item.min_off != &#34;&#34; and int(item.min_off) &gt; 0:
+        seq = f&#34;{{{item.min_off}}}{seq}&#34;
+    return seq</code></pre>
+</details>
+<div class="desc"><p>Given variable offsets, calculate the correct syntax.</p></div>
+</dd>
+<dt id="src.jsonid.pronom.calculate_variable_off_eof"><code class="name flex">
+<span>def <span class="ident">calculate_variable_off_eof</span></span>(<span>item: <a title="src.jsonid.pronom.ByteSequence" href="#src.jsonid.pronom.ByteSequence">ByteSequence</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate_variable_off_eof(item: ByteSequence):
+    &#34;&#34;&#34;Given variable offsets, calculate the correct syntax.&#34;&#34;&#34;
+    seq = item.value
+    if (
+        item.min_off != &#34;&#34;
+        and int(item.min_off) &gt; 0
+        and item.max_off != &#34;&#34;
+        and int(item.max_off) &gt; 0
+    ):
+        seq = f&#34;{seq}{{{item.min_off}-{int(item.min_off)+int(item.max_off)}}}&#34;
+    elif item.max_off != &#34;&#34; and int(item.max_off) &gt; 0:
+        seq = f&#34;{seq}{{0-{item.max_off}}}&#34;
+    elif item.min_off != &#34;&#34; and int(item.min_off) &gt; 0:
+        seq = f&#34;{seq}{{{item.min_off}}}&#34;
+    return seq</code></pre>
+</details>
+<div class="desc"><p>Given variable offsets, calculate the correct syntax.</p></div>
+</dd>
+<dt id="src.jsonid.pronom.convert_marker_to_signature_sequence"><code class="name flex">
+<span>def <span class="ident">convert_marker_to_signature_sequence</span></span>(<span>marker: dict, encoding: str) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def convert_marker_to_signature_sequence(marker: dict, encoding: str) -&gt; str:
+    &#34;&#34;&#34;Convert a JSONID marker into a signature sequence.&#34;&#34;&#34;
+
+    # pylint: disable=R0914; too-many local variables.
+    # pylint: disable=R0911; too-many return statements.
+    # pylint: disable=R0915; too-many statements.
+
+    logger.debug(&#34;marker: %s&#34;, marker)
+
+    colon_encoded: Final[str] = encode_roundtrip(COLON, encoding)
+    double_quote_encoded: Final[str] = encode_roundtrip(DOUBLE_QUOTE, encoding)
+    curly_open_encoded: Final[str] = encode_roundtrip(CURLY_OPEN, encoding)
+    curly_close_encoded: Final[str] = encode_roundtrip(CURLY_CLOSE, encoding)
+    colon_encoded: Final[str] = encode_roundtrip(COLON, encoding)
+    square_open_encoded: Final[str] = encode_roundtrip(SQUARE_OPEN, encoding)
+    square_close_encoded: Final[str] = encode_roundtrip(SQUARE_CLOSE, encoding)
+    double_quote_encoded: Final[str] = encode_roundtrip(DOUBLE_QUOTE, encoding)
+
+    instruction = &#34;&#34;
+    if registry_matchers.MARKER_GOTO in marker.keys():
+        # GOTO KEY and match KEY.
+        goto_key = _str_to_hex_str(marker[&#34;GOTO&#34;])
+        key_at_goto = _str_to_hex_str(marker[&#34;KEY&#34;])
+        goto_encoded = quote_and_encode(goto_key, encoding)
+        key_encoded = quote_and_encode(key_at_goto, encoding)
+        instruction = f&#34;{goto_encoded}{WHITESPACE_REGEX}{colon_encoded}*{WHITESPACE_REGEX}{key_encoded}{WHITESPACE_REGEX}{colon_encoded}&#34;
+        marker.pop(&#34;GOTO&#34;)
+        marker.pop(&#34;KEY&#34;)
+        return instruction.upper()
+    if registry_matchers.MARKER_INDEX in marker.keys():
+        key = _str_to_hex_str(marker[&#34;KEY&#34;])
+        instruction = f&#34;{WHITESPACE_REGEX}{square_open_encoded}*{curly_open_encoded}*{double_quote_encoded}{encode_roundtrip(key, encoding)}{double_quote_encoded}{WHITESPACE_REGEX}{colon_encoded}*{curly_close_encoded}*{square_close_encoded}&#34;
+        marker.pop(&#34;INDEX&#34;)
+        marker.pop(&#34;KEY&#34;)
+        return instruction.upper()
+    if &#34;KEY&#34; in marker.keys():
+        key = _str_to_hex_str(marker[&#34;KEY&#34;])
+        instruction = quote_and_encode(key, encoding)
+        marker.pop(&#34;KEY&#34;)
+    if registry_matchers.MARKER_KEY_EXISTS in marker.keys():
+        instruction = f&#34;{instruction}{WHITESPACE_REGEX}{colon_encoded}&#34;.upper()
+        return instruction
+    if registry_matchers.MARKER_IS_TYPE in marker.keys():
+        is_type = _type_to_str(marker[&#34;ISTYPE&#34;], encoding=encoding)
+        type_val = (
+            f&#34;{instruction}{WHITESPACE_REGEX}{colon_encoded}{WHITESPACE_REGEX}{is_type}&#34;
+        )
+        return type_val.upper()
+    if registry_matchers.MARKER_IS in marker.keys():
+        marker_is = marker[&#34;IS&#34;]
+        if not isinstance(marker_is, str):
+            _complex_is_type(marker_is)
+        equals = _str_to_hex_str(marker_is)
+        is_val = f&#34;{instruction}{WHITESPACE_REGEX}{encode_roundtrip(equals, encoding)}&#34;
+        return is_val.upper()
+    if registry_matchers.MARKER_STARTSWITH in marker.keys():
+        starts_with = _str_to_hex_str(marker[&#34;STARTSWITH&#34;])
+        starts_with_val = f&#34;{instruction}{WHITESPACE_REGEX}{colon_encoded}{WHITESPACE_REGEX}{double_quote_encoded}{encode_roundtrip(starts_with, encoding)}&#34;
+        return starts_with_val.upper()
+    if registry_matchers.MARKER_ENDSWITH in marker.keys():
+        ends_with = _str_to_hex_str(marker[&#34;ENDSWITH&#34;])
+        ends_with_val = f&#34;{instruction}{WHITESPACE_REGEX}{colon_encoded}{WHITESPACE_REGEX}*{encode_roundtrip(ends_with, encoding)}{double_quote_encoded}&#34;
+        return ends_with_val.upper()
+    if registry_matchers.MARKER_CONTAINS in marker.keys():
+        contains = _str_to_hex_str(marker[&#34;CONTAINS&#34;])
+        contains_val = f&#34;{instruction}{WHITESPACE_REGEX}{colon_encoded}{WHITESPACE_REGEX}{double_quote_encoded}*{encode_roundtrip(contains, encoding)}*{double_quote_encoded}&#34;
+        return contains_val.upper()
+    if registry_matchers.MARKER_REGEX in marker.keys():
+        raise UnprocessableEntity(&#34;REGEX not yet implemented&#34;)
+    if registry_matchers.MARKER_KEY_NO_EXIST in marker.keys():
+        raise UnprocessableEntity(&#34;KEY NO EXIST not yet implemented&#34;)
+    # We should never arrive here. In the future clean this up so we
+    # only return when we have information.
+    return &#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Convert a JSONID marker into a signature sequence.</p></div>
+</dd>
+<dt id="src.jsonid.pronom.create_baseline_json_sequences"><code class="name flex">
+<span>def <span class="ident">create_baseline_json_sequences</span></span>(<span>encoding: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_baseline_json_sequences(encoding: str):
+    &#34;&#34;&#34;Create baseline JSON sequences that match map and list types
+    with various different encodings.
+    &#34;&#34;&#34;
+
+    # pylint: disable=R0914; too-many local variables.
+
+    curly_open_encoded: Final[str] = encode_roundtrip(CURLY_OPEN, encoding)
+    curly_close_encoded: Final[str] = encode_roundtrip(CURLY_CLOSE, encoding)
+    square_open_encoded: Final[str] = encode_roundtrip(SQUARE_OPEN, encoding)
+    square_close_encoded: Final[str] = encode_roundtrip(SQUARE_CLOSE, encoding)
+
+    colon_encoded: Final[str] = encode_roundtrip(COLON, encoding)
+    double_quote_encoded: Final[str] = encode_roundtrip(DOUBLE_QUOTE, encoding)
+
+    bof = f&#34;({curly_open_encoded}|{square_open_encoded})&#34;
+    eof = f&#34;({curly_close_encoded}|{square_close_encoded})&#34;
+
+    no_encoded: Final[str] = NUMBER_REGEX
+    true_encoded: Final[str] = encode_roundtrip(TRUE_VALUE, encoding)
+    false_encoded: Final[str] = encode_roundtrip(FALSE_VALUE, encoding)
+    null_encoded: Final[str] = encode_roundtrip(NULL_VALUE, encoding)
+
+    options = (
+        f&#34;{double_quote_encoded}{WHITESPACE_REGEX}{colon_encoded}&#34;,
+        no_encoded,
+        f&#34;({true_encoded}|{false_encoded})&#34;,
+        null_encoded,
+    )
+
+    sigs = []
+
+    for opt in options:
+
+        bs = []
+
+        bs.append(
+            ByteSequence(
+                id=1,
+                pos=&#34;BOF&#34;,
+                min_off=0,
+                max_off=f&#34;{DISK_SECTOR_SIZE}&#34;,
+                endian=&#34;&#34;,
+                value=bof,
+            )
+        )
+
+        bs.append(
+            ByteSequence(
+                id=1,
+                pos=&#34;VAR&#34;,
+                min_off=0,
+                max_off=0,
+                endian=&#34;&#34;,
+                value=opt,
+            )
+        )
+
+        bs.append(
+            ByteSequence(
+                id=1,
+                pos=&#34;EOF&#34;,
+                min_off=&#34;0&#34;,
+                max_off=f&#34;{DISK_SECTOR_SIZE}&#34;,
+                endian=&#34;&#34;,
+                value=eof,
+            )
+        )
+
+        iss = InternalSignature(
+            id=0,
+            name=&#34;&#34;,
+            byte_sequences=bs,
+        )
+
+        sigs.append(iss)
+
+    return sigs</code></pre>
+</details>
+<div class="desc"><p>Create baseline JSON sequences that match map and list types
+with various different encodings.</p></div>
+</dd>
+<dt id="src.jsonid.pronom.create_file_format_collection"><code class="name flex">
+<span>def <span class="ident">create_file_format_collection</span></span>(<span>fmt: list[<a title="src.jsonid.pronom.Format" href="#src.jsonid.pronom.Format">Format</a>])</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_file_format_collection(fmt: list[Format]):
+    &#34;&#34;&#34;Create the FileFormatCollection object.
+
+    E.g.
+    ```
+        &lt;FileFormat ID=&#34;1&#34; Name=&#34;Development Signature&#34; PUID=&#34;dev/1&#34; Version=&#34;1.0&#34; MIMEType=&#34;application/octet-stream&#34;&gt;
+            &lt;InternalSignatureID&gt;1&lt;/InternalSignatureID&gt;
+            &lt;Extension&gt;ext&lt;/Extension&gt;
+        &lt;/FileFormat&gt;
+
+        &lt;FileFormat ID=&#34;49&#34; MIMEType=&#34;application/postscript&#34;  FormatType=&#34;Text (Structured)&#34;
+            Name=&#34;Adobe Illustrator&#34; PUID=&#34;x-fmt/20&#34; Version=&#34;1.0 / 1.1&#34;&gt;
+            &lt;InternalSignatureID&gt;880&lt;/InternalSignatureID&gt;
+            &lt;InternalSignatureID&gt;881&lt;/InternalSignatureID&gt;
+            &lt;Extension&gt;ai&lt;/Extension&gt;
+            &lt;HasPriorityOverFileFormatID&gt;86&lt;/HasPriorityOverFileFormatID&gt;
+            &lt;HasPriorityOverFileFormatID&gt;331&lt;/HasPriorityOverFileFormatID&gt;
+            &lt;HasPriorityOverFileFormatID&gt;332&lt;/HasPriorityOverFileFormatID&gt;
+            &lt;HasPriorityOverFileFormatID&gt;771&lt;/HasPriorityOverFileFormatID&gt;
+            &lt;HasPriorityOverFileFormatID&gt;773&lt;/HasPriorityOverFileFormatID&gt;
+        &lt;/FileFormat&gt;
+    ```
+
+    &#34;&#34;&#34;
+    internal_sigs = [
+        f&#34;&lt;InternalSignatureID&gt;{sig.id}&lt;/InternalSignatureID&gt;&#34;
+        for sig in fmt.internal_signatures
+    ]
+    external_sigs = [
+        f&#34;&lt;Extension&gt;{sig.signature}&lt;/Extension&gt;&#34;
+        for sig in fmt.external_signatures
+        if sig.type.lower() == EXT
+    ]
+    priorities = [
+        f&#34;&lt;HasPriorityOverFileFormatID&gt;{priority}&lt;/HasPriorityOverFileFormatID&gt;&#34;
+        for priority in fmt.priorities
+    ]
+    ff = f&#34;&#34;&#34;
+&lt;FileFormat ID=\&#34;{fmt.id}\&#34; Name=\&#34;{fmt.name}\&#34; PUID=\&#34;{fmt.puid}\&#34; Version=&#34;{fmt.version}&#34; MIMEType=\&#34;{fmt.mime}\&#34; FormatType=\&#34;{fmt.classification}\&#34; &gt;
+    {&#34;&#34;.join(internal_sigs).strip()}
+    {&#34;&#34;.join(external_sigs).strip()}
+    {&#34;&#34;.join(priorities).strip()}
+&lt;/FileFormat&gt;
+    &#34;&#34;&#34;
+    return ff.strip()</code></pre>
+</details>
+<div class="desc"><p>Create the FileFormatCollection object.</p>
+<p>E.g.</p>
+<pre><code>    &lt;FileFormat ID=&quot;1&quot; Name=&quot;Development Signature&quot; PUID=&quot;dev/1&quot; Version=&quot;1.0&quot; MIMEType=&quot;application/octet-stream&quot;&gt;
+        &lt;InternalSignatureID&gt;1&lt;/InternalSignatureID&gt;
+        &lt;Extension&gt;ext&lt;/Extension&gt;
+    &lt;/FileFormat&gt;
+
+    &lt;FileFormat ID=&quot;49&quot; MIMEType=&quot;application/postscript&quot;  FormatType=&quot;Text (Structured)&quot;
+        Name=&quot;Adobe Illustrator&quot; PUID=&quot;x-fmt/20&quot; Version=&quot;1.0 / 1.1&quot;&gt;
+        &lt;InternalSignatureID&gt;880&lt;/InternalSignatureID&gt;
+        &lt;InternalSignatureID&gt;881&lt;/InternalSignatureID&gt;
+        &lt;Extension&gt;ai&lt;/Extension&gt;
+        &lt;HasPriorityOverFileFormatID&gt;86&lt;/HasPriorityOverFileFormatID&gt;
+        &lt;HasPriorityOverFileFormatID&gt;331&lt;/HasPriorityOverFileFormatID&gt;
+        &lt;HasPriorityOverFileFormatID&gt;332&lt;/HasPriorityOverFileFormatID&gt;
+        &lt;HasPriorityOverFileFormatID&gt;771&lt;/HasPriorityOverFileFormatID&gt;
+        &lt;HasPriorityOverFileFormatID&gt;773&lt;/HasPriorityOverFileFormatID&gt;
+    &lt;/FileFormat&gt;
+</code></pre></div>
+</dd>
+<dt id="src.jsonid.pronom.create_many_to_one_byte_sequence"><code class="name flex">
+<span>def <span class="ident">create_many_to_one_byte_sequence</span></span>(<span>internal_signatures: list[<a title="src.jsonid.pronom.InternalSignature" href="#src.jsonid.pronom.InternalSignature">InternalSignature</a>])</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_many_to_one_byte_sequence(internal_signatures: list[InternalSignature]):
+    &#34;&#34;&#34;Create a many to one byte sequence, i.e. a format with multiple
+    Internal Signatures.
+    &#34;&#34;&#34;
+    internal_signature = &#34;&#34;
+    for internal in internal_signatures:
+        id_ = internal.id
+        bs = create_one_to_many_byte_sequence(internal.byte_sequences)
+        internal_signature = f&#34;&#34;&#34;
+{internal_signature}&lt;InternalSignature ID=\&#34;{id_}\&#34; Specificity=\&#34;Specific\&#34;&gt;
+    {bs}
+&lt;/InternalSignature&gt;
+        &#34;&#34;&#34;
+    return internal_signature.strip()</code></pre>
+</details>
+<div class="desc"><p>Create a many to one byte sequence, i.e. a format with multiple
+Internal Signatures.</p></div>
+</dd>
+<dt id="src.jsonid.pronom.create_one_to_many_byte_sequence"><code class="name flex">
+<span>def <span class="ident">create_one_to_many_byte_sequence</span></span>(<span>byte_sequences: list[<a title="src.jsonid.pronom.ByteSequence" href="#src.jsonid.pronom.ByteSequence">ByteSequence</a>])</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_one_to_many_byte_sequence(byte_sequences: list[ByteSequence]):
+    &#34;&#34;&#34;Create a byte sequence object.&#34;&#34;&#34;
+    byte_sequence = &#34;&#34;
+    for item in byte_sequences:
+        seq = item.value
+        if item.pos.startswith(&#34;EOF&#34;):
+            seq = calculate_variable_off_eof(item)
+        elif item.pos.startswith(&#34;BOF&#34;):
+            seq = calculate_variable_off_bof(item)
+        byte_sequence = f&#34;&#34;&#34;
+{byte_sequence.strip()}
+    &lt;ByteSequence Reference=\&#34;{item.pos}\&#34; Sequence=\&#34;{seq}\&#34; MinOffset=\&#34;{item.min_off}\&#34; MaxOffset=\&#34;{item.max_off}\&#34;/&gt;
+        &#34;&#34;&#34;
+    return byte_sequence.strip()</code></pre>
+</details>
+<div class="desc"><p>Create a byte sequence object.</p></div>
+</dd>
+<dt id="src.jsonid.pronom.encode_roundtrip"><code class="name flex">
+<span>def <span class="ident">encode_roundtrip</span></span>(<span>hexed_val: str, encoding: str) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def encode_roundtrip(hexed_val: str, encoding: str) -&gt; str:
+    &#34;&#34;&#34;We want to get a plain-text byte-sequence into a new
+    encoding. It takes a few hops and skips.
+    &#34;&#34;&#34;
+    val = hexed_val.strip()
+    try:
+        re_encoded = binascii.unhexlify(hexed_val).decode(&#34;utf-8&#34;).encode(encoding)
+    except (binascii.Error, UnicodeDecodeError) as err:
+        logger.error(&#34;cannot convert: %s len: %s (&#39;%s&#39;)&#34;, hexed_val, len(val), err)
+        return val
+    hex_val = binascii.hexlify(re_encoded).decode().upper()
+    for bom in _get_bom():
+        if not hex_val.startswith(bom):
+            continue
+        return hex_val.replace(bom, &#34;&#34;)
+    return hex_val</code></pre>
+</details>
+<div class="desc"><p>We want to get a plain-text byte-sequence into a new
+encoding. It takes a few hops and skips.</p></div>
+</dd>
+<dt id="src.jsonid.pronom.preprocess_goto_markers"><code class="name flex">
+<span>def <span class="ident">preprocess_goto_markers</span></span>(<span>markers: dict) ‑> list</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def preprocess_goto_markers(markers: dict) -&gt; list:
+    &#34;&#34;&#34;Preprocess markers to remove data that is otherwise duplicated
+    when converted to a PRONOM signature, e.g. GOTO.&#34;&#34;&#34;
+
+    out = []
+    for marker in markers:
+        if registry_matchers.MARKER_GOTO not in marker:
+            out.append(marker)
+            continue
+        key = marker.pop(&#34;GOTO&#34;)
+        new_marker = {&#34;KEY&#34;: key, &#34;EXISTS&#34;: None}
+        if new_marker not in out:
+            out.append(new_marker)
+        out.append(marker)
+    return out</code></pre>
+</details>
+<div class="desc"><p>Preprocess markers to remove data that is otherwise duplicated
+when converted to a PRONOM signature, e.g. GOTO.</p></div>
+</dd>
+<dt id="src.jsonid.pronom.process_formats_and_save"><code class="name flex">
+<span>def <span class="ident">process_formats_and_save</span></span>(<span>formats: list[<a title="src.jsonid.pronom.Format" href="#src.jsonid.pronom.Format">Format</a>],<br>filename: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_formats_and_save(formats: list[Format], filename: str):
+    &#34;&#34;&#34;Process the collected formats and output a signature file.
+
+    NB. Given our dataclasses here, we have the opportunity to rework
+    this data into many new structures. We output XML because DROID
+    expects XML.
+    &#34;&#34;&#34;
+    prettier_xml = _process_formats(formats)
+    logger.info(&#34;outputting to: %s&#34;, filename)
+    with open(filename, &#34;w&#34;, encoding=&#34;utf=8&#34;) as output_file:
+        output_file.write(prettier_xml)</code></pre>
+</details>
+<div class="desc"><p>Process the collected formats and output a signature file.</p>
+<p>NB. Given our dataclasses here, we have the opportunity to rework
+this data into many new structures. We output XML because DROID
+expects XML.</p></div>
+</dd>
+<dt id="src.jsonid.pronom.process_formats_to_stdout"><code class="name flex">
+<span>def <span class="ident">process_formats_to_stdout</span></span>(<span>formats: list[<a title="src.jsonid.pronom.Format" href="#src.jsonid.pronom.Format">Format</a>])</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_formats_to_stdout(formats: list[Format]):
+    &#34;&#34;&#34;Process the collected formats and output a signature file.
+
+    NB. Given our dataclasses here, we have the opportunity to rework
+    this data into many new structures. We output XML because DROID
+    expects XML.
+    &#34;&#34;&#34;
+    prettier_xml = _process_formats(formats)
+    logger.info(&#34;outputting to: stdout&#34;)
+    print(prettier_xml)</code></pre>
+</details>
+<div class="desc"><p>Process the collected formats and output a signature file.</p>
+<p>NB. Given our dataclasses here, we have the opportunity to rework
+this data into many new structures. We output XML because DROID
+expects XML.</p></div>
+</dd>
+<dt id="src.jsonid.pronom.process_markers"><code class="name flex">
+<span>def <span class="ident">process_markers</span></span>(<span>markers: list, sig_id: int, encoding: str = '') ‑> tuple[list | bool]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_markers(
+    markers: list, sig_id: int, encoding: str = &#34;&#34;
+) -&gt; tuple[list | bool]:
+    &#34;&#34;&#34;Given a set of markers for a document type, process them into
+    a set of byte sequences and finally an internal signature sequence
+    that can be output as a PRONOM signature.
+
+    returns a tuple describing the processed value and a flag to
+    highlight the result is potentially lossless, e.g. in the case
+    of matching types, e.g. strings.
+
+    dict_keys([&#39;CONTAINS&#39;])
+    dict_keys([&#39;ENDSWITH&#39;])
+    dict_keys([&#39;IS&#39;]
+    dict_keys([&#39;ISTYPE&#39;])
+    dict_keys([&#39;STARTSWITH&#39;])
+
+    key(0-n):(0-n)value
+
+    Need to return something like:
+
+      &lt;ByteSequence Reference=&#34;BOFoffset&#34; Sequence=&#34;FFD8FFE0{2}4A464946000101(00|01|02)&#34; MinOffset=&#34;0&#34; MaxOffset=&#34;&#34;/&gt;
+
+    Different encodings need to be accounted for, e.g. (with added
+    whitespace below)
+
+    UTF-32-LE:
+
+        00000000: 2000 0000 2000 0000 2000 0000 2000 0000   ... ... ... ...
+        00000010: 2000 0000 2000 0000 0a00 0000 0a00 0000   ... ...........
+        00000020: 0a00 0000 0a00 0000 7b00 0000 2200 0000  ........{...&#34;...
+        00000030: 6100 0000 2200 0000 3a00 0000 2000 0000  a...&#34;...:... ...
+        00000040: 2200 0000 6200 0000 2200 0000 7d00 0000  &#34;...b...&#34;...}...
+        00000050: 0a00 0000                                ....
+
+    UTF-32-BE:
+
+        00000000: 0000 0020 0000 0020 0000 0020 0000 0020  ... ... ... ...
+        00000010: 0000 0020 0000 0020 0000 000a 0000 000a  ... ... ........
+        00000020: 0000 000a 0000 000a 0000 007b 0000 0022  ...........{...&#34;
+        00000030: 0000 0061 0000 0022 0000 003a 0000 0020  ...a...&#34;...:...
+        00000040: 0000 0022 0000 0062 0000 0022 0000 007d  ...&#34;...b...&#34;...}
+        00000050: 0000 000a                                ....
+
+
+    UTF-16-LE:
+
+        00000000: 2000 2000 2000 2000 2000 2000 0a00 0a00   . . . . . .....
+        00000010: 0a00 0a00 7b00 2200 6100 2200 3a00 2000  ....{.&#34;.a.&#34;.:. .
+        00000020: 2200 6200 2200 7d00 0a00                 &#34;.b.&#34;.}...
+
+    UTF-16-BE:
+
+        00000000: 0020 0020 0020 0020 0020 0020 000a 000a  . . . . . . ....
+        00000010: 000a 000a 007b 0022 0061 0022 003a 0020  .....{.&#34;.a.&#34;.:.
+        00000020: 0022 0062 0022 007d 000a                 .&#34;.b.&#34;.}..
+
+
+    &#34;&#34;&#34;
+
+    curly_open_encoded: Final[str] = encode_roundtrip(CURLY_OPEN, encoding)
+    curly_close_encoded: Final[str] = encode_roundtrip(CURLY_CLOSE, encoding)
+
+    sequences = []
+
+    markers = preprocess_goto_markers(markers)
+
+    for marker in markers:
+        sig_sequence = convert_marker_to_signature_sequence(marker, encoding)
+        sequences.append(sig_sequence)
+
+    byte_sequences = []
+
+    byte_sequences.append(
+        ByteSequence(
+            id=0,
+            pos=&#34;BOF&#34;,
+            min_off=0,
+            max_off=f&#34;{DISK_SECTOR_SIZE}&#34;,
+            endian=&#34;&#34;,
+            value=curly_open_encoded,
+        )
+    )
+
+    for idx, item in enumerate(sequences, 0):
+        logger.debug(&#34;%s. %s&#34;, idx, item)
+        byte_sequence = ByteSequence(
+            id=idx,
+            pos=&#34;VAR&#34;,
+            min_off=&#34;&#34;,
+            max_off=&#34;&#34;,
+            endian=&#34;&#34;,
+            value=item,
+        )
+        byte_sequences.append(byte_sequence)
+
+    byte_sequences.append(
+        ByteSequence(
+            id=0,
+            pos=&#34;EOF&#34;,
+            min_off=&#34;0&#34;,
+            max_off=f&#34;{DISK_SECTOR_SIZE}&#34;,
+            endian=&#34;&#34;,
+            value=curly_close_encoded,
+        )
+    )
+
+    internal_signature = InternalSignature(
+        id=sig_id,
+        name=&#34;&#34;,
+        byte_sequences=byte_sequences,
+    )
+
+    return [internal_signature]</code></pre>
+</details>
+<div class="desc"><p>Given a set of markers for a document type, process them into
+a set of byte sequences and finally an internal signature sequence
+that can be output as a PRONOM signature.</p>
+<p>returns a tuple describing the processed value and a flag to
+highlight the result is potentially lossless, e.g. in the case
+of matching types, e.g. strings.</p>
+<p>dict_keys(['CONTAINS'])
+dict_keys(['ENDSWITH'])
+dict_keys(['IS']
+dict_keys(['ISTYPE'])
+dict_keys(['STARTSWITH'])</p>
+<p>key(0-n):(0-n)value</p>
+<p>Need to return something like:</p>
+<p><ByteSequence Reference="BOFoffset" Sequence="FFD8FFE0{2}4A464946000101(00|01|02)" MinOffset="0" MaxOffset=""/></p>
+<p>Different encodings need to be accounted for, e.g. (with added
+whitespace below)</p>
+<p>UTF-32-LE:</p>
+<pre><code>00000000: 2000 0000 2000 0000 2000 0000 2000 0000   ... ... ... ...
+00000010: 2000 0000 2000 0000 0a00 0000 0a00 0000   ... ...........
+00000020: 0a00 0000 0a00 0000 7b00 0000 2200 0000  ........{..."...
+00000030: 6100 0000 2200 0000 3a00 0000 2000 0000  a..."...:... ...
+00000040: 2200 0000 6200 0000 2200 0000 7d00 0000  "...b..."...}...
+00000050: 0a00 0000                                ....
+</code></pre>
+<p>UTF-32-BE:</p>
+<pre><code>00000000: 0000 0020 0000 0020 0000 0020 0000 0020  ... ... ... ...
+00000010: 0000 0020 0000 0020 0000 000a 0000 000a  ... ... ........
+00000020: 0000 000a 0000 000a 0000 007b 0000 0022  ...........{..."
+00000030: 0000 0061 0000 0022 0000 003a 0000 0020  ...a..."...:...
+00000040: 0000 0022 0000 0062 0000 0022 0000 007d  ..."...b..."...}
+00000050: 0000 000a                                ....
+</code></pre>
+<p>UTF-16-LE:</p>
+<pre><code>00000000: 2000 2000 2000 2000 2000 2000 0a00 0a00   . . . . . .....
+00000010: 0a00 0a00 7b00 2200 6100 2200 3a00 2000  ....{.".a.".:. .
+00000020: 2200 6200 2200 7d00 0a00                 ".b.".}...
+</code></pre>
+<p>UTF-16-BE:</p>
+<pre><code>00000000: 0020 0020 0020 0020 0020 0020 000a 000a  . . . . . . ....
+00000010: 000a 000a 007b 0022 0061 0022 003a 0020  .....{.".a.".:.
+00000020: 0022 0062 0022 007d 000a                 .".b.".}..
+</code></pre></div>
+</dd>
+<dt id="src.jsonid.pronom.quote_and_encode"><code class="name flex">
+<span>def <span class="ident">quote_and_encode</span></span>(<span>value, encoding) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def quote_and_encode(value, encoding) -&gt; str:
+    &#34;&#34;&#34;Quote and encode a given value.&#34;&#34;&#34;
+
+    double_quote_encoded: Final[str] = encode_roundtrip(DOUBLE_QUOTE, encoding)
+    # return f&#34;{double_quote_encoded}{value}{double_quote_encoded}&#34;
+    return f&#34;{double_quote_encoded}{encode_roundtrip(value, encoding)}{double_quote_encoded}&#34;</code></pre>
+</details>
+<div class="desc"><p>Quote and encode a given value.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="src.jsonid.pronom.ByteSequence"><code class="flex name class">
+<span>class <span class="ident">ByteSequence</span></span>
+<span>(</span><span>id: str, pos: str, min_off: str, max_off: str, endian: str, value: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class ByteSequence:
+    id: str
+    pos: str
+    min_off: str
+    max_off: str
+    endian: str
+    value: str</code></pre>
+</details>
+<div class="desc"><p>ByteSequence(id: str, pos: str, min_off: str, max_off: str, endian: str, value: str)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="src.jsonid.pronom.ByteSequence.endian"><code class="name">var <span class="ident">endian</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.ByteSequence.id"><code class="name">var <span class="ident">id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.ByteSequence.max_off"><code class="name">var <span class="ident">max_off</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.ByteSequence.min_off"><code class="name">var <span class="ident">min_off</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.ByteSequence.pos"><code class="name">var <span class="ident">pos</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.ByteSequence.value"><code class="name">var <span class="ident">value</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="src.jsonid.pronom.ExternalSignature"><code class="flex name class">
+<span>class <span class="ident">ExternalSignature</span></span>
+<span>(</span><span>id: str, signature: str, type: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class ExternalSignature:
+    id: str
+    signature: str
+    type: str</code></pre>
+</details>
+<div class="desc"><p>ExternalSignature(id: str, signature: str, type: str)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="src.jsonid.pronom.ExternalSignature.id"><code class="name">var <span class="ident">id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.ExternalSignature.signature"><code class="name">var <span class="ident">signature</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.ExternalSignature.type"><code class="name">var <span class="ident">type</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="src.jsonid.pronom.Format"><code class="flex name class">
+<span>class <span class="ident">Format</span></span>
+<span>(</span><span>id: str,<br>name: str,<br>version: str,<br>puid: str,<br>mime: str,<br>classification: str,<br>external_signatures: list[<a title="src.jsonid.pronom.ExternalSignature" href="#src.jsonid.pronom.ExternalSignature">ExternalSignature</a>],<br>internal_signatures: list[<a title="src.jsonid.pronom.InternalSignature" href="#src.jsonid.pronom.InternalSignature">InternalSignature</a>],<br>priorities: list[int])</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class Format:  # pylint: disable=R0902
+    id: str
+    name: str
+    version: str
+    puid: str
+    mime: str
+    classification: str
+    external_signatures: list[ExternalSignature]
+    internal_signatures: list[InternalSignature]
+    priorities: list[int]</code></pre>
+</details>
+<div class="desc"><p>Format(id: str, name: str, version: str, puid: str, mime: str, classification: str, external_signatures: list[src.jsonid.pronom.ExternalSignature], internal_signatures: list[src.jsonid.pronom.InternalSignature], priorities: list[int])</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="src.jsonid.pronom.Format.classification"><code class="name">var <span class="ident">classification</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.Format.external_signatures"><code class="name">var <span class="ident">external_signatures</span> : list[<a title="src.jsonid.pronom.ExternalSignature" href="#src.jsonid.pronom.ExternalSignature">ExternalSignature</a>]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.Format.id"><code class="name">var <span class="ident">id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.Format.internal_signatures"><code class="name">var <span class="ident">internal_signatures</span> : list[<a title="src.jsonid.pronom.InternalSignature" href="#src.jsonid.pronom.InternalSignature">InternalSignature</a>]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.Format.mime"><code class="name">var <span class="ident">mime</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.Format.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.Format.priorities"><code class="name">var <span class="ident">priorities</span> : list[int]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.Format.puid"><code class="name">var <span class="ident">puid</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.Format.version"><code class="name">var <span class="ident">version</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="src.jsonid.pronom.Identifier"><code class="flex name class">
+<span>class <span class="ident">Identifier</span></span>
+<span>(</span><span>type: str, value: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class Identifier:
+    type: str
+    value: str</code></pre>
+</details>
+<div class="desc"><p>Identifier(type: str, value: str)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="src.jsonid.pronom.Identifier.type"><code class="name">var <span class="ident">type</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.Identifier.value"><code class="name">var <span class="ident">value</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="src.jsonid.pronom.InternalSignature"><code class="flex name class">
+<span>class <span class="ident">InternalSignature</span></span>
+<span>(</span><span>id: str,<br>name: str,<br>byte_sequences: list[<a title="src.jsonid.pronom.ByteSequence" href="#src.jsonid.pronom.ByteSequence">ByteSequence</a>])</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class InternalSignature:
+    id: str
+    name: str
+    byte_sequences: list[ByteSequence]</code></pre>
+</details>
+<div class="desc"><p>InternalSignature(id: str, name: str, byte_sequences: list[src.jsonid.pronom.ByteSequence])</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="src.jsonid.pronom.InternalSignature.byte_sequences"><code class="name">var <span class="ident">byte_sequences</span> : list[<a title="src.jsonid.pronom.ByteSequence" href="#src.jsonid.pronom.ByteSequence">ByteSequence</a>]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.InternalSignature.id"><code class="name">var <span class="ident">id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.InternalSignature.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="src.jsonid.pronom.Priority"><code class="flex name class">
+<span>class <span class="ident">Priority</span></span>
+<span>(</span><span>type: str, id: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class Priority:
+    type: str
+    id: str</code></pre>
+</details>
+<div class="desc"><p>Priority(type: str, id: str)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="src.jsonid.pronom.Priority.id"><code class="name">var <span class="ident">id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="src.jsonid.pronom.Priority.type"><code class="name">var <span class="ident">type</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="src.jsonid.pronom.UnprocessableEntity"><code class="flex name class">
+<span>class <span class="ident">UnprocessableEntity</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UnprocessableEntity(Exception):
+    &#34;&#34;&#34;Provide a way to give complete feedback to the caller to allow
+    it to exit.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Provide a way to give complete feedback to the caller to allow
+it to exit.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src.jsonid" href="index.html">src.jsonid</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="src.jsonid.pronom.calculate_variable_off_bof" href="#src.jsonid.pronom.calculate_variable_off_bof">calculate_variable_off_bof</a></code></li>
+<li><code><a title="src.jsonid.pronom.calculate_variable_off_eof" href="#src.jsonid.pronom.calculate_variable_off_eof">calculate_variable_off_eof</a></code></li>
+<li><code><a title="src.jsonid.pronom.convert_marker_to_signature_sequence" href="#src.jsonid.pronom.convert_marker_to_signature_sequence">convert_marker_to_signature_sequence</a></code></li>
+<li><code><a title="src.jsonid.pronom.create_baseline_json_sequences" href="#src.jsonid.pronom.create_baseline_json_sequences">create_baseline_json_sequences</a></code></li>
+<li><code><a title="src.jsonid.pronom.create_file_format_collection" href="#src.jsonid.pronom.create_file_format_collection">create_file_format_collection</a></code></li>
+<li><code><a title="src.jsonid.pronom.create_many_to_one_byte_sequence" href="#src.jsonid.pronom.create_many_to_one_byte_sequence">create_many_to_one_byte_sequence</a></code></li>
+<li><code><a title="src.jsonid.pronom.create_one_to_many_byte_sequence" href="#src.jsonid.pronom.create_one_to_many_byte_sequence">create_one_to_many_byte_sequence</a></code></li>
+<li><code><a title="src.jsonid.pronom.encode_roundtrip" href="#src.jsonid.pronom.encode_roundtrip">encode_roundtrip</a></code></li>
+<li><code><a title="src.jsonid.pronom.preprocess_goto_markers" href="#src.jsonid.pronom.preprocess_goto_markers">preprocess_goto_markers</a></code></li>
+<li><code><a title="src.jsonid.pronom.process_formats_and_save" href="#src.jsonid.pronom.process_formats_and_save">process_formats_and_save</a></code></li>
+<li><code><a title="src.jsonid.pronom.process_formats_to_stdout" href="#src.jsonid.pronom.process_formats_to_stdout">process_formats_to_stdout</a></code></li>
+<li><code><a title="src.jsonid.pronom.process_markers" href="#src.jsonid.pronom.process_markers">process_markers</a></code></li>
+<li><code><a title="src.jsonid.pronom.quote_and_encode" href="#src.jsonid.pronom.quote_and_encode">quote_and_encode</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="src.jsonid.pronom.ByteSequence" href="#src.jsonid.pronom.ByteSequence">ByteSequence</a></code></h4>
+<ul class="two-column">
+<li><code><a title="src.jsonid.pronom.ByteSequence.endian" href="#src.jsonid.pronom.ByteSequence.endian">endian</a></code></li>
+<li><code><a title="src.jsonid.pronom.ByteSequence.id" href="#src.jsonid.pronom.ByteSequence.id">id</a></code></li>
+<li><code><a title="src.jsonid.pronom.ByteSequence.max_off" href="#src.jsonid.pronom.ByteSequence.max_off">max_off</a></code></li>
+<li><code><a title="src.jsonid.pronom.ByteSequence.min_off" href="#src.jsonid.pronom.ByteSequence.min_off">min_off</a></code></li>
+<li><code><a title="src.jsonid.pronom.ByteSequence.pos" href="#src.jsonid.pronom.ByteSequence.pos">pos</a></code></li>
+<li><code><a title="src.jsonid.pronom.ByteSequence.value" href="#src.jsonid.pronom.ByteSequence.value">value</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="src.jsonid.pronom.ExternalSignature" href="#src.jsonid.pronom.ExternalSignature">ExternalSignature</a></code></h4>
+<ul class="">
+<li><code><a title="src.jsonid.pronom.ExternalSignature.id" href="#src.jsonid.pronom.ExternalSignature.id">id</a></code></li>
+<li><code><a title="src.jsonid.pronom.ExternalSignature.signature" href="#src.jsonid.pronom.ExternalSignature.signature">signature</a></code></li>
+<li><code><a title="src.jsonid.pronom.ExternalSignature.type" href="#src.jsonid.pronom.ExternalSignature.type">type</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="src.jsonid.pronom.Format" href="#src.jsonid.pronom.Format">Format</a></code></h4>
+<ul class="two-column">
+<li><code><a title="src.jsonid.pronom.Format.classification" href="#src.jsonid.pronom.Format.classification">classification</a></code></li>
+<li><code><a title="src.jsonid.pronom.Format.external_signatures" href="#src.jsonid.pronom.Format.external_signatures">external_signatures</a></code></li>
+<li><code><a title="src.jsonid.pronom.Format.id" href="#src.jsonid.pronom.Format.id">id</a></code></li>
+<li><code><a title="src.jsonid.pronom.Format.internal_signatures" href="#src.jsonid.pronom.Format.internal_signatures">internal_signatures</a></code></li>
+<li><code><a title="src.jsonid.pronom.Format.mime" href="#src.jsonid.pronom.Format.mime">mime</a></code></li>
+<li><code><a title="src.jsonid.pronom.Format.name" href="#src.jsonid.pronom.Format.name">name</a></code></li>
+<li><code><a title="src.jsonid.pronom.Format.priorities" href="#src.jsonid.pronom.Format.priorities">priorities</a></code></li>
+<li><code><a title="src.jsonid.pronom.Format.puid" href="#src.jsonid.pronom.Format.puid">puid</a></code></li>
+<li><code><a title="src.jsonid.pronom.Format.version" href="#src.jsonid.pronom.Format.version">version</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="src.jsonid.pronom.Identifier" href="#src.jsonid.pronom.Identifier">Identifier</a></code></h4>
+<ul class="">
+<li><code><a title="src.jsonid.pronom.Identifier.type" href="#src.jsonid.pronom.Identifier.type">type</a></code></li>
+<li><code><a title="src.jsonid.pronom.Identifier.value" href="#src.jsonid.pronom.Identifier.value">value</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="src.jsonid.pronom.InternalSignature" href="#src.jsonid.pronom.InternalSignature">InternalSignature</a></code></h4>
+<ul class="">
+<li><code><a title="src.jsonid.pronom.InternalSignature.byte_sequences" href="#src.jsonid.pronom.InternalSignature.byte_sequences">byte_sequences</a></code></li>
+<li><code><a title="src.jsonid.pronom.InternalSignature.id" href="#src.jsonid.pronom.InternalSignature.id">id</a></code></li>
+<li><code><a title="src.jsonid.pronom.InternalSignature.name" href="#src.jsonid.pronom.InternalSignature.name">name</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="src.jsonid.pronom.Priority" href="#src.jsonid.pronom.Priority">Priority</a></code></h4>
+<ul class="">
+<li><code><a title="src.jsonid.pronom.Priority.id" href="#src.jsonid.pronom.Priority.id">id</a></code></li>
+<li><code><a title="src.jsonid.pronom.Priority.type" href="#src.jsonid.pronom.Priority.type">type</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="src.jsonid.pronom.UnprocessableEntity" href="#src.jsonid.pronom.UnprocessableEntity">UnprocessableEntity</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

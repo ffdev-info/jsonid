@@ -78,7 +78,7 @@ to UTF-8.</p>
 <pre><code class="python">async def identify_json(paths: list[str]):
     &#34;&#34;&#34;Identify objects.&#34;&#34;&#34;
     for idx, path in enumerate(paths):
-        valid, data, _, _ = await identify_plaintext_bytestream(path)
+        valid, data = await identify_plaintext_bytestream(path)
         if not valid:
             continue
         print(json.dumps(data, indent=2))</code></pre>
@@ -143,7 +143,7 @@ processed as JSON.</p></div>
     parser = argparse.ArgumentParser(
         prog=&#34;json2json&#34;,
         description=&#34;parse JSON UTF-16 (BE-LE) objects and output them as UTF-8 for the sake of developer ergonomics&#34;,
-        epilog=&#34;for more information visit https://github.com/ffdev-info/json-id&#34;,
+        epilog=&#34;for more information visit https://github.com/ffdev-info/jsonid&#34;,
     )
     parser.add_argument(
         &#34;--debug&#34;,

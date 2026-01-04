@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
-<title>src.jsonid API documentation</title>
-<meta name="description" content="">
+<title>src.jsonid.export_helpers API documentation</title>
+<meta name="description" content="Helpers for the export functions.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -33,86 +33,61 @@ el.replaceWith(d);
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>src.jsonid</code></h1>
+<h1 class="title">Module <code>src.jsonid.export_helpers</code></h1>
 </header>
 <section id="section-intro">
+<p>Helpers for the export functions.</p>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt><code class="name"><a title="src.jsonid.analysis" href="analysis.html">src.jsonid.analysis</a></code></dt>
+<dt id="src.jsonid.export_helpers.get_utc_timestamp_now"><code class="name flex">
+<span>def <span class="ident">get_utc_timestamp_now</span></span>(<span>)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Simple module to analys JSON for technical metadata.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_utc_timestamp_now():
+    &#34;&#34;&#34;Get a formatted UTC timestamp for &#39;now&#39; that can be used when
+    a timestamp is needed.
+    &#34;&#34;&#34;
+    return datetime.datetime.now(timezone.utc).strftime(UTC_TIME_FORMAT)</code></pre>
+</details>
+<div class="desc"><p>Get a formatted UTC timestamp for 'now' that can be used when
+a timestamp is needed.</p></div>
 </dd>
-<dt><code class="name"><a title="src.jsonid.base_obj_presets" href="base_obj_presets.html">src.jsonid.base_obj_presets</a></code></dt>
+<dt id="src.jsonid.export_helpers.new_prettify"><code class="name flex">
+<span>def <span class="ident">new_prettify</span></span>(<span>c)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Standard objects to be returned by JSONID for consistency …</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.compressionlib" href="compressionlib.html">src.jsonid.compressionlib</a></code></dt>
-<dd>
-<div class="desc"><p>Handlers for compression.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.export" href="export.html">src.jsonid.export</a></code></dt>
-<dd>
-<div class="desc"><p>Functions to support export.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.export_helpers" href="export_helpers.html">src.jsonid.export_helpers</a></code></dt>
-<dd>
-<div class="desc"><p>Helpers for the export functions.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.file_processing" href="file_processing.html">src.jsonid.file_processing</a></code></dt>
-<dd>
-<div class="desc"><p>File processing functions.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.helpers" href="helpers.html">src.jsonid.helpers</a></code></dt>
-<dd>
-<div class="desc"><p>Code helperrs.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.htm_template" href="htm_template.html">src.jsonid.htm_template</a></code></dt>
-<dd>
-<div class="desc"><p>HTML template for output of the registry data.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.jsonid" href="jsonid.html">src.jsonid.jsonid</a></code></dt>
-<dd>
-<div class="desc"><p>jsonid entry-point.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.lookup" href="lookup.html">src.jsonid.lookup</a></code></dt>
-<dd>
-<div class="desc"><p>Provide lookup functions for the registry.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.output" href="output.html">src.jsonid.output</a></code></dt>
-<dd>
-<div class="desc"><p>Functions for output of results.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.pronom" href="pronom.html">src.jsonid.pronom</a></code></dt>
-<dd>
-<div class="desc"><p>PRONOM export routines …</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry" href="registry.html">src.jsonid.registry</a></code></dt>
-<dd>
-<div class="desc"><p>JSON registry processor.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry_class" href="registry_class.html">src.jsonid.registry_class</a></code></dt>
-<dd>
-<div class="desc"><p>Dataclasses for the registry objects.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry_data" href="registry_data.html">src.jsonid.registry_data</a></code></dt>
-<dd>
-<div class="desc"><p>JSON registry data.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry_matchers" href="registry_matchers.html">src.jsonid.registry_matchers</a></code></dt>
-<dd>
-<div class="desc"><p>Functions to support processing of the registry.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.version" href="version.html">src.jsonid.version</a></code></dt>
-<dd>
-<div class="desc"><p>jsonid version information.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def new_prettify(c):
+    &#34;&#34;&#34;Remove excess newlines from DOM output.
+
+    via: https://stackoverflow.com/a/14493981
+    &#34;&#34;&#34;
+    reparsed = parseString(c)
+    return &#34;\n&#34;.join(
+        [
+            line
+            for line in reparsed.toprettyxml(indent=&#34; &#34; * 2).split(&#34;\n&#34;)
+            if line.strip()
+        ]
+    )</code></pre>
+</details>
+<div class="desc"><p>Remove excess newlines from DOM output.</p>
+<p>via: <a href="https://stackoverflow.com/a/14493981">https://stackoverflow.com/a/14493981</a></p></div>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
 </section>
 <section>
 </section>
@@ -124,28 +99,13 @@ el.replaceWith(d);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="src" href="../index.html">src</a></code></li>
+<li><code><a title="src.jsonid" href="index.html">src.jsonid</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
-<ul>
-<li><code><a title="src.jsonid.analysis" href="analysis.html">src.jsonid.analysis</a></code></li>
-<li><code><a title="src.jsonid.base_obj_presets" href="base_obj_presets.html">src.jsonid.base_obj_presets</a></code></li>
-<li><code><a title="src.jsonid.compressionlib" href="compressionlib.html">src.jsonid.compressionlib</a></code></li>
-<li><code><a title="src.jsonid.export" href="export.html">src.jsonid.export</a></code></li>
-<li><code><a title="src.jsonid.export_helpers" href="export_helpers.html">src.jsonid.export_helpers</a></code></li>
-<li><code><a title="src.jsonid.file_processing" href="file_processing.html">src.jsonid.file_processing</a></code></li>
-<li><code><a title="src.jsonid.helpers" href="helpers.html">src.jsonid.helpers</a></code></li>
-<li><code><a title="src.jsonid.htm_template" href="htm_template.html">src.jsonid.htm_template</a></code></li>
-<li><code><a title="src.jsonid.jsonid" href="jsonid.html">src.jsonid.jsonid</a></code></li>
-<li><code><a title="src.jsonid.lookup" href="lookup.html">src.jsonid.lookup</a></code></li>
-<li><code><a title="src.jsonid.output" href="output.html">src.jsonid.output</a></code></li>
-<li><code><a title="src.jsonid.pronom" href="pronom.html">src.jsonid.pronom</a></code></li>
-<li><code><a title="src.jsonid.registry" href="registry.html">src.jsonid.registry</a></code></li>
-<li><code><a title="src.jsonid.registry_class" href="registry_class.html">src.jsonid.registry_class</a></code></li>
-<li><code><a title="src.jsonid.registry_data" href="registry_data.html">src.jsonid.registry_data</a></code></li>
-<li><code><a title="src.jsonid.registry_matchers" href="registry_matchers.html">src.jsonid.registry_matchers</a></code></li>
-<li><code><a title="src.jsonid.version" href="version.html">src.jsonid.version</a></code></li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="src.jsonid.export_helpers.get_utc_timestamp_now" href="#src.jsonid.export_helpers.get_utc_timestamp_now">get_utc_timestamp_now</a></code></li>
+<li><code><a title="src.jsonid.export_helpers.new_prettify" href="#src.jsonid.export_helpers.new_prettify">new_prettify</a></code></li>
 </ul>
 </li>
 </ul>

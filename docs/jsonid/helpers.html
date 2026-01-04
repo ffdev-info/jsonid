@@ -273,19 +273,19 @@ el.replaceWith(d);
     # pylint: disable=R0911
 
     if replace_me.__name__ == &#34;dict&#34;:
-        return &#34;map&#34;
+        return TYPE_MAP
     if replace_me.__name__ == &#34;int&#34;:
-        return &#34;integer&#34;
+        return TYPE_INTEGER
     if replace_me.__name__ == &#34;list&#34;:
-        return &#34;list&#34;
+        return TYPE_LIST
     if replace_me.__name__ == &#34;str&#34;:
-        return &#34;string&#34;
+        return TYPE_STRING
     if replace_me.__name__ == &#34;float&#34;:
-        return &#34;float&#34;
+        return TYPE_FLOAT
     if replace_me.__name__ == &#34;bool&#34;:
-        return &#34;bool&#34;
+        return TYPE_BOOL
     if replace_me.__name__ == &#34;NoneType&#34;:
-        return &#34;NoneType&#34;
+        return TYPE_NONE
     if not isinstance(replace_me, type):
         pass
     return replace_me</code></pre>
