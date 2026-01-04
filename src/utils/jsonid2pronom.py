@@ -9,7 +9,13 @@ import json
 import logging
 import sys
 
-from src.jsonid import pronom
+try:
+    from src.jsonid import pronom
+except ModuleNotFoundError:
+    try:
+        from jsonid import pronom
+    except ModuleNotFoundError:
+        import pronom
 
 # Set up logging.
 logging.basicConfig(
