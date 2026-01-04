@@ -1,11 +1,11 @@
 """JSONID entry-points."""
 
-from src.jsonid import jsonid
+from src.utils import jsonid2pronom
 
 
 def main():
     """Primary entry point for this script."""
-    jsonid.main()
+    jsonid2pronom.main()
 
 
 if __name__ == "__main__":

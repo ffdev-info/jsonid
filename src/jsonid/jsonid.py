@@ -98,7 +98,7 @@ def main() -> None:
     # pylint: disable=R0912,R0915
 
     parser = argparse.ArgumentParser(
-        prog="json-id",
+        prog="jsonid",
         description="proof-of-concept identifier for JSON objects on disk based on identifying valid objects and their key-values",
         epilog="for more information visit https://github.com/ffdev-info/json-id",
     )
@@ -156,10 +156,12 @@ def main() -> None:
         help="path to a custom registry to lead into memory replacing the default",
         required=False,
     )
+    # NB. consider output to stdout once the feature is more stable.
     parser.add_argument(
         "--pronom",
-        help="return a PRONOM-centric view of the results",
+        help=f"return a PRONOM-centric view of the results to `{export.PRONOM_FILENAME}` (BETA)",
         required=False,
+        action="store_true",
     )
     parser.add_argument(
         "--export",
@@ -220,7 +222,8 @@ def main() -> None:
     if args.registry:
         raise NotImplementedError("custom registry is not yet available")
     if args.pronom:
-        raise NotImplementedError("pronom view is not yet implemented")
+        export.export_pronom()
+        sys.exit()
     if args.language:
         raise NotImplementedError("multiple languages are not yet implemented")
     if args.export:

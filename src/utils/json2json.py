@@ -62,7 +62,7 @@ async def identify_plaintext_bytestream(path: str) -> Tuple[bool, str]:
 async def identify_json(paths: list[str]):
     """Identify objects."""
     for idx, path in enumerate(paths):
-        valid, data, _, _ = await identify_plaintext_bytestream(path)
+        valid, data = await identify_plaintext_bytestream(path)
         if not valid:
             continue
         print(json.dumps(data, indent=2))
@@ -114,7 +114,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         prog="json2json",
         description="parse JSON UTF-16 (BE-LE) objects and output them as UTF-8 for the sake of developer ergonomics",
-        epilog="for more information visit https://github.com/ffdev-info/json-id",
+        epilog="for more information visit https://github.com/ffdev-info/jsonid",
     )
     parser.add_argument(
         "--debug",

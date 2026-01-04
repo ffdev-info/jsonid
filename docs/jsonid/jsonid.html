@@ -84,7 +84,7 @@ el.replaceWith(d);
     # pylint: disable=R0912,R0915
 
     parser = argparse.ArgumentParser(
-        prog=&#34;json-id&#34;,
+        prog=&#34;jsonid&#34;,
         description=&#34;proof-of-concept identifier for JSON objects on disk based on identifying valid objects and their key-values&#34;,
         epilog=&#34;for more information visit https://github.com/ffdev-info/json-id&#34;,
     )
@@ -142,10 +142,12 @@ el.replaceWith(d);
         help=&#34;path to a custom registry to lead into memory replacing the default&#34;,
         required=False,
     )
+    # NB. consider output to stdout once the feature is more stable.
     parser.add_argument(
         &#34;--pronom&#34;,
-        help=&#34;return a PRONOM-centric view of the results&#34;,
+        help=f&#34;return a PRONOM-centric view of the results to `{export.PRONOM_FILENAME}` (BETA)&#34;,
         required=False,
+        action=&#34;store_true&#34;,
     )
     parser.add_argument(
         &#34;--export&#34;,
@@ -155,7 +157,7 @@ el.replaceWith(d);
     )
     parser.add_argument(
         &#34;--check&#34;,
-        help=&#34;check the registry entrues are correct&#34;,
+        help=&#34;check the registry entries are correct&#34;,
         required=False,
         action=&#34;store_true&#34;,
     )
@@ -206,7 +208,8 @@ el.replaceWith(d);
     if args.registry:
         raise NotImplementedError(&#34;custom registry is not yet available&#34;)
     if args.pronom:
-        raise NotImplementedError(&#34;pronom view is not yet implemented&#34;)
+        export.export_pronom()
+        sys.exit()
     if args.language:
         raise NotImplementedError(&#34;multiple languages are not yet implemented&#34;)
     if args.export:

@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
-<title>src.jsonid API documentation</title>
-<meta name="description" content="">
+<title>src.utils.jsonid2pronom API documentation</title>
+<meta name="description" content="jsonid2pronom provides a helper script to enable export of generic
+JSONID compatible markers to a PRONOM compatible signature file.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -33,86 +34,152 @@ el.replaceWith(d);
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>src.jsonid</code></h1>
+<h1 class="title">Module <code>src.utils.jsonid2pronom</code></h1>
 </header>
 <section id="section-intro">
+<p>jsonid2pronom provides a helper script to enable export of generic
+JSONID compatible markers to a PRONOM compatible signature file.</p>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt><code class="name"><a title="src.jsonid.analysis" href="analysis.html">src.jsonid.analysis</a></code></dt>
+<dt id="src.utils.jsonid2pronom.load_patterns"><code class="name flex">
+<span>async def <span class="ident">load_patterns</span></span>(<span>path: str) ‑> list</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Simple module to analys JSON for technical metadata.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def load_patterns(path: str) -&gt; list:
+    &#34;&#34;&#34;Load patterns from a file for conversion to a signature file.&#34;&#34;&#34;
+    patterns = []
+    with open(path, &#34;r&#34;, encoding=&#34;utf-8&#34;) as patterns_file:
+        patterns = json.loads(patterns_file.read())
+    return patterns</code></pre>
+</details>
+<div class="desc"><p>Load patterns from a file for conversion to a signature file.</p></div>
 </dd>
-<dt><code class="name"><a title="src.jsonid.base_obj_presets" href="base_obj_presets.html">src.jsonid.base_obj_presets</a></code></dt>
+<dt id="src.utils.jsonid2pronom.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>) ‑> None</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Standard objects to be returned by JSONID for consistency …</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main() -&gt; None:
+    &#34;&#34;&#34;Primary entry point for this script.&#34;&#34;&#34;
+    parser = argparse.ArgumentParser(
+        prog=&#34;jsonid2pronom&#34;,
+        description=&#34;convert JSONID compatible markers to PRONOM&#34;,
+        epilog=&#34;for more information visit https://github.com/ffdev-info/jsonid&#34;,
+    )
+    parser.add_argument(
+        &#34;--debug&#34;,
+        help=&#34;use debug loggng&#34;,
+        required=False,
+        action=&#34;store_true&#34;,
+    )
+    parser.add_argument(
+        &#34;--path&#34;,
+        &#34;-p&#34;,
+        help=&#34;file path to process&#34;,
+        required=False,
+    )
+    args = parser.parse_args()
+    logging.getLogger(__name__).setLevel(logging.DEBUG if args.debug else logging.INFO)
+    logger.debug(&#34;debug logging is configured&#34;)
+    if not args.path:
+        parser.print_help(sys.stderr)
+        sys.exit()
+    asyncio.run(
+        output_signature(
+            path=args.path,
+        )
+    )</code></pre>
+</details>
+<div class="desc"><p>Primary entry point for this script.</p></div>
 </dd>
-<dt><code class="name"><a title="src.jsonid.compressionlib" href="compressionlib.html">src.jsonid.compressionlib</a></code></dt>
+<dt id="src.utils.jsonid2pronom.output_signature"><code class="name flex">
+<span>async def <span class="ident">output_signature</span></span>(<span>path: str)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Handlers for compression.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.export" href="export.html">src.jsonid.export</a></code></dt>
-<dd>
-<div class="desc"><p>Functions to support export.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.export_helpers" href="export_helpers.html">src.jsonid.export_helpers</a></code></dt>
-<dd>
-<div class="desc"><p>Helpers for the export functions.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.file_processing" href="file_processing.html">src.jsonid.file_processing</a></code></dt>
-<dd>
-<div class="desc"><p>File processing functions.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.helpers" href="helpers.html">src.jsonid.helpers</a></code></dt>
-<dd>
-<div class="desc"><p>Code helperrs.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.htm_template" href="htm_template.html">src.jsonid.htm_template</a></code></dt>
-<dd>
-<div class="desc"><p>HTML template for output of the registry data.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.jsonid" href="jsonid.html">src.jsonid.jsonid</a></code></dt>
-<dd>
-<div class="desc"><p>jsonid entry-point.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.lookup" href="lookup.html">src.jsonid.lookup</a></code></dt>
-<dd>
-<div class="desc"><p>Provide lookup functions for the registry.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.output" href="output.html">src.jsonid.output</a></code></dt>
-<dd>
-<div class="desc"><p>Functions for output of results.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.pronom" href="pronom.html">src.jsonid.pronom</a></code></dt>
-<dd>
-<div class="desc"><p>PRONOM export routines …</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry" href="registry.html">src.jsonid.registry</a></code></dt>
-<dd>
-<div class="desc"><p>JSON registry processor.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry_class" href="registry_class.html">src.jsonid.registry_class</a></code></dt>
-<dd>
-<div class="desc"><p>Dataclasses for the registry objects.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry_data" href="registry_data.html">src.jsonid.registry_data</a></code></dt>
-<dd>
-<div class="desc"><p>JSON registry data.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.registry_matchers" href="registry_matchers.html">src.jsonid.registry_matchers</a></code></dt>
-<dd>
-<div class="desc"><p>Functions to support processing of the registry.</p></div>
-</dd>
-<dt><code class="name"><a title="src.jsonid.version" href="version.html">src.jsonid.version</a></code></dt>
-<dd>
-<div class="desc"><p>jsonid version information.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def output_signature(path: str):
+    &#34;&#34;&#34;Output JSONID compatible signatures to PRONOM.&#34;&#34;&#34;
+
+    formats = []
+
+    encodings = (&#34;UTF-8&#34;, &#34;UTF-16&#34;, &#34;UTF-16BE&#34;, &#34;UTF-32LE&#34;)
+    priorities = []
+
+    increment_id = 0
+
+    markers = await load_patterns(path)
+
+    if not markers:
+        logger.error(&#34;no patterns provided via path arg&#34;)
+        sys.exit(1)
+
+    for encoding in encodings:
+        increment_id += 1
+        json_puid = &#34;jsonid2pronom/1&#34;
+        name_ = f&#34;JSONID2PRONOM Conversion ({encoding})&#34;
+        try:
+            mime = &#34;application/json&#34;
+        except IndexError:
+            mime = &#34;&#34;
+        try:
+            sequences = pronom.process_markers(
+                copy.deepcopy(markers),
+                increment_id,
+                encoding=encoding,
+            )
+        except pronom.UnprocessableEntity as err:
+            logger.error(
+                &#34;%s %s: cannot handle: %s&#34;,
+                json_puid,
+                name_,
+                err,
+            )
+            for err_marker in markers:
+                logger.debug(&#34;--- START ---&#34;)
+                logger.debug(&#34;marker: %s&#34;, err_marker)
+                logger.debug(&#34;---  END  ---&#34;)
+            continue
+        fmt = pronom.Format(
+            id=increment_id,
+            name=name_,
+            version=&#34;&#34;,
+            puid=json_puid,
+            mime=mime,
+            classification=&#34;structured text&#34;,
+            external_signatures=[
+                pronom.ExternalSignature(
+                    id=increment_id,
+                    signature=&#34;json&#34;,
+                    type=pronom.EXT,
+                )
+            ],
+            internal_signatures=sequences,
+            priorities=list(set(priorities)),
+        )
+        priorities.append(f&#34;{increment_id}&#34;)
+        formats.append(fmt)
+
+    pronom.process_formats_to_stdout(formats)</code></pre>
+</details>
+<div class="desc"><p>Output JSONID compatible signatures to PRONOM.</p></div>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
 </section>
 <section>
 </section>
@@ -124,28 +191,14 @@ el.replaceWith(d);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="src" href="../index.html">src</a></code></li>
+<li><code><a title="src.utils" href="index.html">src.utils</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
-<ul>
-<li><code><a title="src.jsonid.analysis" href="analysis.html">src.jsonid.analysis</a></code></li>
-<li><code><a title="src.jsonid.base_obj_presets" href="base_obj_presets.html">src.jsonid.base_obj_presets</a></code></li>
-<li><code><a title="src.jsonid.compressionlib" href="compressionlib.html">src.jsonid.compressionlib</a></code></li>
-<li><code><a title="src.jsonid.export" href="export.html">src.jsonid.export</a></code></li>
-<li><code><a title="src.jsonid.export_helpers" href="export_helpers.html">src.jsonid.export_helpers</a></code></li>
-<li><code><a title="src.jsonid.file_processing" href="file_processing.html">src.jsonid.file_processing</a></code></li>
-<li><code><a title="src.jsonid.helpers" href="helpers.html">src.jsonid.helpers</a></code></li>
-<li><code><a title="src.jsonid.htm_template" href="htm_template.html">src.jsonid.htm_template</a></code></li>
-<li><code><a title="src.jsonid.jsonid" href="jsonid.html">src.jsonid.jsonid</a></code></li>
-<li><code><a title="src.jsonid.lookup" href="lookup.html">src.jsonid.lookup</a></code></li>
-<li><code><a title="src.jsonid.output" href="output.html">src.jsonid.output</a></code></li>
-<li><code><a title="src.jsonid.pronom" href="pronom.html">src.jsonid.pronom</a></code></li>
-<li><code><a title="src.jsonid.registry" href="registry.html">src.jsonid.registry</a></code></li>
-<li><code><a title="src.jsonid.registry_class" href="registry_class.html">src.jsonid.registry_class</a></code></li>
-<li><code><a title="src.jsonid.registry_data" href="registry_data.html">src.jsonid.registry_data</a></code></li>
-<li><code><a title="src.jsonid.registry_matchers" href="registry_matchers.html">src.jsonid.registry_matchers</a></code></li>
-<li><code><a title="src.jsonid.version" href="version.html">src.jsonid.version</a></code></li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="src.utils.jsonid2pronom.load_patterns" href="#src.utils.jsonid2pronom.load_patterns">load_patterns</a></code></li>
+<li><code><a title="src.utils.jsonid2pronom.main" href="#src.utils.jsonid2pronom.main">main</a></code></li>
+<li><code><a title="src.utils.jsonid2pronom.output_signature" href="#src.utils.jsonid2pronom.output_signature">output_signature</a></code></li>
 </ul>
 </li>
 </ul>

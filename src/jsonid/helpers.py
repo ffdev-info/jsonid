@@ -2,7 +2,7 @@
 
 import logging
 import time
-from typing import Union
+from typing import Final, Union
 
 try:
     import htm_template
@@ -75,6 +75,15 @@ def format_marker(marker_text: str, marker: dict) -> str:
     return f"{marker_text}{marker_formatted}\n"
 
 
+TYPE_BOOL: Final[str] = "bool"
+TYPE_FLOAT: Final[str] = "float"
+TYPE_INTEGER: Final[str] = "integer"
+TYPE_LIST: Final[str] = "list"
+TYPE_NONE: Final[str] = "NoneType"
+TYPE_MAP: Final[str] = "map"
+TYPE_STRING: Final[str] = "string"
+
+
 def substitute_type_text(replace_me: Union[str, type]):
     """Output a text substitution for a type that will otherwise not
     pretty-print.
@@ -83,19 +92,19 @@ def substitute_type_text(replace_me: Union[str, type]):
     # pylint: disable=R0911
 
     if replace_me.__name__ == "dict":
-        return "map"
+        return TYPE_MAP
     if replace_me.__name__ == "int":
-        return "integer"
+        return TYPE_INTEGER
     if replace_me.__name__ == "list":
-        return "list"
+        return TYPE_LIST
     if replace_me.__name__ == "str":
-        return "string"
+        return TYPE_STRING
     if replace_me.__name__ == "float":
-        return "float"
+        return TYPE_FLOAT
     if replace_me.__name__ == "bool":
-        return "bool"
+        return TYPE_BOOL
     if replace_me.__name__ == "NoneType":
-        return "NoneType"
+        return TYPE_NONE
     if not isinstance(replace_me, type):
         pass
     return replace_me

@@ -413,6 +413,60 @@ PRONOM IDs that can then be referenced in the JSONID output.
 Evantually, PRONOM or a PRONOM-like tool might host an authoritative version
 of the JSONID registry.
 
+### JSONID for PRONOM Signature Development
+
+JSONID provides a high-level language for output of PRONOM compatible
+signatures. The feature set is still in its BETA phase but JSONID provides
+two distinct capabilities:
+
+#### 1. Registry output
+
+JSONID's registry can be output using the `--pronom` flag. A signature file
+will be created under `jsonid_pronom.xml` which can be imported into DROID
+for identification of document types registered with JSONID.
+
+JSONID's registry is output alongisde a handful of baseline JSON signatures
+designed to capture "plain"-JSON that is not yet encoded in the registry.
+
+#### 2. Signature development
+
+A standalone `json2pronom` utility is provided for creation of potentially
+robust DROID compatible signatures.
+
+As a high-level language, signatures can be defined in easy to understand
+syntax and then output consistently via the `json2pronom` utility. Signatures
+include sensible defaults for whitespace and other aspects that are
+difficult for signature developers to consistently anticipate when writing
+JSON based signatures.
+
+Given a [sample pattern file](./pronom_example/patterns_example.json) a DROID
+compatible snippet can be output as follows (UTF-8 shown for brevity):
+
+<!--markdownlint-disable-->
+
+```xml
+<?xml version="1.0" ?>
+<FFSignatureFile xmlns="http://www.nationalarchives.gov.uk/pronom/SignatureFile" Version="1" DateCreated="2026-01-04T16:14:16Z">
+  <InternalSignatureCollection>
+    <InternalSignature ID="1" Specificity="Specific">
+      <ByteSequence Reference="BOF" Sequence="{0-4095}7B" MinOffset="0" MaxOffset="4095"/>
+      <ByteSequence Reference="VAR" Sequence="226B65793122{0-16}3A" MinOffset="" MaxOffset=""/>
+      <ByteSequence Reference="VAR" Sequence="226B65793222{0-16}3A" MinOffset="" MaxOffset=""/>
+      <ByteSequence Reference="EOF" Sequence="7D{0-4095}" MinOffset="0" MaxOffset="4095"/>
+    </InternalSignature>
+  </InternalSignatureCollection>
+  <FileFormatCollection>
+    <FileFormat ID="1" Name="JSONID2PRONOM Conversion (UTF-8)" PUID="jsonid2pronom/1" Version="" MIMEType="application/json" FormatType="structured text">
+      <InternalSignatureID>1</InternalSignatureID>
+      <Extension>json</Extension>
+    </FileFormat>
+</FFSignatureFile>
+```
+
+<!--markdownlint-enable-->
+
+Feedback on this utility is welcome.
+
 ## Output format
 
 Previously JSONID output YAML containing all result object metadata. It has

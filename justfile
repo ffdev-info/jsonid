@@ -83,6 +83,10 @@ check-debug:
 @hexdump file:
    hexdump -v -e '"\\\x" 1/1 "%02x"' {{file}}
 
+# Hexdump bytes only.
+@hexdump-plain file:
+    hexdump -ve '1/1 "%.2x"' {{file}}
+
 # code coverage
 coverage:
  python -m tox -e coverage
@@ -102,3 +106,25 @@ lookup-ref-ex:
 # lookup ref
 @lookup-ref ref:
  python jsonid.py lookup {{ref}}
+
+# export as PRONOM
+pronom:
+ python jsonid.py --pronom --debug
+
+# move pronom to .droid folder
+pronom-to-droid:
+ ~/.droid6/clean.sh
+ rm -f ~/.droid6/signature_files/jsonid_pronom.xml
+ cp jsonid_pronom.xml ~/.droid6/signature_files/
+
+dir := `pwd`
+
+# load pronom to siegfried via roy
+roy:
+ @echo {{dir}}
+ roy build --noreports -extend {{dir}}/jsonid_pronom.xml
+
+# droid-cli
+droid-cli path: pronom-to-droid
+ java -jar ~/dp/droid/droid-binary-6.8.0-bin/droid-command-line-6.8.0.jar -s 1
+ java -jar ~/dp/droid/droid-binary-6.8.0-bin/droid-command-line-6.8.0.jar -ri  {{path}}

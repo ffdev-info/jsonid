@@ -55,7 +55,7 @@ el.replaceWith(d);
 </summary>
 <pre><code class="python">def exportJSON() -&gt; None:  # pylint: disable=C0103
     &#34;&#34;&#34;Export to JSON.&#34;&#34;&#34;
-    logger.debug(&#34;exporting registry ad JSON&#34;)
+    logger.debug(&#34;exporting registry as JSON&#34;)
     data = registry_data.registry()
     json_obj = []
     id_ = {
@@ -74,9 +74,144 @@ el.replaceWith(d);
 </details>
 <div class="desc"><p>Export to JSON.</p></div>
 </dd>
+<dt id="src.jsonid.export.export_pronom"><code class="name flex">
+<span>def <span class="ident">export_pronom</span></span>(<span>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_pronom() -&gt; None:
+    &#34;&#34;&#34;Export a PRONOM compatible set of signatures.
+
+    Export is done in two phases. A set of proposed &#34;Baseline&#34; JSON
+    signatures to catch many JSON instances.
+
+    Second the JSONID registry is exported.
+
+    Every export has a priority over the other so that there should
+    be no multiple identification results.
+    &#34;&#34;&#34;
+
+    # pylint: disable=R0914; too-many local variables.
+
+    logger.debug(&#34;exporting registry as PRONOM&#34;)
+
+    reg_data = registry_data.registry()
+    formats = []
+
+    encodings = (&#34;UTF-8&#34;, &#34;UTF-16&#34;, &#34;UTF-16BE&#34;, &#34;UTF-32LE&#34;)
+    priorities = []
+
+    increment_id = 0
+
+    for encoding in encodings:
+        all_baseline = pronom.create_baseline_json_sequences(encoding)
+        for baseline in all_baseline:
+            increment_id += 1
+            fmt = pronom.Format(
+                id=increment_id,
+                name=f&#34;JSON (Baseline - fmt/817) ({encoding})&#34;,
+                version=&#34;&#34;,
+                puid=&#34;jsonid:0000&#34;,
+                mime=&#34;application/json&#34;,
+                classification=&#34;structured text&#34;,
+                external_signatures=[
+                    pronom.ExternalSignature(
+                        id=increment_id,
+                        signature=&#34;json&#34;,
+                        type=pronom.EXT,
+                    )
+                ],
+                internal_signatures=[baseline],
+                priorities=priorities,
+            )
+            priorities.append(f&#34;{increment_id}&#34;)
+            formats.append(fmt)
+
+    for encoding in encodings:
+        for entry in reg_data:
+            increment_id += 1
+            json_puid = f&#34;{entry.json()[&#39;identifier&#39;]};{encoding}&#34;
+            name_ = f&#34;{entry.json()[&#39;name&#39;][0][&#39;@en&#39;]} ({encoding})&#34;
+            markers = entry.json()[&#34;markers&#34;]
+            try:
+                mime = entry.json()[&#34;mime&#34;][0]
+            except IndexError:
+                mime = &#34;&#34;
+            try:
+                sequences = pronom.process_markers(
+                    copy.deepcopy(markers),
+                    increment_id,
+                    encoding=encoding,
+                )
+            except pronom.UnprocessableEntity as err:
+                logger.error(
+                    &#34;%s %s: cannot handle: %s&#34;,
+                    json_puid,
+                    name_,
+                    err,
+                )
+                for marker in markers:
+                    logger.debug(&#34;--- START ---&#34;)
+                    logger.debug(&#34;marker: %s&#34;, marker)
+                    logger.debug(&#34;---  END  ---&#34;)
+                continue
+            fmt = pronom.Format(
+                id=increment_id,
+                name=name_,
+                version=&#34;&#34;,
+                puid=json_puid,
+                mime=mime,
+                classification=&#34;structured text&#34;,
+                external_signatures=[
+                    pronom.ExternalSignature(
+                        id=increment_id,
+                        signature=&#34;json&#34;,
+                        type=pronom.EXT,
+                    )
+                ],
+                internal_signatures=sequences,
+                priorities=copy.deepcopy(list(set(priorities))),
+            )
+            priorities.append(f&#34;{increment_id}&#34;)
+            formats.append(fmt)
+
+    pronom.process_formats_and_save(formats, PRONOM_FILENAME)</code></pre>
+</details>
+<div class="desc"><p>Export a PRONOM compatible set of signatures.</p>
+<p>Export is done in two phases. A set of proposed "Baseline" JSON
+signatures to catch many JSON instances.</p>
+<p>Second the JSONID registry is exported.</p>
+<p>Every export has a priority over the other so that there should
+be no multiple identification results.</p></div>
+</dd>
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="src.jsonid.export.PRONOMException"><code class="flex name class">
+<span>class <span class="ident">PRONOMException</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PRONOMException(Exception):
+    &#34;&#34;&#34;Exception class if we can&#39;t create a PRONOM signature as expected.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Exception class if we can't create a PRONOM signature as expected.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -92,6 +227,14 @@ el.replaceWith(d);
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="src.jsonid.export.exportJSON" href="#src.jsonid.export.exportJSON">exportJSON</a></code></li>
+<li><code><a title="src.jsonid.export.export_pronom" href="#src.jsonid.export.export_pronom">export_pronom</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="src.jsonid.export.PRONOMException" href="#src.jsonid.export.PRONOMException">PRONOMException</a></code></h4>
+</li>
 </ul>
 </li>
 </ul>
