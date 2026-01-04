@@ -56,7 +56,7 @@ async def output_signature(path: str):
 
     for encoding in encodings:
         increment_id += 1
-        json_puid = "jsonid2pronom/1"
+        json_puid = f"jsonid2pronom/{increment_id}"
         name_ = f"JSONID2PRONOM Conversion ({encoding})"
         try:
             mime = "application/json"
