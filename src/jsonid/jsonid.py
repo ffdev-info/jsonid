@@ -110,35 +110,6 @@ def analysis() -> None:
         action="store_true",
     )
     parser.add_argument(
-        "--nojson",
-        "-nj",
-        action="store_true",
-        required=False,
-    )
-    parser.add_argument(
-        "--nojsonl",
-        "-njl",
-        action="store_true",
-        required=False,
-    )
-    parser.add_argument(
-        "--noyaml",
-        "-ny",
-        action="store_true",
-        required=False,
-    )
-    parser.add_argument(
-        "--notoml",
-        "-nt",
-        action="store_true",
-        required=False,
-    )
-    parser.add_argument(
-        "--language",
-        help="return results in different languages",
-        required=False,
-    )
-    parser.add_argument(
         "--path",
         "-p",
         help="analyse a file in support of ruleset development and data preservation",
