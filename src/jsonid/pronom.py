@@ -248,13 +248,8 @@ def create_file_format_collection(fmt: list[Format]):
     return ff.strip()
 
 
-def process_formats_and_save(formats: list[Format], filename: str):
-    """Process the collected formats and output a signature file.
-
-    NB. Given our dataclasses here, we have the opportunity to rework
-    this data into many new structures. We output XML because DROID
-    expects XML.
-    """
+def _process_formats(formats: list[Format]):
+    """Process formats into a PRONOM XML file."""
     isc = []
     ffc = []
     for fmt in formats:
@@ -278,12 +273,35 @@ def process_formats_and_save(formats: list[Format], filename: str):
         dom = xml.dom.minidom.parseString(signature_file)
     except xml.parsers.expat.ExpatError as err:
         logger.error("cannot process xml: %s", err)
-        return
+        return ""
     pretty_xml = dom.toprettyxml(indent=" ", encoding="utf-8")
     prettier_xml = export_helpers.new_prettify(pretty_xml)
+    return prettier_xml
+
+
+def process_formats_and_save(formats: list[Format], filename: str):
+    """Process the collected formats and output a signature file.
+
+    NB. Given our dataclasses here, we have the opportunity to rework
+    this data into many new structures. We output XML because DROID
+    expects XML.
+    """
+    prettier_xml = _process_formats(formats)
     logger.info("outputting to: %s", filename)
     with open(filename, "w", encoding="utf=8") as output_file:
         output_file.write(prettier_xml)
+
+
+def process_formats_to_stdout(formats: list[Format]):
+    """Process the collected formats and output a signature file.
+
+    NB. Given our dataclasses here, we have the opportunity to rework
+    this data into many new structures. We output XML because DROID
+    expects XML.
+    """
+    prettier_xml = _process_formats(formats)
+    logger.info("outputting to: stdout")
+    print(prettier_xml)
 
 
 def encode_roundtrip(hexed_val: str, encoding: str) -> str:

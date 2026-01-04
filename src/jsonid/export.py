@@ -107,7 +107,7 @@ def export_pronom() -> None:
                 mime = ""
             try:
                 sequences = pronom.process_markers(
-                    markers.copy(),
+                    copy.deepcopy(markers),
                     increment_id,
                     encoding=encoding,
                 )
