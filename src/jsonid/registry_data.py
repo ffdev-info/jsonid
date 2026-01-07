@@ -944,6 +944,33 @@ _registry = [
             {"KEY": "term", "ISTYPE": dict},
         ],
     ),
+    # Vega.
+    # Ref: https://vega.github.io/vega/docs/specification/
+    registry_class.RegistryEntry(
+        identifier="jrid:0081",
+        name=[{"@en": "Vega visualization specification language schema"}],
+        markers=[
+            {"KEY": "$schema", "CONTAINS": "json-schema.org"},
+            {"KEY": "$schema", "CONTAINS": "/schema"},
+            {"KEY": "title", "CONTAINS": "Vega Visualization Specification Language"},
+            {"GOTO": "definitions", "KEY": "autosize", "ISTYPE": dict},
+            {"GOTO": "definitions", "KEY": "axis", "ISTYPE": dict},
+            {"GOTO": "definitions", "KEY": "labelOverlap", "ISTYPE": dict},
+            {"GOTO": "definitions", "KEY": "tickBand", "ISTYPE": dict},
+            {"GOTO": "definitions", "KEY": "tickCount", "ISTYPE": dict},
+            {"GOTO": "definitions", "KEY": "background", "ISTYPE": dict},
+        ],
+    ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0082",
+        name=[{"@en": "Vega visualization definition"}],
+        markers=[
+            {"KEY": "$schema", "CONTAINS": "/schema/vega/"},
+            {"KEY": "autosize", "EXISTS": None},
+            {"KEY": "data", "ISTYPE": list},
+            {"KEY": "marks", "ISTYPE": list},
+        ],
+    ),
 ]
 
 
