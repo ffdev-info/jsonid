@@ -982,6 +982,13 @@ _registry = [
     registry_class.RegistryEntry(
         identifier="jrid:0084",
         name=[{"@en": "Vega visualization specification language schema"}],
+        description=[
+            {
+                "@en": "a schema for a declarative language for creating, saving, and sharing interactive visualization designs"
+            }
+        ],
+        wikidata="https://www.wikidata.org/entity/Q105857352",
+        archive_team="http://fileformats.archiveteam.org/wiki/Vega",
         markers=[
             {"KEY": "$schema", "CONTAINS": "json-schema.org"},
             {"KEY": "$schema", "CONTAINS": "/schema"},
@@ -997,6 +1004,13 @@ _registry = [
     registry_class.RegistryEntry(
         identifier="jrid:0085",
         name=[{"@en": "Vega visualization definition"}],
+        description=[
+            {
+                "@en": "a declarative language for creating, saving, and sharing interactive visualization designs"
+            }
+        ],
+        wikidata="https://www.wikidata.org/entity/Q105857352",
+        archive_team="http://fileformats.archiveteam.org/wiki/Vega",
         markers=[
             {"KEY": "$schema", "CONTAINS": "/schema/vega/"},
             {"KEY": "autosize", "EXISTS": None},
