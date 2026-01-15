@@ -111,6 +111,10 @@ lookup-ref-ex:
 pronom:
  python jsonid.py --pronom --debug
 
+# PRONOM demo
+pronom-example:
+ python json2pronom.py -p pronom_example/patterns_example.json
+
 # move pronom to .droid folder
 pronom-to-droid:
  ~/.droid6/clean.sh
@@ -128,3 +132,7 @@ roy:
 droid-cli path: pronom-to-droid
  java -jar ~/dp/droid/droid-binary-6.8.0-bin/droid-command-line-6.8.0.jar -s 1
  java -jar ~/dp/droid/droid-binary-6.8.0-bin/droid-command-line-6.8.0.jar -ri  {{path}}
+
+# inspect prronom
+inspect-pro:
+ bat jsonid_pronom.xml
