@@ -12,14 +12,15 @@ from functools import lru_cache
 from typing import Any, Final
 
 try:
+    import export
     import export_helpers
     import helpers
     import registry_matchers
 except ModuleNotFoundError:
     try:
-        from src.jsonid import export_helpers, helpers, registry_matchers
+        from src.jsonid import export, export_helpers, helpers, registry_matchers
     except ModuleNotFoundError:
-        from jsonid import export_helpers, helpers, registry_matchers
+        from jsonid import export, export_helpers, helpers, registry_matchers
 
 
 logger = logging.getLogger(__name__)
@@ -234,9 +235,19 @@ def create_file_format_collection(fmt: list[Format]):
         for sig in fmt.external_signatures
         if sig.type.lower() == EXT
     ]
+
+    priority_ids = []
+    for id_ in fmt.priorities:
+        if id_ == str(fmt.id):
+            continue
+        if export.JSON_PUID in fmt.name:
+            # This is brittle. Understand how to make more robust.
+            continue
+        priority_ids.append(id_)
+
     priorities = [
         f"<HasPriorityOverFileFormatID>{priority}</HasPriorityOverFileFormatID>"
-        for priority in fmt.priorities
+        for priority in priority_ids
     ]
     ff = f"""
 <FileFormat ID=\"{fmt.id}\" Name=\"{fmt.name}\" PUID=\"{fmt.puid}\" Version="{fmt.version}" MIMEType=\"{fmt.mime}\" FormatType=\"{fmt.classification}\" >

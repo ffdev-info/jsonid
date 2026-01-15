@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 PRONOM_FILENAME: Final[str] = "jsonid_pronom.xml"
+JSON_PUID: Final[str] = "fmt/817"
 
 
 class PRONOMException(Exception):
@@ -77,7 +78,7 @@ def export_pronom() -> None:
             increment_id += 1
             fmt = pronom.Format(
                 id=increment_id,
-                name=f"JSON (Baseline - fmt/817) ({encoding})",
+                name=f"JSON (Baseline - {JSON_PUID}) ({encoding})",
                 version="",
                 puid="jsonid:0000",
                 mime="application/json",
