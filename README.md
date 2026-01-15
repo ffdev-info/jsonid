@@ -42,6 +42,7 @@ from pypi.org.
   - [Registry examples](#registry-examples)
   - [Local rules](#local-rules)
 - [PRONOM](#pronom)
+  - [JSONID for PRONOM Signature Development](#jsonid-for-pronom-signature-development)
 - [Output format](#output-format)
   - [Agent out](#agent-out)
 - [Lookup](#lookup)
@@ -467,6 +468,37 @@ compatible snippet can be output as follows (UTF-8 shown for brevity):
       <Extension>json</Extension>
     </FileFormat>
 </FFSignatureFile>
+```
+
+##### Installing json2pronom
+
+You can install the standalone utility using pip as follows:
+
+```cli
+# optionally setup a virtual environment.
+python -m venv venv
+source venv/bin/activate
+# install JSONID via pip.
+python -m pip install jsonid
+```
+
+Once installed, invoke the following to see the command line options:
+
+```cli
+json2pronom -h
+```
+
+Given a custom patterns file named `patterns.json` you will run:
+
+```cli
+json2pronom --path patterns.json
+```
+
+and the output will be sent to `stdout` so will need to be piped to a file to
+be used with DROID, e.g.
+
+```cli
+json2pronom --path patterns.json > jsonid_pronom.xml
 ```
 
 <!--markdownlint-enable-->
