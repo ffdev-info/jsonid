@@ -944,6 +944,40 @@ _registry = [
             {"KEY": "term", "ISTYPE": dict},
         ],
     ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0081",
+        name=[{"@en": "Tldraw v1"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/Tldraw",
+        wikidata="http://www.wikidata.org/entity/Q137039604",
+        markers=[
+            {"KEY": "tldrawFileFormatVersion", "ISTYPE": int},
+            {"KEY": "records", "ISTYPE": list},
+            {"GOTO": "schema", "KEY": "schemaVersion", "IS": 1},
+        ],
+    ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0082",
+        name=[{"@en": "Tldraw v2"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/Tldraw",
+        wikidata="http://www.wikidata.org/entity/Q137039604",
+        markers=[
+            {"KEY": "tldrawFileFormatVersion", "ISTYPE": int},
+            {"KEY": "records", "ISTYPE": list},
+            {"GOTO": "schema", "KEY": "schemaVersion", "IS": 2},
+        ],
+    ),
+    registry_class.RegistryEntry(
+        identifier="jrid:0083",
+        name=[{"@en": "Irkasi visual thinking tool"}],
+        archive_team="http://fileformats.archiveteam.org/wiki/Tldraw",
+        markers=[
+            {"KEY": "schema", "ISTYPE": dict},
+            {"KEY": "shapes", "ISTYPE": list},
+            {"KEY": "rootShapeIds", "ISTYPE": list},
+            {"KEY": "bindings", "ISTYPE": list},
+            {"KEY": "assets", "ISTYPE": list},
+        ],
+    ),
 ]
 
 
