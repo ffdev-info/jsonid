@@ -107,6 +107,7 @@ el.replaceWith(d);
         res = await analysis.analyse_input(base_obj.data, base_obj.content_for_analysis)
         res[&#34;doctype&#34;] = base_obj.doctype
         res[&#34;encoding&#34;] = base_obj.encoding
+        res[&#34;agent&#34;] = version.get_agent()
         if base_obj.doctype == registry.DOCTYPE_JSONL:
             res[&#34;compression&#34;] = base_obj.compression
             res.pop(&#34;content_length&#34;)

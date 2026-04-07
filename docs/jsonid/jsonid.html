@@ -45,6 +45,80 @@ el.replaceWith(d);
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="src.jsonid.jsonid.analysis"><code class="name flex">
+<span>def <span class="ident">analysis</span></span>(<span>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def analysis() -&gt; None:
+    &#34;&#34;&#34;Secondary entry point for analysis functionality.
+
+    Enables us to call analysis from the command line once installed
+    via PyPi.
+    &#34;&#34;&#34;
+    parser = argparse.ArgumentParser(
+        prog=&#34;jsonida&#34;,
+        description=&#34;JSONID(A)nalysis&#34;,
+        epilog=&#34;for more information visit https://github.com/ffdev-info/jsonid&#34;,
+    )
+    parser.add_argument(
+        &#34;--debug&#34;,
+        help=&#34;use debug loggng&#34;,
+        required=False,
+        action=&#34;store_true&#34;,
+    )
+    parser.add_argument(
+        &#34;--path&#34;,
+        &#34;-p&#34;,
+        help=&#34;analyse a file in support of ruleset development and data preservation&#34;,
+        required=False,
+        type=str,
+        metavar=&#34;PATH&#34;,
+    )
+    args = parser.parse_args()
+
+    if not args.path:
+        parser.print_help(sys.stderr)
+        sys.exit()
+
+    # Initialize logging.
+    init_logging(args.debug)
+
+    # Attempt lookup in the registry. This should come first as it
+    # doesn&#39;t involve reading files.
+    _attempt_lookup(args)
+
+    # Determine which decode strategy to adopt.
+    strategy = _get_strategy(args)
+    if not strategy:
+        logger.error(
+            &#34;please ensure there is one remaining decode strategy, e.g. %s&#34;,
+            &#34;,&#34;.join(decode_strategies),
+        )
+        sys.exit(1)
+
+    # Enable graceful exit via signal handler...
+    def signal_handler(*args):  # pylint: disable=W0613
+        logger.info(&#34;exiting...&#34;)
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+
+    if args.path:
+        asyncio.run(
+            file_processing.analyse_data(
+                path=args.path,
+                strategy=strategy,
+            )
+        )</code></pre>
+</details>
+<div class="desc"><p>Secondary entry point for analysis functionality.</p>
+<p>Enables us to call analysis from the command line once installed
+via PyPi.</p></div>
+</dd>
 <dt id="src.jsonid.jsonid.init_logging"><code class="name flex">
 <span>def <span class="ident">init_logging</span></span>(<span>debug: bool)</span>
 </code></dt>
@@ -85,8 +159,8 @@ el.replaceWith(d);
 
     parser = argparse.ArgumentParser(
         prog=&#34;jsonid&#34;,
-        description=&#34;proof-of-concept identifier for JSON objects on disk based on identifying valid objects and their key-values&#34;,
-        epilog=&#34;for more information visit https://github.com/ffdev-info/json-id&#34;,
+        description=&#34;JSON(ID)entification of objects on disk based on identifying valid objects and their key-values&#34;,
+        epilog=&#34;for more information visit https://github.com/ffdev-info/jsonid&#34;,
     )
     parser.add_argument(
         &#34;--debug&#34;,
@@ -175,6 +249,7 @@ el.replaceWith(d);
     parser.add_argument(
         &#34;--analyse&#34;,
         &#34;--analyze&#34;,
+        &#34;--analysis&#34;,
         &#34;-a&#34;,
         help=&#34;analyse a file in support of ruleset development and data preservation&#34;,
         required=False,
@@ -282,6 +357,7 @@ el.replaceWith(d);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="src.jsonid.jsonid.analysis" href="#src.jsonid.jsonid.analysis">analysis</a></code></li>
 <li><code><a title="src.jsonid.jsonid.init_logging" href="#src.jsonid.jsonid.init_logging">init_logging</a></code></li>
 <li><code><a title="src.jsonid.jsonid.main" href="#src.jsonid.jsonid.main">main</a></code></li>
 </ul>

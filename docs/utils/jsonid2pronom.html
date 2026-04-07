@@ -131,7 +131,7 @@ JSONID compatible markers to a PRONOM compatible signature file.</p>
 
     for encoding in encodings:
         increment_id += 1
-        json_puid = &#34;jsonid2pronom/1&#34;
+        json_puid = f&#34;jsonid2pronom/{increment_id}&#34;
         name_ = f&#34;JSONID2PRONOM Conversion ({encoding})&#34;
         try:
             mime = &#34;application/json&#34;

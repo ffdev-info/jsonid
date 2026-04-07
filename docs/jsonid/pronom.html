@@ -314,9 +314,19 @@ with various different encodings.</p></div>
         for sig in fmt.external_signatures
         if sig.type.lower() == EXT
     ]
+
+    priority_ids = []
+    for id_ in fmt.priorities:
+        if id_ == str(fmt.id):
+            continue
+        if export.JSON_PUID in fmt.name:
+            # This is brittle. Understand how to make more robust.
+            continue
+        priority_ids.append(id_)
+
     priorities = [
         f&#34;&lt;HasPriorityOverFileFormatID&gt;{priority}&lt;/HasPriorityOverFileFormatID&gt;&#34;
-        for priority in fmt.priorities
+        for priority in priority_ids
     ]
     ff = f&#34;&#34;&#34;
 &lt;FileFormat ID=\&#34;{fmt.id}\&#34; Name=\&#34;{fmt.name}\&#34; PUID=\&#34;{fmt.puid}\&#34; Version=&#34;{fmt.version}&#34; MIMEType=\&#34;{fmt.mime}\&#34; FormatType=\&#34;{fmt.classification}\&#34; &gt;
