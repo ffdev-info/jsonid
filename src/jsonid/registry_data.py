@@ -1,5 +1,7 @@
 """JSON registry data."""
 
+# pylint: disable=C0302; too-many lines in module.
+
 try:
     import registry_class
 except ModuleNotFoundError:
