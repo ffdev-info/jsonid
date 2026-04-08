@@ -43,7 +43,7 @@ from pypi.org.
   - [Local rules](#local-rules)
 - [PRONOM](#pronom)
   - [JSONID for PRONOM Signature Development](#jsonid-for-pronom-signature-development)
-- [Output format](#output-format)
+- [JSONID Output format](#jsonid-output-format)
   - [Agent out](#agent-out)
 - [Lookup](#lookup)
   - [Core formats](#core-formats)
