@@ -432,6 +432,10 @@ for identification of document types registered with JSONID.
 JSONID's registry is output alongisde a handful of baseline JSON signatures
 designed to capture "plain"-JSON that is not yet encoded in the registry.
 
+An example export can be found in the [pronom reference folder][pronom-ref-1].
+
+[pronom-ref-1]: ./pronom_reference/DROID_JSONID_SignatureFile.xml
+
 #### 2. Signature development
 
 A standalone `json2pronom` utility is provided for creation of potentially
@@ -506,7 +510,7 @@ json2pronom --path patterns.json > jsonid_pronom.xml
 Feedback on this utility is welcome. Hopefully we can build on this
 approach for other structured formats such as XML.
 
-## Output format
+## JSONID Output format
 
 Previously JSONID output YAML containing all result object metadata. It has
 since coalesced on a MIME based output approximating that of `$file --mime`.

@@ -24,6 +24,7 @@ ignore-patterns=
     ^(.+).html,
     ^(.+).png,
     ^(.+).htm,
+    ^(.+).xml,
     ^\.,
 
 ignore-paths=
