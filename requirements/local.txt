@@ -2,7 +2,7 @@
 -r requirements.txt
 
 pdoc3==0.11.6
-pip-upgrader==2.4.1
+pip-upgrader==2.4.5
 pre-commit==4.6.0
 pylint==4.0.5
 pytest==9.0.3
