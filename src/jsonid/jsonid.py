@@ -16,11 +16,12 @@ try:
     import helpers
     import lookup
     import registry
+    import local
 except ModuleNotFoundError:
     try:
-        from src.jsonid import export, file_processing, helpers, lookup, registry
+        from src.jsonid import export, file_processing, helpers, lookup, registry, local
     except ModuleNotFoundError:
-        from jsonid import export, file_processing, helpers, lookup, registry
+        from jsonid import export, file_processing, helpers, lookup, registry, local
 
 
 logger = None
@@ -293,9 +294,11 @@ def main() -> None:
 
     # Primary application functions.
     if args.registry:
-        raise NotImplementedError("custom registry is not yet available")
-        if args.local_only:
+        local.load_and_parse_local_registry(path=args.registry)
+        if args.localonly:
             raise NotImplementedError("todo...")
+
+    return
     if args.pronom:
         export.export_pronom()
         sys.exit()
