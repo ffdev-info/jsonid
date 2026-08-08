@@ -216,8 +216,17 @@ def main() -> None:
     )
     parser.add_argument(
         "--registry",
+        "--local",
         help="path to a custom registry to lead into memory replacing the default",
         required=False,
+    )
+    parser.add_argument(
+        "--localonly",
+        "--lonly",
+        "--lonely",
+        help="if a local registry is specified, use this and this only",
+        required=False,
+        action="store_true",
     )
     # NB. consider output to stdout once the feature is more stable.
     parser.add_argument(
@@ -285,6 +294,8 @@ def main() -> None:
     # Primary application functions.
     if args.registry:
         raise NotImplementedError("custom registry is not yet available")
+        if args.local_only:
+            raise NotImplementedError("todo...")
     if args.pronom:
         export.export_pronom()
         sys.exit()
@@ -305,6 +316,8 @@ def main() -> None:
         logger.info("ok")
         sys.exit()
     if args.html:
+        if args.registry:
+            raise NotImplementedError("local registry output is not yet supported")
         helpers.html()
         sys.exit()
     if not strategy:
