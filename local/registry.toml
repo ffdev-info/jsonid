@@ -3,7 +3,10 @@
 name = "doctype1"
 identifier = "local0001"
 
-[[doctype.markers]]
+# optional
+localref = "http://example.com/repository/ID
+
+[[entries.markers]]
 
 key = "key1"
 is = "value1"
@@ -13,7 +16,7 @@ is = "value1"
 name = "doctype2"
 identifier = "local0002"
 
-[[doctype.markers]]
+[[entries.markers]]
 
 key = "key2"
 is = "value2"

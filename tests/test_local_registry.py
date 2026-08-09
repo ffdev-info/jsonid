@@ -30,7 +30,6 @@ is = "value2"
 """
 
 
-
 def test_load_local(tmp_path):
     """Ensure loading the local registry works as anticipated."""
 
