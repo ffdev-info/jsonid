@@ -1,10 +1,12 @@
 """Test functions associated with the local registry."""
 
-from src.jsonid import local
-
 from typing import Final
 
-registry: Final[str] = """
+from src.jsonid import local
+
+registry: Final[
+    str
+] = """
 [[entries]]
 
 name = "doctype1"
@@ -27,7 +29,6 @@ is = "value2"
 
 """
 
-import io
 
 
 def test_load_local(tmp_path):

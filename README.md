@@ -405,9 +405,37 @@ within the `sops` object/value.
 
 ### Local rules
 
-The plan is to allow local rules to be run alongside the global ruleset. I
-expect this will be a bit further down the line when the ruleset and
-metaddata is more stabilised.
+You can define local rules in a local registry object. Local registries are
+defined in TOML, and look as follows:
+
+```toml
+[[entries]]
+
+name = "doctype1"
+identifier = "local0001"
+
+[[entries.markers]]
+
+key = "key1"
+is = "value1"
+
+[[entries]]
+
+name = "doctype2"
+identifier = "local0002"
+
+[[entries.markers]]
+
+key = "key2"
+is = "value2"
+```
+
+Markers follow the same pattern as the standard registry.
+
+#### Local only
+
+Use the `--localonly` flag to use _just_ your custom markers in your format
+identification workflow.
 
 ## PRONOM
 

@@ -16,12 +16,13 @@ try:
     import helpers
     import lookup
     import registry
+
     import local
 except ModuleNotFoundError:
     try:
-        from src.jsonid import export, file_processing, helpers, lookup, registry, local
+        from src.jsonid import export, file_processing, helpers, local, lookup, registry
     except ModuleNotFoundError:
-        from jsonid import export, file_processing, helpers, lookup, registry, local
+        from jsonid import export, file_processing, helpers, local, lookup, registry
 
 
 logger = None

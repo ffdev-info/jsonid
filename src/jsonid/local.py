@@ -35,4 +35,7 @@ def load_local_registry(registry: pathlib.Path):
 
     logger.debug("local registry length: %d", len(reg["entries"]))
 
+    for item in reg["entries"]:
+        print(item)
+
     assert False
