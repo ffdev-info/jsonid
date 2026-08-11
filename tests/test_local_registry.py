@@ -17,6 +17,11 @@ identifier = "local0001"
 key = "key1"
 is = "value1"
 
+[[entries.markers]]
+
+key = "key2"
+is = "value2"
+
 [[entries]]
 
 name = "doctype2"

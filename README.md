@@ -413,7 +413,7 @@ defined in TOML, and look as follows:
 
 name = "doctype1"
 identifier = "local0001"
-localref = "http://example.com/repository/ID"
+localref = "http://example.com/doctype/spec/ID"
 
 [[entries.markers]]
 
@@ -424,7 +424,7 @@ is = "value1"
 
 name = "doctype2"
 identifier = "local0002"
-#localref = "http://example.com/repository/ID
+localref = "http://example.com/doctype/spec/ID
 
 [[entries.markers]]
 
