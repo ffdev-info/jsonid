@@ -83,4 +83,9 @@ async def test_load_local_only(tmp_path):
     )
 
     print(id_)
+
+    assert len(id_) == 1
+    assert id_[0].identifier == "local0002"
+    assert id_[0].name[0]["@en"] == "doctype2"
+
     assert False
