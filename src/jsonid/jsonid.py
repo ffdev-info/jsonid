@@ -4,6 +4,7 @@
 
 import argparse
 import asyncio
+import copy
 import logging
 import signal
 import sys
@@ -16,13 +17,30 @@ try:
     import helpers
     import lookup
     import registry
+    import registry_data
 
     import local
 except ModuleNotFoundError:
     try:
-        from src.jsonid import export, file_processing, helpers, local, lookup, registry
+        from src.jsonid import (
+            export,
+            file_processing,
+            helpers,
+            local,
+            lookup,
+            registry,
+            registry_data,
+        )
     except ModuleNotFoundError:
-        from jsonid import export, file_processing, helpers, local, lookup, registry
+        from jsonid import (
+            export,
+            file_processing,
+            helpers,
+            local,
+            lookup,
+            registry,
+            registry_data,
+        )
 
 
 logger = None
@@ -295,11 +313,12 @@ def main() -> None:
 
     # Primary application functions.
     if args.registry:
-        local.load_and_parse_local_registry(path=args.registry)
         if args.localonly:
-            raise NotImplementedError("todo...")
-
-    return
+            reg_data = local.load_and_parse_local_registry(path=args.registry)
+        else:
+            reg_data = local.load_and_parse_local_registry(path=args.registry)
+    if not args.registry:
+        reg_data = copy.deepcopy(registry_data.registry())
     if args.pronom:
         export.export_pronom()
         sys.exit()
@@ -355,6 +374,8 @@ def main() -> None:
             strategy=strategy,
             binary=args.binary,
             agentout=args.agentout,
+            # TODO: registry data here? or just feed the local config through?
+            reg_data=reg_data,
         )
     )
 

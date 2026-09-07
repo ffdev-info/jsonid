@@ -1,5 +1,6 @@
 """Functions supporting local registry use"""
 
+import copy
 import logging
 import pathlib
 import tomllib as toml
@@ -46,7 +47,7 @@ def load_and_parse_local_registry(path: str):
 """
 
 
-def load_local_registry(registry: pathlib.Path):
+def load_local_registry(registry: pathlib.Path, only_local: bool = False):
     """Load the local registry and return it as a data structure
     to the caller.
     """
@@ -54,13 +55,13 @@ def load_local_registry(registry: pathlib.Path):
     with registry.open() as data:
         local_registry_data = data.read()
 
-    local_reg = toml.loads(local_registry_data)
+    local_reg_config = toml.loads(local_registry_data)
 
-    logger.debug("local registry length: %d", len(local_reg["entries"]))
+    logger.debug("local registry length: %d", len(local_reg_config["entries"]))
 
-    reg = registry_data.registry()
+    local_reg = []
 
-    for item in local_reg["entries"]:
+    for item in local_reg_config["entries"]:
 
         # TODO: cleanup, ensure keys are capitalized.
         m = []
@@ -73,8 +74,8 @@ def load_local_registry(registry: pathlib.Path):
         # TODO: variable naming.
         a = registry_class.RegistryEntry(
             identifier=item["identifier"],
-            name=[{"@en": "TODO"}],
-            description=[{"@en": "TODO"}],
+            name=[{"@en": item.get("name")}],
+            description=[{"@en": item.get("description")}],
             markers=m,
         )
 
@@ -82,25 +83,11 @@ def load_local_registry(registry: pathlib.Path):
         print(a.markers)
         print("---")
         # if local...
-        reg.append(a)
+        local_reg.append(a)
 
-    # print(reg)
+    if only_local:
+        return local_reg
 
-    """
-    [[entries]]
+    reg = copy.deepcopy(registry_data.registry())
 
-    name = "doctype1"
-    identifier = "local0001"
-    localref = "http://example.com/repository/ID
-
-    [[entries.markers]]
-
-    key = "key1"
-    is = "value1"
-
-    {'name': 'doctype1', 'identifier': 'local0001', 'markers': [{'key': 'key1', 'is': 'value1'}]}
-
-
-    """
-
-    assert False
+    return reg + local_reg

@@ -1,4 +1,4 @@
-"""JSON registry processor. """
+"""JSON registry processor."""
 
 import copy
 import json
@@ -20,7 +20,7 @@ except ModuleNotFoundError:
             registry_matchers,
         )
     except ModuleNotFoundError:
-        from jsonid import analysis, registry_class, registry_data, registry_matchers
+        from jsonid import analysis, registry_class, registry_matchers
 
 
 logger = logging.getLogger(__name__)
@@ -306,7 +306,7 @@ def build_identifier(
     return match_obj
 
 
-def matcher(base_obj: BaseCharacteristics) -> list:
+def matcher(base_obj: BaseCharacteristics, reg_data: list) -> list:
     """Matcher for registry objects."""
     logger.debug("type: '%s'", type(base_obj.data))
     if isinstance(base_obj.data, str):
@@ -315,9 +315,15 @@ def matcher(base_obj: BaseCharacteristics) -> list:
         except json.decoder.JSONDecodeError as err:
             logger.error("unprocessable data: %s", err)
             return []
-    reg = registry_data.registry()
+
+    # TODO: load registry outside of this function and supply it as an
+    # arg to enable local registry functions?
+    # TODO: load registry outside of this function and supply it as an
+    # arg to enable local registry functions?
+    # TODO: load registry outside of this function and supply it as an
+    # arg to enable local registry functions?
     matches = []
-    for idx, registry_entry in enumerate(reg):
+    for idx, registry_entry in enumerate(reg_data):
         try:
             logger.debug("processing registry entry: %s", idx)
             match = process_markers(registry_entry, base_obj.data)
