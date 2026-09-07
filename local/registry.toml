@@ -1,0 +1,25 @@
+[[entries]]
+
+name = "doctype1"
+identifier = "local0001"
+localref = "http://example.com/repository/ID"
+
+[[entries.markers]]
+
+key = "key1"
+is = "value1"
+
+[[entries.markers]]
+
+key = "key2"
+is = "value2"
+
+[[entries]]
+
+name = "doctype2"
+identifier = "local0002"
+
+[[entries.markers]]
+
+key = "key2"
+is = "value2"

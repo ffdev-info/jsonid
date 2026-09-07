@@ -164,6 +164,9 @@ async def analyse_json(paths: list[str], strategy: list):
     """Analyse a JSON object."""
     analysis_res = []
     for path in paths:
+        if os.path.islink(path):
+            logger.debug(f"'{path}' is a symlink")
+            continue
         if os.path.getsize(path) == 0:
             logger.debug("%s is an empty file", path)
             continue
@@ -200,8 +203,13 @@ async def process_result(
     base_obj: registry.BaseCharacteristics,
     padding: int,
     agentout: bool,
+    reg_data: list,
 ):
-    """Process something JSON/YAML/TOML"""
+    """Process something JSON/YAML/TOML.
+
+    TODO: ...
+
+    """
     results = []
     # NB. these switch-like ifs might not be needed in the fullness
     # of time. It depends if we need to do any custom processing of
@@ -225,21 +233,23 @@ async def process_result(
         return
     # If we don't exit early and we try and identify the file... we then
     # create a new class object with an identification...
-    if base_obj.doctype == registry.DOCTYPE_JSON:
-        results = registry.matcher(base_obj)
-    if base_obj.doctype == registry.DOCTYPE_JSONL:
-        results = registry.matcher(base_obj)
-    if base_obj.doctype == registry.DOCTYPE_YAML:
-        results = registry.matcher(base_obj)
-    if base_obj.doctype == registry.DOCTYPE_TOML:
-        results = registry.matcher(base_obj)
+    if base_obj.doctype not in (
+        registry.DOCTYPE_JSON,
+        registry.DOCTYPE_JSONL,
+        registry.DOCTYPE_YAML,
+        registry.DOCTYPE_TOML,
+    ):
+        return
+    results = registry.matcher(
+        base_obj=base_obj,
+        reg_data=reg_data,
+    )
     output.output_results(
         path=path,
         results=results,
         padding=padding,
         agentout=agentout,
     )
-    return
 
 
 def _get_padding(paths: list):
@@ -255,10 +265,18 @@ def _get_padding(paths: list):
     return padding
 
 
-async def identify_json(paths: list[str], strategy: list, binary: bool, agentout: bool):
-    """Identify objects."""
+async def identify_json(
+    paths: list[str], strategy: list, binary: bool, agentout: bool, reg_data: list
+):
+    """Identify objects.
+
+    TODO: ,,,
+    """
     padding = _get_padding(paths=paths)
     for _, path in enumerate(paths):
+        if os.path.islink(path):
+            logger.debug(f"'{path}' is a symlink")
+            continue
         if os.path.getsize(path) == 0:
             logger.debug("%s is an empty file", path)
             base_obj = registry.BaseCharacteristics(empty=True)
@@ -268,6 +286,7 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, agentout
                     base_obj=base_obj,
                     padding=padding,
                     agentout=agentout,
+                    reg_data=reg_data,
                 )
             continue
         base_obj = await identify_plaintext_bytestream(
@@ -283,6 +302,7 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, agentout
                     base_obj=base_obj,
                     padding=padding,
                     agentout=agentout,
+                    reg_data=reg_data,
                 )
             continue
         logger.debug("processing: %s (%s)", path, base_obj.doctype)
@@ -291,6 +311,7 @@ async def identify_json(paths: list[str], strategy: list, binary: bool, agentout
             base_obj=base_obj,
             padding=padding,
             agentout=agentout,
+            reg_data=reg_data,
         )
 
 
@@ -443,7 +464,9 @@ async def process_glob(glob_path: str):
     return paths
 
 
-async def process_data(path: str, strategy: list, binary: bool, agentout: bool):
+async def process_data(
+    path: str, strategy: list, binary: bool, agentout: bool, reg_data: list
+):
     """Process all objects at a given path."""
     logger.debug("processing: %s", path)
     if "*" in path:
@@ -453,6 +476,7 @@ async def process_data(path: str, strategy: list, binary: bool, agentout: bool):
             strategy=strategy,
             binary=binary,
             agentout=agentout,
+            reg_data=reg_data,
         )
         sys.exit(0)
     if not os.path.exists(path):
@@ -464,6 +488,7 @@ async def process_data(path: str, strategy: list, binary: bool, agentout: bool):
             strategy=strategy,
             binary=binary,
             agentout=agentout,
+            reg_data=reg_data,
         )
         sys.exit(0)
     paths = await create_manifest(path)
@@ -475,6 +500,7 @@ async def process_data(path: str, strategy: list, binary: bool, agentout: bool):
         strategy=strategy,
         binary=binary,
         agentout=agentout,
+        reg_data=reg_data,
     )
 
 

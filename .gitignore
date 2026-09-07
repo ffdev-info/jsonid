@@ -142,3 +142,7 @@ jsonid-integration-files/
 # Secreta
 token.pypi
 jsonid_pronom.xml
+*.csv
+*.json
+*.diff
+token-pypi
